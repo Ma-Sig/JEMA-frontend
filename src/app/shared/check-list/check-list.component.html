@@ -1,0 +1,39 @@
+<div class="selectable-list-container">
+    <ul class="selectable-list">
+      <li
+        *ngFor="let item of items"
+        class="list-item"
+        [class.selected]="item.selected"
+        (click)="toggleItem(item)"
+      >
+        <div class="checkbox-container" (click)="$event.stopPropagation()">
+          <input
+            type="checkbox"
+            class="checkbox"
+            [(ngModel)]="item.selected"
+            (click)="$event.stopPropagation()"
+          />
+        </div>
+        <span class="item-text">{{ item.text }}</span>
+      </li>
+    </ul>
+  
+    <div class="actions-container">
+      <div class="selection-info">
+        {{ selectedCount }} elemento{{ selectedCount !== 1 ? 's' : '' }} seleccionado{{ selectedCount !== 1 ? 's' : '' }}
+      </div>
+      <div class="action-buttons">
+        <button class="action-button select-all-button" (click)="toggleAll()">
+          {{ allSelected ? 'Deseleccionar todos' : 'Seleccionar todos' }}
+        </button>
+        <button
+          class="action-button primary-button"
+          [disabled]="selectedCount === 0"
+          (click)="performAction()"
+        >
+          Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+  

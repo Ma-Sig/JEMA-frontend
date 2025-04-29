@@ -1,0 +1,239 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* Estilos del header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e5e5;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background-color: white;
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.menu-button:hover {
+  background-color: #f5f5f5;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.logo-blue {
+  color: #3b82f6;
+}
+
+.logo-black {
+  color: #000;
+}
+
+.right-icons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.notification-container {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ef4444;
+  color: white;
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-container {
+  position: relative;
+}
+
+.user-icon {
+  background-color: #e5e5e5;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.user-icon:hover {
+  background-color: #d5d5d5;
+}
+
+/* Estilos del dropdown de usuario */
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 200px;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 8px;
+  z-index: 100;
+  display: none;
+}
+
+.user-dropdown.active {
+  display: block;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  transform: rotate(45deg);
+  border-left: 1px solid #e5e5e5;
+  border-top: 1px solid #e5e5e5;
+}
+
+.user-dropdown-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.user-dropdown-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.user-dropdown-email {
+  font-size: 12px;
+  color: #666;
+}
+
+.user-dropdown-menu {
+  padding: 8px 0;
+}
+
+.user-dropdown-item {
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.user-dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.user-dropdown-divider {
+  height: 1px;
+  background-color: #e5e5e5;
+  margin: 8px 0;
+}
+
+.user-dropdown-icon {
+  color: #666;
+}
+
+/* Estilos del sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px; /* Inicialmente oculto */
+  width: 260px;
+  height: 100%;
+  background-color: white;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.open {
+  transform: translateX(260px);
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.close-button:hover {
+  background-color: #f5f5f5;
+}
+
+.sidebar-nav {
+  padding: 16px;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+}
+
+.sidebar-nav li {
+  margin-bottom: 8px;
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: 8px;
+  text-decoration: none;
+  color: #333;
+  border-radius: 4px;
+}
+
+.sidebar-nav a:hover {
+  background-color: #f5f5f5;
+}
+
+/* Overlay para cuando el sidebar está abierto */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  display: none;
+}
+
+.overlay.active {
+  display: block;
+}

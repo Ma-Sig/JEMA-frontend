@@ -1,0 +1,45 @@
+import { Component } from '@angular/core';
+
+interface Item {
+  id: string;
+  text: string;
+  selected: boolean;
+}
+
+@Component({
+  selector: 'app-check-list',
+  templateUrl: './check-list.component.html',
+  styleUrls: ['./check-list.component.scss']
+})
+export class CheckListComponent {
+  items: Item[] = [
+    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+    { id: '1235', text: '1235 - Pc Imac. Estado: Bueno', selected: true },
+    { id: '1236', text: '1236 - Pc Imac. Estado: Bueno', selected: true },
+    { id: '1237', text: '1237 - Pc Imac. Estado: Bueno', selected: false }
+  ];
+
+  get selectedCount(): number {
+    return this.items.filter(item => item.selected).length;
+  }
+
+  get allSelected(): boolean {
+    return this.selectedCount === this.items.length;
+  }
+
+  toggleItem(item: Item): void {
+    item.selected = !item.selected;
+  }
+
+  toggleAll(): void {
+    const newState = !this.allSelected;
+    this.items.forEach(item => item.selected = newState);
+  }
+
+  performAction(): void {
+    const selectedIds = this.items
+      .filter(item => item.selected)
+      .map(item => item.id);
+    alert(`Acción realizada con los elementos: ${selectedIds.join(', ')}`);
+  }
+}
