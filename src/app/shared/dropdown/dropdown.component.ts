@@ -1,37 +1,52 @@
-import { Component, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  HostListener,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 
 @Component({
   selector: 'app-dropdown',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './dropdown.component.html',
-  styleUrls: ['./dropdown.component.scss']
+  styleUrls: ['./dropdown.component.scss'],
 })
 export class DropdownComponent {
-  isOpen = false;
-  selectedLabel = 'Servicio';
+  @Input() options: string[] = []; // Lista de opciones
+  @Input() placeholder: string = 'Seleccionar'; // Placeholder inicial
+  @Input() readonly: boolean = false; // Modo solo lectura
+  @Input() selectedLabel: string = ''; // Valor preseleccionado (opcional)
+  @Input() hostClass: string | string[] = '';
+  @Output() selectionChange = new EventEmitter<string>(); // Emitir selección
 
-  options = [
-    'Mantenimiento',
-    'Reparación',
-    'Instalación',
-    'Consultoría',
-    'Soporte Técnico'
-  ];
+  isOpen = false;
 
   toggleDropdown() {
-    this.isOpen = !this.isOpen;
+    if (!this.readonly) {
+      this.isOpen = !this.isOpen;
+    }
   }
 
   selectOption(option: string) {
-    this.selectedLabel = option;
-    this.isOpen = false;
+    if (!this.readonly) {
+      this.selectedLabel = option;
+      this.isOpen = false;
+      this.selectionChange.emit(option); // Emitimos el valor seleccionado
+    }
   }
 
-  // Cierra el dropdown si se hace clic fuera
   @HostListener('document:click', ['$event'])
   handleClickOutside(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (!target.closest('.dropdown-container')) {
       this.isOpen = false;
     }
+  }
+
+  get label(): string {
+    return this.selectedLabel || this.placeholder;
   }
 }

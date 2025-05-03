@@ -1,0 +1,30 @@
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+// import { InventoryComponent } from './inventory.component';
+
+import { ItemListComponent } from './item-list/item-list.component';
+import { ItemEntryComponent } from './item-entry/item-entry.component';
+import { InventoryListComponent } from './inventory-list/inventory-list.component';
+import { InventoryEntryComponent } from './inventory-entry/inventory-entry.component';
+
+// const routes: Routes = [{ path: '', component: InventoryComponent }];
+const routes: Routes = [
+  { path: 'items', component: ItemListComponent },
+  { path: 'items/new', component: ItemEntryComponent, data: { mode: 'create' } },
+  { path: 'items/:id/edit', component: ItemEntryComponent, data: { mode: 'edit' } },
+  { path: 'items/:id/view', component: ItemEntryComponent, data: { mode: 'view' } },
+
+  { path: 'inventories', component: InventoryListComponent },
+  { path: 'inventories/new', component: InventoryEntryComponent, data: { mode: 'create' } },
+  { path: 'inventories/:id/edit', component: InventoryEntryComponent, data: { mode: 'edit' } },
+  { path: 'inventories/:id/view', component: InventoryEntryComponent, data: { mode: 'view' } },
+
+  // Ruta por defecto para inventario
+  { path: '', redirectTo: 'items', pathMatch: 'full' }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class InventoryRoutingModule { }

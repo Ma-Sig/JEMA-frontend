@@ -1,0 +1,98 @@
+<h1 class="section-title" *ngIf="isCreate">Registro de items</h1>
+<h1 class="section-title" *ngIf="isEdit">Editar ítem</h1>
+<h1 class="section-title" *ngIf="isReadOnly">Detalle del ítem</h1>
+
+<div *ngIf="!isReadOnly" class="bg-white rounded-2xl p-4 mx-8">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="space-y-2 col-span-6">
+      <label class="field-title">Estado</label>
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <div class="col-span-11">
+          <app-dropdown
+            class="w-full block"
+            [options]="['Alta', 'Media', 'Baja']"
+            [placeholder]="'Estado'"
+            [readonly]="isReadOnly"
+            [selectedLabel]="selectedPriority"
+            (selectionChange)="onPriorityChange($event)"
+          ></app-dropdown>
+        </div>
+        <div class="col-span-1 h-full">
+          <app-button
+            class="w-full h-full"
+            [label]="'+'"
+            (clicked)="addItem()"
+          ></app-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-2 col-span-6">
+      <label class="field-title">Tipo</label>
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <div class="col-span-11">
+          <app-dropdown
+            class="w-full block"
+            [options]="['Alta', 'Media', 'Baja']"
+            [placeholder]="'Tipo'"
+            [readonly]="isReadOnly"
+            [selectedLabel]="selectedPriority"
+            (selectionChange)="onPriorityChange($event)"
+          ></app-dropdown>
+        </div>
+        <div class="col-span-1 h-full">
+          <app-button
+            class="w-full h-full"
+            [label]="'+'"
+            (clicked)="addItem()"
+          ></app-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-2 col-span-12">
+      <label class="field-title">Nombre</label>
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <div class="col-span-12">
+          <app-input-field
+            [placeholder]="'Nombre'"
+            (valueChange)="onValueChange($event)"
+          ></app-input-field>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-2 col-span-6">
+      <label class="field-title">Descripción</label>
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <div class="col-span-12">
+          <app-textarea-field
+            [placeholder]="'Descripción'"
+            (valueChange)="onValueChangeTextarea($event)"
+          >
+          </app-textarea-field>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="form-container">
+    <div class="grid-container">
+      <app-dropdown
+        [options]="['Alta', 'Media', 'Baja']"
+        [placeholder]="'Selecciona una prioridad'"
+        [readonly]="isReadOnly"
+        [selectedLabel]="selectedPriority"
+        (selectionChange)="onPriorityChange($event)"
+      >
+      </app-dropdown>
+      <app-button [label]="'Agregar ítem'" (clicked)="addItem()"> </app-button>
+    </div>
+  </div> -->
+
+<div *ngIf="isReadOnly">
+  <!-- solo vista -->
+  <p><strong>Nombre:</strong> Televisor</p>
+  <!-- otros campos -->
+</div>

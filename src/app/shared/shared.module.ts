@@ -8,6 +8,8 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { UploadImageComponent } from './upload-image/upload-image.component';
 import { TableComponent } from './table/table.component';
 import { CheckListComponent } from './check-list/check-list.component';
+import { InputFieldComponent } from './input-field/input-field.component';
+import { TextareaFieldComponent } from './textarea-field/textarea-field.component';
 
 
 
@@ -19,7 +21,9 @@ import { CheckListComponent } from './check-list/check-list.component';
     CalendarComponent,
     UploadImageComponent,
     TableComponent,
-    CheckListComponent
+    CheckListComponent,
+    InputFieldComponent,
+    TextareaFieldComponent
   ],
   imports: [
     CommonModule,

@@ -1,20 +1,39 @@
-<div class="dropdown-container">
-    <button class="dropdown-button" [class.active]="isOpen" (click)="toggleDropdown()">
-      <span>{{ selectedLabel }}</span>
-      <svg class="dropdown-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
-    </button>
-  
-    <div class="dropdown-menu" [class.active]="isOpen">
-      <div
-        class="dropdown-item"
-        *ngFor="let option of options"
-        [class.selected]="option === selectedLabel"
-        (click)="selectOption(option)">
-        {{ option }}
-      </div>
+<div
+  class="dropdown-container"
+  [class.readonly]="readonly"
+  [ngClass]="hostClass"
+>
+  <button
+    type="button"
+    class="dropdown-button"
+    [class.active]="isOpen"
+    (click)="toggleDropdown()"
+    [disabled]="readonly"
+  >
+    <span>{{ label }}</span>
+    <svg
+      class="dropdown-icon"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
+
+  <div class="dropdown-menu" [class.active]="isOpen">
+    <div
+      class="dropdown-item"
+      *ngFor="let option of options"
+      [class.selected]="option === selectedLabel"
+      (click)="selectOption(option)"
+    >
+      {{ option }}
     </div>
   </div>
-  
+</div>

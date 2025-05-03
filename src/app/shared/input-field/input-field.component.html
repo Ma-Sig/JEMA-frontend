@@ -1,0 +1,24 @@
+<div class="input-group">
+  <input
+    type="text"
+    class="input-field"
+    [ngClass]="{
+      'is-valid': isValid === true,
+      'is-invalid': isValid === false
+    }"
+    [placeholder]="placeholder"
+    [(ngModel)]="value"
+    (input)="onInputChange()"
+    (blur)="validate()"
+  />
+  <div
+    class="validation-message"
+    [ngClass]="{
+      success: isValid === true,
+      error: isValid === false
+    }"
+    *ngIf="validationMessage"
+  >
+    {{ validationMessage }}
+  </div>
+</div>

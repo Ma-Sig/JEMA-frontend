@@ -10,6 +10,7 @@ const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule)
   },
   { path: 'page-not-found', component: PageNotFoundComponent },
+  { path: 'inventory', loadChildren: () => import('./features/inventory/inventory.module').then(m => m.InventoryModule) },
   { path: '**', redirectTo: '/page-not-found' }
 ];
 
