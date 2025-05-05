@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-upload-image',
   templateUrl: './upload-image.component.html',
-  styleUrls: ['./upload-image.component.scss']
+  styleUrls: ['./upload-image.component.scss'],
+  imports: [CommonModule],
+  standalone: true,
 })
 export class UploadImageComponent {
   imageSrc: string | null = null;
@@ -27,7 +30,9 @@ export class UploadImageComponent {
     this.imageSrc = null;
 
     // También puedes reiniciar el input si lo necesitas
-    const fileInput = document.getElementById('photoUpload') as HTMLInputElement;
+    const fileInput = document.getElementById(
+      'photoUpload'
+    ) as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
     }

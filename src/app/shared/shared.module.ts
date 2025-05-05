@@ -10,8 +10,7 @@ import { TableComponent } from './table/table.component';
 import { CheckListComponent } from './check-list/check-list.component';
 import { InputFieldComponent } from './input-field/input-field.component';
 import { TextareaFieldComponent } from './textarea-field/textarea-field.component';
-
-
+import { RightQComponent } from './right-q/right-q.component';
 
 @NgModule({
   declarations: [
@@ -23,12 +22,10 @@ import { TextareaFieldComponent } from './textarea-field/textarea-field.componen
     TableComponent,
     CheckListComponent,
     InputFieldComponent,
-    TextareaFieldComponent
+    TextareaFieldComponent,
+    RightQComponent,
   ],
-  imports: [
-    CommonModule,
-    FormsModule 
-  ],
-  exports: [ButtonComponent]
+  imports: [CommonModule, FormsModule],
+  exports: [ButtonComponent, RightQComponent],
 })
-export class SharedModule { }
+export class SharedModule {}

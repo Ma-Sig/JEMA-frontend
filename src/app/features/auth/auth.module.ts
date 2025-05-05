@@ -7,12 +7,7 @@ import { ReportsComponent } from './reports/reports.component';
 import { InfoComponent } from './info/info.component';
 
 @NgModule({
-  declarations: [
-    LoginComponent,
-    RegisterComponent,
-    ReportsComponent,
-    InfoComponent,
-  ],
-  imports: [CommonModule, AuthRoutingModule],
+  declarations: [LoginComponent, RegisterComponent, ReportsComponent],
+  imports: [CommonModule, AuthRoutingModule, InfoComponent],
 })
 export class AuthModule {}
