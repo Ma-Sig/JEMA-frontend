@@ -1,5 +1,4 @@
 {
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "tailwindCSS.experimental.configFile": "./path/to/your/tailwind/entrypoint.css"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
 }

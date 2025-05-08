@@ -9,7 +9,7 @@ interface Item {
 @Component({
   selector: 'app-check-list',
   templateUrl: './check-list.component.html',
-  styleUrls: ['./check-list.component.scss']
+  styleUrls: ['./check-list.component.css']
 })
 export class CheckListComponent {
   items: Item[] = [

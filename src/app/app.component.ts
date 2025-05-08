@@ -1,27 +1,17 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { HeaderComponent } from './shared/header/header.component';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, CommonModule, HeaderComponent],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'JEMA';
-  showHeader: boolean = true;
+  title = 'jema';
 
-  constructor(private router: Router) {
-    // Suscribirse a los cambios de ruta
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(event => {
-      // Si la ruta es la página 404 (wildcard '**'), ocultamos el header
-      if (this.router.url === '/page-not-found') {
-        this.showHeader = false;
-      } else {
-        this.showHeader = true;
-      }
-    });
-  }
+  showHeader = true;
 }

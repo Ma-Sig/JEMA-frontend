@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './textarea-field.component.html',
-  styleUrls: ['./textarea-field.component.scss'],
+  styleUrls: ['./textarea-field.component.css'],
 })
 export class TextareaFieldComponent {
   @Input() placeholder: string = 'Escribe aquí';

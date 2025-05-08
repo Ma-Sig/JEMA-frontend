@@ -1,4 +1,4 @@
-<h1 class="section-title" *ngIf="isCreate">Registro de items</h1>
+<h1 class="ml-2 pt-2 font-bold text-xl" *ngIf="isCreate">Registro de items</h1>
 <h1 class="section-title" *ngIf="isEdit">Editar ítem</h1>
 <h1 class="section-title" *ngIf="isReadOnly">Detalle del ítem</h1>
 
@@ -13,8 +13,8 @@
             [options]="['Alta', 'Media', 'Baja']"
             [placeholder]="'Estado'"
             [readonly]="isReadOnly"
-            [selectedLabel]="selectedPriority"
-            (selectionChange)="onPriorityChange($event)"
+            [selectedLabel]="selectedPriority1"
+            (selectionChange)="onPriorityChange1($event)"
           ></app-dropdown>
         </div>
         <div class="col-span-1 h-full">
@@ -36,8 +36,8 @@
             [options]="['Alta', 'Media', 'Baja']"
             [placeholder]="'Tipo'"
             [readonly]="isReadOnly"
-            [selectedLabel]="selectedPriority"
-            (selectionChange)="onPriorityChange($event)"
+            [selectedLabel]="selectedPriority2"
+            (selectionChange)="onPriorityChange2($event)"
           ></app-dropdown>
         </div>
         <div class="col-span-1 h-full">

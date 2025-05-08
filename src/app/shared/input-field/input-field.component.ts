@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './input-field.component.html',
-  styleUrls: ['./input-field.component.scss'],
+  styleUrls: ['./input-field.component.css'],
 })
 export class InputFieldComponent {
   @Input() placeholder: string = 'Ingrese texto';

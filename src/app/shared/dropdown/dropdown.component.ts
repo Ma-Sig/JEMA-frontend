@@ -12,7 +12,7 @@ import {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './dropdown.component.html',
-  styleUrls: ['./dropdown.component.scss'],
+  styleUrls: ['./dropdown.component.css'],
 })
 export class DropdownComponent {
   @Input() options: string[] = []; // Lista de opciones

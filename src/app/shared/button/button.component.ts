@@ -6,7 +6,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   standalone: true,
   imports: [NgClass],
   templateUrl: './button.component.html',
-  styleUrls: ['./button.component.scss'],
+  styleUrls: ['./button.component.css'],
 })
 export class ButtonComponent {
   @Input() class: string = ''; // clases personalizadas que se pasan desde el exterior

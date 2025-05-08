@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { DropdownComponent } from 'src/app/shared/dropdown/dropdown.component';
-import { ButtonComponent } from 'src/app/shared/button/button.component';
 import { CommonModule } from '@angular/common';
-import { InputFieldComponent } from 'src/app/shared/input-field/input-field.component';
-import { TextareaFieldComponent } from 'src/app/shared/textarea-field/textarea-field.component';
+import { DropdownComponent } from '../../../shared/dropdown/dropdown.component';
+import { ButtonComponent } from '../../../shared/button/button.component';
+import { InputFieldComponent } from '../../../shared/input-field/input-field.component';
+import { TextareaFieldComponent } from '../../../shared/textarea-field/textarea-field.component';
 
 @Component({
   selector: 'app-item-entry',
@@ -18,12 +18,13 @@ import { TextareaFieldComponent } from 'src/app/shared/textarea-field/textarea-f
     TextareaFieldComponent,
   ],
   templateUrl: './item-entry.component.html',
-  styleUrls: ['./item-entry.component.scss'],
+  styleUrls: ['./item-entry.component.css'],
 })
 export class ItemEntryComponent implements OnInit {
   mode: 'create' | 'edit' | 'view' = 'view';
   itemId?: string;
-  selectedPriority = '';
+  selectedPriority1 = '';
+  selectedPriority2 = '';
 
   constructor(private route: ActivatedRoute) {}
 
@@ -51,8 +52,13 @@ export class ItemEntryComponent implements OnInit {
     return this.mode === 'create';
   }
 
-  onPriorityChange(value: string) {
-    this.selectedPriority = value;
+  onPriorityChange1(value: string) {
+    this.selectedPriority1 = value;
+    console.log('Prioridad seleccionada:', value);
+  }
+
+  onPriorityChange2(value: string) {
+    this.selectedPriority2 = value;
     console.log('Prioridad seleccionada:', value);
   }
 
