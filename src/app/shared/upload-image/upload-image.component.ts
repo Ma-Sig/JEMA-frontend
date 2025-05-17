@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,7 +9,8 @@ import { CommonModule } from '@angular/common';
   standalone: true,
 })
 export class UploadImageComponent {
-  imageSrc: string | null = null;
+  @Input() imageSrc: string | null = null;
+  @Input() readonly: boolean = false;
   @Output() imageUploaded = new EventEmitter<string | null>();
 
   onFileSelected(event: Event): void {

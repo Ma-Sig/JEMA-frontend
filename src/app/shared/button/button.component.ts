@@ -9,9 +9,10 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./button.component.css'],
 })
 export class ButtonComponent {
-  @Input() class: string = ''; // clases personalizadas que se pasan desde el exterior
-  @Input() label: string = 'Add Item'; // Texto del botón, por defecto "Add Item"
-  @Output() clicked: EventEmitter<void> = new EventEmitter(); // Evento personalizado
+  @Input() class: string = '';
+  @Input() label: string = 'Add Item';
+  @Input() readonly: boolean = false;
+  @Output() clicked: EventEmitter<void> = new EventEmitter();
 
   onClick(event: MouseEvent): void {
     // Ejecuta la lógica del evento ripple

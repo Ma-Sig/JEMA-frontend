@@ -11,9 +11,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class TextareaFieldComponent {
   @Input() placeholder: string = 'Escribe aquí';
+  @Input() readonly: boolean = false;
   @Output() valueChange = new EventEmitter<string>();
 
-  value: string = '';
+  @Input() value: string = '';
   validationMessage: string = '';
   isValid: boolean | null = null;
 

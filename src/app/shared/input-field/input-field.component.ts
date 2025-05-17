@@ -11,9 +11,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class InputFieldComponent {
   @Input() placeholder: string = 'Ingrese texto';
+  @Input() readonly: boolean = false;
   @Output() valueChange = new EventEmitter<string>();
 
-  value: string = '';
+  @Input() value: string = '';
   validationMessage: string = '';
   isValid: boolean | null = null;
 

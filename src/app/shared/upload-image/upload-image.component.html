@@ -1,5 +1,5 @@
 <div class="upload-container h-full relative">
-  <label class="upload-button h-full w-full block" for="photoUpload">
+  <label class="upload-button h-full w-full block" for="photoUpload" [class.pointer-events-none]="readonly">
     <div class="upload-circle h-full w-40 relative overflow-hidden">
       <img *ngIf="imageSrc" [src]="imageSrc" class="preview-image h-full w-full object-cover rounded-md" />
 
@@ -22,7 +22,7 @@
   </label>
 
   <button
-    *ngIf="imageSrc"
+    *ngIf="imageSrc && !readonly"
     (click)="removeImage($event)"
     class="absolute top-2 right-2 bg-white text-red-600 rounded-full p-2 shadow-lg hover:bg-gray-100 z-10"
   >
@@ -41,5 +41,5 @@
     </svg>
   </button>
 
-  <input type="file" id="photoUpload" class="upload-input hidden" accept="image/*" (change)="onFileSelected($event)" />
+  <input type="file" id="photoUpload" class="upload-input hidden" accept="image/*" (change)="onFileSelected($event)" [disabled]="readonly" />
 </div>

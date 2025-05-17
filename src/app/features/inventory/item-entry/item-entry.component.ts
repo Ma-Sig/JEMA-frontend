@@ -11,6 +11,7 @@ import { UploadImageComponent } from '../../../shared/upload-image/upload-image.
 import { TypeStateEntryComponent } from '../type-state-entry/type-state-entry.component';
 
 import Swal from 'sweetalert2';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-item-entry',
@@ -41,21 +42,33 @@ export class ItemEntryComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
-  ngOnInit(): void {
-    this.route.data.subscribe((data) => {
-      this.mode = data['mode'] ?? 'view';
-    });
+  async ngOnInit(): Promise<void> {
+    const data = await firstValueFrom(this.route.data);
+    this.mode = data['mode'] ?? 'view';
 
-    this.route.paramMap.subscribe((params) => {
-      this.itemId = params.get('id') ?? undefined;
-    });
+    const params = await firstValueFrom(this.route.paramMap);
+    this.itemId = params.get('id') ?? undefined;
 
     this.loadSystemData();
+
+    if (this.mode === 'edit' || this.mode === 'view') {
+      this.loadItemData();
+    }
   }
 
   loadSystemData() {
     this.states = ['Nuevo', 'Usado', 'Dañado'];
     this.types = ['Computador', 'Mueble', 'Herramienta'];
+  }
+
+  loadItemData() {
+    console.log('Cargar datos del item con ID:', this.itemId);
+    this.name = 'Item de ejemplo';
+    this.description = 'Descripción del item de ejemplo';
+    this.selectedState = 'Nuevo';
+    this.selectedType = 'Computador';
+    this.uploadedImage =
+      'https://t3.ftcdn.net/jpg/00/92/53/56/360_F_92535664_IvFsQeHjBzfE6sD4VHdO8u5OHUSc6yHF.jpg';
   }
 
   get isReadOnly(): boolean {
