@@ -1,1 +1,15 @@
-<p>item-list works!</p>
+<h1 class="ml-2 pt-12 font-bold text-xl">Items</h1>
+
+<div class="w-full mx-auto px-4 mt-4">
+  <div class="w-full justify-center">
+    <app-table
+      class="w-full"
+      [data]="inventoryData"
+      [columns]="inventoryColumns"
+      [showActions]="false"
+      (view)="onViewItem($event)"
+      (edit)="onEditItem($event)"
+      (delete)="onDeleteItem($event)"
+    ></app-table>
+  </div>
+</div>

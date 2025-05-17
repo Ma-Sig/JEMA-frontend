@@ -1,59 +1,38 @@
-<div class="table-container">
-    <div class="table-controls">
-      <div class="search-container">
-        <div class="search-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </div>
-        <input type="text" [(ngModel)]="searchQuery" (input)="currentPage = 1" class="search-input" placeholder="Buscar...">
-      </div>
-      <button class="filter-button">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-        </svg>
-        Filtrar
-      </button>
-    </div>
-  
-    <table>
-      <thead>
-        <tr>
-          <th class="id-column">ID</th>
-          <th class="lugar-column">LUGAR</th>
-          <th class="servicio-column">SERVICIO</th>
-          <th class="cantidad-column">CANTIDAD</th>
-          <th class="fecha-column">FECHA</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of paginatedData">
-          <td>{{ item.id }}</td>
-          <td>{{ item.lugar }}</td>
-          <td>{{ item.servicio }}</td>
-          <td>{{ item.cantidad }}</td>
-          <td>{{ item.fecha }}</td>
-        </tr>
-      </tbody>
-    </table>
-  
-    <div class="pagination">
-      <div class="pagination-info">{{ paginationInfo }}</div>
-      <button class="pagination-button" (click)="prevPage()" [disabled]="currentPage === 1">
-        <svg width="16" height="16" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
-      </button>
-  
-      <button *ngFor="let page of [].constructor(totalPages); let i = index"
-              class="pagination-button"
-              [class.active]="currentPage === i + 1"
-              (click)="goToPage(i + 1)">
-        {{ i + 1 }}
-      </button>
-  
-      <button class="pagination-button" (click)="nextPage()" [disabled]="currentPage === totalPages">
-        <svg width="16" height="16" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-      </button>
+<div class="table-container w-full">
+  <div class="table-controls w-full">
+    <div class="search-container w-full">
+      <input type="text" class="border-1 rounded-sm" [(ngModel)]="searchQuery" (input)="currentPage = 1" placeholder="Buscar..." />
     </div>
   </div>
-  
+
+  <table>
+    <thead>
+      <tr>
+        <th *ngIf="showActions == true" class="text-left w-20">Acción</th>
+        <th *ngFor="let col of columns">{{ col.label }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of paginatedData">
+        <td *ngIf="showActions == true" class="border-b px-4 py-2">
+          <div class="flex gap-2">
+            <button class="text-blue-600 hover:underline" (click)="onView(row)">Ver</button>
+            <button class="text-green-600 hover:underline" (click)="onEdit(row)">Editar</button>
+            <button class="text-red-600 hover:underline" (click)="onDelete(row)">Eliminar</button>
+          </div>
+        </td>
+
+        <td *ngFor="let col of columns">{{ row[col.key] }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <span>{{ paginationInfo }}</span>
+    <button (click)="prevPage()" [disabled]="currentPage === 1">«</button>
+    <button *ngFor="let p of [].constructor(totalPages); let i = index" [class.active]="currentPage === i + 1" (click)="goToPage(i + 1)">
+      {{ i + 1 }}
+    </button>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">»</button>
+  </div>
+</div>
