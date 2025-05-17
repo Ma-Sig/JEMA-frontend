@@ -1,0 +1,35 @@
+.sidebar {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+.sidebar h4{
+  margin-top: 20px;
+  color: #34495e;
+  font-size: 1.3rem;
+}
+
+.faq-box {
+  margin-bottom: 10px;
+}
+
+.faq-box button {
+  width: 100%;
+  text-align: left;
+  background: #f4f4f4;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+}
+
+.answer {
+  margin: 5px 0 10px 0;
+  background: #e8f0fe;
+  padding: 0.5rem;
+  border-radius: 5px;
+}

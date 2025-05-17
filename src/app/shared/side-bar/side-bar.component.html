@@ -1,1 +1,12 @@
-<p>side-bar works!</p>
+<div class="sidebar">
+  <h4>Preguntas Frecuentes</h4>
+  <div *ngFor="let faq of faqs; let i = index" class="faq-box">
+    <button (click)="toggle(i)">
+      {{ faq.question }}
+      <span>{{ selected === i ? '▲' : '▼' }}</span>
+    </button>
+    <div *ngIf="selected === i" class="answer">
+      {{ faq.answer }}
+    </div>
+  </div>
+</div>

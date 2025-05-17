@@ -1,0 +1,8 @@
+<div class="author-container">
+  <div *ngFor="let author of authors" class="card">
+    <img [src]="author.img" [alt]="author.name">
+    <h4>{{ author.name }}</h4>
+    <p>{{ author.role }}</p>
+    <small>{{ author.email }}</small>
+  </div>
+</div>

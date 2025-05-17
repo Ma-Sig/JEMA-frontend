@@ -1,0 +1,75 @@
+/* Contenedor general con flexbox */
+.info-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 40px;
+  gap: 40px;
+}
+
+/* Contenido principal (lado izquierdo) */
+.info-left {
+  flex: 1;
+  max-width: 70%;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Sidebar (lado derecho) */
+.info-right {
+  width: 300px;
+  position: sticky;
+  top: 20px;
+}
+
+/* Título principal */
+.info-left h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+/* Subtítulos */
+.info-left h3 {
+  margin-top: 20px;
+  color: #34495e;
+  font-size: 1.3rem;
+}
+
+/* Párrafos */
+.info-left p {
+  text-align: justify;
+  line-height: 1.6;
+  color: #555;
+}
+
+/* Lista */
+.info-left ul {
+  padding-left: 20px;
+  color: #333;
+}
+
+.info-left ul li {
+  margin-bottom: 6px;
+}
+
+/* Responsividad */
+@media (max-width: 992px) {
+  .info-wrapper {
+    flex-direction: column;
+  }
+
+  .info-right {
+    width: 100%;
+    position: static;
+    margin-top: 20px;
+  }
+
+  .info-left {
+    max-width: 100%;
+  }
+}
