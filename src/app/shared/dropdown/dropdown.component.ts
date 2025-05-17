@@ -1,11 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  HostListener,
-  Input,
-  Output,
-  EventEmitter,
-} from '@angular/core';
+import { Component, HostListener, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-dropdown',
@@ -15,12 +9,12 @@ import {
   styleUrls: ['./dropdown.component.css'],
 })
 export class DropdownComponent {
-  @Input() options: string[] = []; // Lista de opciones
-  @Input() placeholder: string = 'Seleccionar'; // Placeholder inicial
-  @Input() readonly: boolean = false; // Modo solo lectura
-  @Input() selectedLabel: string = ''; // Valor preseleccionado (opcional)
+  @Input() options: string[] = [];
+  @Input() placeholder: string = 'Seleccionar';
+  @Input() readonly: boolean = false;
+  @Input() selectedLabel: string = '';
   @Input() hostClass: string | string[] = '';
-  @Output() selectionChange = new EventEmitter<string>(); // Emitir selección
+  @Output() selectionChange = new EventEmitter<string>();
 
   isOpen = false;
 
@@ -34,7 +28,8 @@ export class DropdownComponent {
     if (!this.readonly) {
       this.selectedLabel = option;
       this.isOpen = false;
-      this.selectionChange.emit(option); // Emitimos el valor seleccionado
+      console.log('Emitido desde Dropdown:', option);
+      this.selectionChange.emit(option);
     }
   }
 

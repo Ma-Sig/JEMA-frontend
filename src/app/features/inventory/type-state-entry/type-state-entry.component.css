@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+.bg-opacity-75 {
+  background-color: rgba(0, 0, 0, 0.75);
+}

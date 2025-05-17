@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { TableComponent } from '../../../shared/table/table.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-item-list',
   standalone: true,
-  imports: [TableComponent],
+  imports: [TableComponent, RouterModule],
   templateUrl: './item-list.component.html',
   styleUrls: ['./item-list.component.css'],
 })
