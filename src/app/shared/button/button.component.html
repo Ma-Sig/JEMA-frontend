@@ -1,10 +1,5 @@
 <div class="button-container">
-  <button
-    type="button"
-    class="add-button"
-    [ngClass]="class"
-    (click)="onClick($event)"
-  >
+  <button type="button" class="add-button" [ngClass]="class" (click)="onClick($event)" [disabled]="readonly">
     <span class="plus-icon">{{ label }}</span>
   </button>
 </div>

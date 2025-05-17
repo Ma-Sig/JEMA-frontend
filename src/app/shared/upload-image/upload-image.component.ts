@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,7 +9,9 @@ import { CommonModule } from '@angular/common';
   standalone: true,
 })
 export class UploadImageComponent {
-  imageSrc: string | null = null;
+  @Input() imageSrc: string | null = null;
+  @Input() readonly: boolean = false;
+  @Output() imageUploaded = new EventEmitter<string | null>();
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -19,6 +21,7 @@ export class UploadImageComponent {
       const reader = new FileReader();
       reader.onload = () => {
         this.imageSrc = reader.result as string;
+        this.imageUploaded.emit(this.imageSrc);
       };
       reader.readAsDataURL(file);
     }
@@ -27,12 +30,11 @@ export class UploadImageComponent {
   removeImage(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    this.imageSrc = null;
 
-    // También puedes reiniciar el input si lo necesitas
-    const fileInput = document.getElementById(
-      'photoUpload'
-    ) as HTMLInputElement;
+    this.imageSrc = null;
+    this.imageUploaded.emit(null);
+
+    const fileInput = document.getElementById('photoUpload') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
     }

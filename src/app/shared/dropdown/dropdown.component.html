@@ -1,15 +1,5 @@
-<div
-  class="dropdown-container"
-  [class.readonly]="readonly"
-  [ngClass]="hostClass"
->
-  <button
-    type="button"
-    class="dropdown-button"
-    [class.active]="isOpen"
-    (click)="toggleDropdown()"
-    [disabled]="readonly"
-  >
+<div class="dropdown-container" [class.readonly]="readonly" [ngClass]="hostClass">
+  <button type="button" class="dropdown-button" [class.active]="isOpen" (click)="toggleDropdown()" [disabled]="readonly">
     <span>{{ label }}</span>
     <svg
       class="dropdown-icon"
@@ -27,12 +17,7 @@
   </button>
 
   <div class="dropdown-menu" [class.active]="isOpen">
-    <div
-      class="dropdown-item"
-      *ngFor="let option of options"
-      [class.selected]="option === selectedLabel"
-      (click)="selectOption(option)"
-    >
+    <div class="dropdown-item" *ngFor="let option of options" [class.selected]="option === selectedLabel" (click)="selectOption(option)">
       {{ option }}
     </div>
   </div>
