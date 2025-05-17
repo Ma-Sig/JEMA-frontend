@@ -1,1 +1,61 @@
-<p>reports works!</p>
+<div class="page-container flex">
+  <!-- Contenido principal -->
+  <div class="content-area flex-1 p-6">
+    
+    <!-- Fila: búsqueda + calendario -->
+    <div class="flex flex-row justify-between items-start gap-4 mb-6">
+      
+      <!-- Barra de búsqueda -->
+      <div class="search-bar w-full max-w-md">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          [(ngModel)]="searchTerm"
+          class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- Calendarios: Fecha inicio y fin en la misma fila -->
+      <div class="calendar-container flex flex-row gap-4">
+        <div class="flex flex-col">
+          <p class="text-gray-600 mb-2">Fecha inicio</p>
+          <app-calendar></app-calendar>
+        </div>
+        <div class="flex flex-col">
+          <p class="text-gray-600 mb-2">Fecha fin</p>
+          <app-calendar></app-calendar>
+        </div>
+      </div>
+    </div>
+
+    <!-- Título del item seleccionado -->
+    <div class="title-container mb-4" *ngIf="selectedItem">
+      <h2 class="text-xl font-semibold text-gray-800">{{ selectedItem }}</h2>
+    </div>
+
+    <!-- Botones -->
+    <div class="buttons-container flex flex-row gap-4 mb-6">
+      <app-button label="Mostrar reporte" (clicked)="onMostrarReporte()"></app-button>
+      <app-button label="Guardar reporte" class="guardar" (clicked)="onGuardarReporte()"></app-button>
+    </div>
+
+    <!-- Tabla -->
+    <app-table
+      *ngIf="showTable"
+      [columns]="tableColumns"
+      [data]="tableData"
+    ></app-table>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar w-64 bg-gray-100 border-l border-gray-200 p-4">
+    <div
+      class="sidebar-item px-4 py-2 rounded cursor-pointer hover:bg-blue-100"
+      *ngFor="let item of items"
+      [class.bg-blue-200]="item === selectedItem"
+      (click)="seleccionarItem(item)"
+    >
+      {{ item }}
+    </div>
+  </div>
+</div>

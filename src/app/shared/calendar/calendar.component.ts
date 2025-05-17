@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -14,7 +15,9 @@ interface CalendarDay {
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.css']
+  styleUrls: ['./calendar.component.css'], 
+  standalone: true,
+  imports: [CommonModule]
 })
 export class CalendarComponent implements OnInit {
   calendarOpen = false;
