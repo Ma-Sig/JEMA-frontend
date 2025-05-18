@@ -29,7 +29,7 @@ export class DashboardComponent {
     {
       title: 'Usuarios',
       backgroundColor: 'bg-blue-400',
-      route: '/usuarios',
+      route: '/users',
     },
     {
       title: 'Préstamos',
