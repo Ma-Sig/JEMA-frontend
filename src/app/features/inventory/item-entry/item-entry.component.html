@@ -1,81 +1,88 @@
-<h1 class="ml-2 pt-12 font-bold text-xl" *ngIf="isCreate">Registro de items</h1>
-<h1 class="ml-2 pt-12 font-bold text-xl" *ngIf="isEdit">Editar ítem</h1>
-<h1 class="ml-2 pt-12 font-bold text-xl" *ngIf="isReadOnly">Detalle del ítem</h1>
+<div class="bg-[#F5F6FA]">
+  <h1 class="section-title" *ngIf="isCreate">Registro de items</h1>
+  <h1 class="section-title" *ngIf="isEdit">Editar ítem</h1>
+  <h1 class="section-title" *ngIf="isReadOnly">Detalle del ítem</h1>
 
-<div class="bg-white rounded-2xl p-4 mx-8">
-  <div class="grid grid-cols-12 gap-4">
-    <div class="space-y-2 col-span-6">
-      <label class="field-title">Estado</label>
-      <div class="grid grid-cols-12 gap-2 items-center">
-        <div class="col-span-11">
-          <app-dropdown
-            class="w-full block"
-            [options]="states"
-            [placeholder]="'Estado'"
-            [readonly]="isReadOnly"
-            [selectedLabel]="selectedState"
-            (selectionChange)="onStateChange($event)"
-          ></app-dropdown>
+  <div class="bg-white rounded-2xl p-4 mx-8">
+    <div class="grid grid-cols-12 gap-4">
+      <div class="space-y-2 col-span-12 md:col-span-6">
+        <label class="field-title">Estado</label>
+        <div class="grid grid-cols-12 gap-2 items-center">
+          <div class="col-span-11">
+            <app-dropdown
+              class="w-full block"
+              [options]="states"
+              [placeholder]="'Estado'"
+              [readonly]="isReadOnly"
+              [selectedLabel]="selectedState"
+              (selectionChange)="onStateChange($event)"
+            ></app-dropdown>
+          </div>
+          <div class="col-span-1 h-full">
+            <app-button class="w-full h-full" [label]="'+'" (clicked)="openTypeStateModal()" [readonly]="isReadOnly"></app-button>
+            <app-type-state-entry [(isOpen)]="isModalOpen" (emitDataSelected)="modalData($event)"></app-type-state-entry>
+          </div>
         </div>
-        <div class="col-span-1 h-full">
-          <app-button class="w-full h-full" [label]="'+'" (clicked)="openTypeStateModal()" [readonly]="isReadOnly"></app-button>
-          <app-type-state-entry [(isOpen)]="isModalOpen" (emitDataSelected)="modalData($event)"></app-type-state-entry>
+      </div>
+
+      <div class="space-y-2 col-span-12 md:col-span-6">
+        <label class="field-title">Tipo</label>
+        <div class="grid grid-cols-12 gap-2 items-center">
+          <div class="col-span-11">
+            <app-dropdown
+              class="w-full block"
+              [options]="types"
+              [placeholder]="'Tipo'"
+              [readonly]="isReadOnly"
+              [selectedLabel]="selectedType"
+              (selectionChange)="onTypeChange($event)"
+            ></app-dropdown>
+          </div>
+          <div class="col-span-1 h-full">
+            <app-button class="w-full h-full" [label]="'+'" (clicked)="openTypeStateModal()" [readonly]="isReadOnly"></app-button>
+            <app-type-state-entry [(isOpen)]="isModalOpen" (emitDataSelected)="modalData($event)"></app-type-state-entry>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2 col-span-12">
+        <label class="field-title">Nombre</label>
+        <div class="grid grid-cols-12 gap-2 items-center">
+          <div class="col-span-12">
+            <app-input-field [placeholder]="'Nombre'" [readonly]="isReadOnly" (valueChange)="onNameChange($event)" [value]="name"></app-input-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2 col-span-12 md:col-span-6">
+        <label class="field-title">Descripción</label>
+        <div class="grid grid-cols-12 gap-2 items-center h-40">
+          <div class="col-span-12">
+            <app-textarea-field
+              [placeholder]="'Descripción'"
+              [readonly]="isReadOnly"
+              (valueChange)="onDescriptionChange($event)"
+              [value]="description"
+            >
+            </app-textarea-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2 col-span-12 md:col-span-6">
+        <label class="field-title">Foto</label>
+        <div class="grid grid-cols-12 gap-2 items-center h-40">
+          <div class="col-span-12 h-full">
+            <app-upload-image (imageUploaded)="onImageUploaded($event)" [readonly]="isReadOnly" [imageSrc]="uploadedImage"></app-upload-image>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="space-y-2 col-span-6">
-      <label class="field-title">Tipo</label>
-      <div class="grid grid-cols-12 gap-2 items-center">
-        <div class="col-span-11">
-          <app-dropdown
-            class="w-full block"
-            [options]="types"
-            [placeholder]="'Tipo'"
-            [readonly]="isReadOnly"
-            [selectedLabel]="selectedType"
-            (selectionChange)="onTypeChange($event)"
-          ></app-dropdown>
-        </div>
-        <div class="col-span-1 h-full">
-          <app-button class="w-full h-full" [label]="'+'" (clicked)="openTypeStateModal()" [readonly]="isReadOnly"></app-button>
-          <app-type-state-entry [(isOpen)]="isModalOpen" (emitDataSelected)="modalData($event)"></app-type-state-entry>
-        </div>
+    <div *ngIf="!isReadOnly" class="flex h-48 items-center justify-center">
+      <div class="w-3xs h-10">
+        <app-button class="w-full h-full" [label]="'Guardar'" (clicked)="saveItem()"></app-button>
       </div>
-    </div>
-
-    <div class="space-y-2 col-span-12">
-      <label class="field-title">Nombre</label>
-      <div class="grid grid-cols-12 gap-2 items-center">
-        <div class="col-span-12">
-          <app-input-field [placeholder]="'Nombre'" [readonly]="isReadOnly" (valueChange)="onNameChange($event)" [value]="name"></app-input-field>
-        </div>
-      </div>
-    </div>
-
-    <div class="space-y-2 col-span-6">
-      <label class="field-title">Descripción</label>
-      <div class="grid grid-cols-12 gap-2 items-center h-40">
-        <div class="col-span-12">
-          <app-textarea-field [placeholder]="'Descripción'" [readonly]="isReadOnly" (valueChange)="onDescriptionChange($event)" [value]="description">
-          </app-textarea-field>
-        </div>
-      </div>
-    </div>
-
-    <div class="space-y-2 col-span-6">
-      <label class="field-title">Foto</label>
-      <div class="grid grid-cols-12 gap-2 items-center h-40">
-        <div class="col-span-12 h-full">
-          <app-upload-image (imageUploaded)="onImageUploaded($event)" [readonly]="isReadOnly" [imageSrc]="uploadedImage"></app-upload-image>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div *ngIf="!isReadOnly" class="flex h-48 items-center justify-center">
-    <div class="w-3xs h-10">
-      <app-button class="w-full h-full" [label]="'Guardar'" (clicked)="saveItem()"></app-button>
     </div>
   </div>
 </div>

@@ -28,3 +28,11 @@
     }
   }
 }
+
+.section-title {
+  @apply ml-[3vw] font-bold text-3xl md:mt-3 mb-4 md:mb-3;
+}
+
+body {
+  background-color: #f5f6fa;
+}

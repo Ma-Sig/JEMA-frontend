@@ -1,6 +1,6 @@
-<h1 class="ml-2 pt-12 font-bold text-xl" *ngIf="isCreate">Registro de inventario</h1>
-<h1 class="ml-2 pt-12 font-bold text-xl" *ngIf="isEdit">Editar inventario</h1>
-<h1 class="ml-2 pt-12 font-bold text-xl" *ngIf="isReadOnly">Detalle del inventario</h1>
+<h1 class="section-title" *ngIf="isCreate">Registro de inventario</h1>
+<h1 class="section-title" *ngIf="isEdit">Editar inventario</h1>
+<h1 class="section-title" *ngIf="isReadOnly">Detalle del inventario</h1>
 
 <div class="bg-white rounded-2xl p-4 mx-8">
   <div *ngIf="mode == 'create' && editingRow == false" class="flex items-center justify-end">
@@ -16,7 +16,7 @@
   </div>
 
   <div class="grid grid-cols-12 gap-4">
-    <div class="space-y-2 col-span-6">
+    <div class="space-y-2 col-span-12 md:col-span-6">
       <label class="field-title">Lugar</label>
       <div class="grid grid-cols-12 gap-2 items-center">
         <div class="col-span-12">
@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <div class="space-y-2 col-span-6">
+    <div class="space-y-2 col-span-12 md:col-span-6">
       <label class="field-title">Item</label>
       <div class="grid grid-cols-12 gap-2 items-center">
         <div class="col-span-12">
@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <div class="space-y-2 col-span-6">
+    <div class="space-y-2 col-span-12 md:col-span-6">
       <label class="field-title">Estado</label>
       <div class="grid grid-cols-12 gap-2 items-center">
         <div class="col-span-12">
@@ -64,7 +64,7 @@
       </div>
     </div>
 
-    <div class="space-y-2 col-span-6">
+    <div class="space-y-2 col-span-12 md:col-span-6">
       <label class="field-title">Código base</label>
       <div class="grid grid-cols-12 gap-2 items-center">
         <div class="col-span-12">
@@ -79,7 +79,7 @@
       </div>
     </div>
 
-    <div class="space-y-2 col-span-6">
+    <div class="space-y-2 col-span-12 md:col-span-6">
       <label class="field-title">Fecha</label>
       <div class="grid grid-cols-12 gap-2 items-center">
         <div class="col-span-12">
@@ -88,7 +88,7 @@
       </div>
     </div>
 
-    <div class="space-y-2 col-span-6">
+    <div class="space-y-2 col-span-12 md:col-span-6">
       <label class="field-title">Cantidad</label>
       <div class="grid grid-cols-12 gap-2 items-center">
         <div class="col-span-12">
