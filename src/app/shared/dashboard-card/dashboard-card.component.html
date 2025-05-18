@@ -2,6 +2,6 @@
   <div [class]="backgroundColor()" class="h-40"></div>
   <div class="p-4 flex flex-col items-center justify-center flex-grow">
     <h3 class="text-lg font-medium text-center mb-4">{{ title() }}</h3>
-    <button (click)="navigateTo()" class="px-8 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">Ver</button>
+    <a class="px-8 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors" routerLink="{{ route() }}">Ver</a>
   </div>
 </div>

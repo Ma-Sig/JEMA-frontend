@@ -5,11 +5,12 @@ import { routes as inventory_routes } from './features/inventory/inventory.route
 import { routes as mashup_routes } from './features/mashup/mashup.routes';
 import { routes as loans_routes  } from './features/loans-folder/loans.routes';
 import { routes as service_consumption_routes } from './features/service-consumption/service-consumption.routes';
+import { routes as user_routes } from './features/users/users.routes'
+import { routes as login_routes } from './features/auth/login/login.routes'
 
 export const routes: Routes = [
   ...loans_routes,
   ...mashup_routes,
-  ...dashboard_routes,
   ...auth_routes,
   ...inventory_routes.map((route) => ({
     ...route,
@@ -19,4 +20,7 @@ export const routes: Routes = [
     ...route,
     path: `service-consumption/${route.path}`,
   })),
+
+  ...user_routes,
+  ...dashboard_routes,
 ];
