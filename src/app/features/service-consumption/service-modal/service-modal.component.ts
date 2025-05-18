@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { InputFieldComponent } from '../../../shared/input-field/input-field.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-service-modal',
   standalone: true,
@@ -22,7 +24,10 @@ export class ServiceModalComponent {
   priceRegex: RegExp = /^[0-9]+(\.[0-9]{1,2})?$/;
 
   close() {
-    // console.log('Cerrando modal y emitiendo datos...');
+    if (!this.validate()) {
+      return;
+    }
+
     this.emitDataSelected.emit({
       serviceName: this.serviceName,
       unitOfMeasure: this.unitOfMeasure,
@@ -36,6 +41,46 @@ export class ServiceModalComponent {
 
     this.isOpen = false;
     this.isOpenChange.emit(this.isOpen);
+  }
+
+  validate() {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+    });
+
+    if (!this.serviceName) {
+      Toast.fire({
+        icon: 'error',
+        title: 'El nombre del servicio es obligatorio',
+      });
+      return false;
+    }
+    if (!this.unitOfMeasure) {
+      Toast.fire({
+        icon: 'error',
+        title: 'La unidad de medida es obligatoria',
+      });
+      return false;
+    }
+    if (!this.price) {
+      Toast.fire({
+        icon: 'error',
+        title: 'El precio es obligatorio',
+      });
+      return false;
+    }
+    if (!this.priceRegex.test(this.price)) {
+      Toast.fire({
+        icon: 'error',
+        title: 'El precio debe ser un número válido',
+      });
+      return false;
+    }
+    return true;
   }
 
   open() {

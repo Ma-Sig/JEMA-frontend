@@ -4,6 +4,8 @@ import { InputFieldComponent } from '../../../shared/input-field/input-field.com
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { TextareaFieldComponent } from '../../../shared/textarea-field/textarea-field.component';
 
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-location-modal',
   standalone: true,
@@ -20,7 +22,10 @@ export class LocationModalComponent {
   description: string = '';
 
   close() {
-    // console.log('Cerrando modal y emitiendo datos...');
+    if (!this.validate()) {
+      return;
+    }
+
     this.emitDataSelected.emit({
       locationName: this.locationName,
       description: this.description,
@@ -32,6 +37,33 @@ export class LocationModalComponent {
 
     this.isOpen = false;
     this.isOpenChange.emit(this.isOpen);
+  }
+
+  validate() {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+    });
+
+    if (!this.locationName) {
+      Toast.fire({
+        icon: 'error',
+        title: 'El nombre de la ubicación es obligatorio',
+      });
+      return false;
+    }
+    if (!this.description) {
+      Toast.fire({
+        icon: 'error',
+        title: 'La descripción es obligatoria',
+      });
+      return false;
+    }
+
+    return true;
   }
 
   open() {
