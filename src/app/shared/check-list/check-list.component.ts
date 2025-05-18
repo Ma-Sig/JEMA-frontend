@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 interface Item {
   id: string;
@@ -7,16 +9,25 @@ interface Item {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-check-list',
   templateUrl: './check-list.component.html',
-  styleUrls: ['./check-list.component.css']
+  styleUrls: ['./check-list.component.css'],
+  imports: [FormsModule, CommonModule],
 })
 export class CheckListComponent {
   items: Item[] = [
     { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
     { id: '1235', text: '1235 - Pc Imac. Estado: Bueno', selected: true },
     { id: '1236', text: '1236 - Pc Imac. Estado: Bueno', selected: true },
-    { id: '1237', text: '1237 - Pc Imac. Estado: Bueno', selected: false }
+    { id: '1237', text: '1237 - Pc Imac. Estado: Bueno', selected: false },
+    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
   ];
 
   get selectedCount(): number {

@@ -18,11 +18,11 @@
       </li>
     </ul>
   
-    <div class="actions-container">
+    <div class="actions-container" hidden>
       <div class="selection-info">
         {{ selectedCount }} elemento{{ selectedCount !== 1 ? 's' : '' }} seleccionado{{ selectedCount !== 1 ? 's' : '' }}
       </div>
-      <div class="action-buttons">
+      <div class="action-buttons hidden">
         <button class="action-button select-all-button" (click)="toggleAll()">
           {{ allSelected ? 'Deseleccionar todos' : 'Seleccionar todos' }}
         </button>
