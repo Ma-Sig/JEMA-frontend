@@ -22,7 +22,7 @@ export class HeaderComponent {
     { label: 'Reportes', routerLink: '/reports' },
     { label: 'Sobre nosotros', routerLink: '/info' },
     { label: 'Mapa', routerLink: '/mashup' },
-    { label: 'Préstamos', routerLink: '/loanList' },
+    { label: 'Préstamos', routerLink: '/loans' },
     { label: 'Cerrar sesión', action: 'logout' },
   ];
 
