@@ -1,17 +1,30 @@
 import { Component, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { ChatbotComponent } from '../chatbot/chatbot.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule, ChatbotComponent],
+  imports: [RouterModule, ChatbotComponent, CommonModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent {
   sidebarOpen = false;
   dropdownOpen = false;
+
+  menuItems = [
+    { label: 'Inicio', routerLink: '/dashboard' },
+    { label: 'Items', routerLink: '/inventory/items' },
+    { label: 'Consumos de servicios', routerLink: '/service-consumption/list' },
+    { label: 'Inventario', routerLink: '/inventory/inventories' },
+    { label: 'Reportes', routerLink: '/reports' },
+    { label: 'Sobre nosotros', routerLink: '/info' },
+    { label: 'Mapa', routerLink: '/mashup' },
+    { label: 'Préstamos', routerLink: '/loanList' },
+    { label: 'Cerrar sesión', action: 'logout' },
+  ];
 
   constructor(private router: Router) {}
 
@@ -33,6 +46,14 @@ export class HeaderComponent {
     const target = event.target as HTMLElement;
     if (!target.closest('.user-container')) {
       this.dropdownOpen = false;
+    }
+  }
+
+  handleMenuClick(item: any) {
+    this.closeSidebar();
+
+    if (item.action === 'logout') {
+      this.logOut();
     }
   }
 

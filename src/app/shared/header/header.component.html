@@ -87,47 +87,16 @@
   </div>
   <nav class="p-4">
     <ul class="list-none">
-      <li class="mb-2"><a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" href="/">Inicio</a></li>
-      <li class="mb-2">
-        <a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" [routerLink]="['/inventory/items']" (click)="closeSidebar()"
-          >Items</a
-        >
-      </li>
-      <li class="mb-2">
+      <li class="mb-2" *ngFor="let item of menuItems">
         <a
           class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]"
-          [routerLink]="['/service-consumption/list']"
-          (click)="closeSidebar()"
-          >Consumos de servicios</a
+          [routerLink]="!item.action ? [item.routerLink] : null"
+          (click)="handleMenuClick(item)"
+          href="javascript:void(0)"
         >
+          {{ item.label }}
+        </a>
       </li>
-      <li class="mb-2">
-        <a
-          class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]"
-          [routerLink]="['/inventory/inventories']"
-          (click)="closeSidebar()"
-          >Inventario</a
-        >
-      </li>
-      <li class="mb-2">
-        <a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" [routerLink]="['/reports']" (click)="closeSidebar()"
-          >Reportes</a
-        >
-      </li>
-      <li class="mb-2">
-        <a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" [routerLink]="['/info']" (click)="closeSidebar()"
-          >Sobre nosotros</a
-        >
-      </li>
-      <li class="mb-2">
-        <a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" [routerLink]="['/mashup']" (click)="closeSidebar()">Mapa</a>
-      </li>
-      <li class="mb-2">
-        <a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" [routerLink]="['/loanList']" (click)="closeSidebar()"
-          >Préstamos</a
-        >
-      </li>
-      <li class="mb-2"><a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" (click)="logOut()">Cerrar sesión</a></li>
     </ul>
   </nav>
 </div>
