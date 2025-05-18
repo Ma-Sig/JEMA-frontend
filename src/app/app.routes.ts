@@ -3,7 +3,7 @@ import { routes as dashboard_routes } from './features/dashboard/dashboard.route
 import { routes as auth_routes } from './features/auth/auth.routes';
 import { routes as inventory_routes } from './features/inventory/inventory.routes';
 import { routes as mashup_routes } from './features/mashup/mashup.routes';
-import { routes as loans_routes  } from './features/loans/loans.routes';
+import { routes as loans_routes  } from './features/loans-folder/loans.routes';
 import { routes as service_consumption_routes } from './features/service-consumption/service-consumption.routes';
 
 export const routes: Routes = [

@@ -109,9 +109,24 @@
           >Inventario</a
         >
       </li>
-      <li class="mb-2"><a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" href="/auth/reports">Reportes</a></li>
-      <li class="mb-2"><a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" href="/auth/info-page">Sobre nosotros</a></li>
-      <li class="mb-2"><a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" href="#">Mensajes</a></li>
+      <li class="mb-2">
+        <a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" [routerLink]="['/reports']" (click)="closeSidebar()"
+          >Reportes</a
+        >
+      </li>
+      <li class="mb-2">
+        <a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" [routerLink]="['/info']" (click)="closeSidebar()"
+          >Sobre nosotros</a
+        >
+      </li>
+      <li class="mb-2">
+        <a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" [routerLink]="['/mashup']" (click)="closeSidebar()">Mapa</a>
+      </li>
+      <li class="mb-2">
+        <a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" [routerLink]="['/loans']" (click)="closeSidebar()"
+          >Préstamos</a
+        >
+      </li>
       <li class="mb-2"><a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" href="#">Cerrar sesión</a></li>
     </ul>
   </nav>
