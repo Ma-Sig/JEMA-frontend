@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 interface Item {
   id: string;
@@ -7,9 +9,11 @@ interface Item {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-check-list',
   templateUrl: './check-list.component.html',
-  styleUrls: ['./check-list.component.css']
+  styleUrls: ['./check-list.component.css'],
+  imports: [FormsModule, CommonModule],
 })
 export class CheckListComponent {
   items: Item[] = [

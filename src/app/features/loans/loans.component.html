@@ -1,1 +1,33 @@
-<p>loans works!</p>
+<div class="bg-[#F5F6FA] w-screen h-[91vh] overflow-hidden flex flex-col items-center">
+    <h2 class="bg-[#F5F6FA] ml-[3vw] font-bold text-3xl md:mt-3 mb-4 md:mb-3 self-start">Préstamo de items</h2>
+    <article class="border h-[80vh] w-[80vw] bg-white rounded-sm">
+        
+        <section class="flex gap-4 justify-center mt-10">
+            <div class="w-[30vw]">
+                <h3>Lugar de origen</h3>
+                <app-dropdown [options]="placesOriginOptions"></app-dropdown>
+            </div>
+
+            <div class="w-[30vw]">
+                <h3>Item</h3>
+                <app-dropdown [options]="itemOptions"></app-dropdown>
+            </div>
+        </section>
+
+        <section class="overflow-auto border">
+            <app-check-list></app-check-list>
+        </section>
+
+        <section class="flex flex-col gap-4 items-center ">
+
+            <div class="w-[30vw]">
+                <h3>Lugar de destino</h3>
+                <app-dropdown [options]="placesDestinationOptions"></app-dropdown>
+            </div>
+
+            <button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF]">Registrar Préstamo</button>
+            
+        </section>
+        
+    </article>
+</div>
