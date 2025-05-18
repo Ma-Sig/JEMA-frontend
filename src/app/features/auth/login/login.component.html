@@ -45,7 +45,7 @@
             class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors"
           />
 
-          <!-- Indicador de fortaleza de contraseña -->
+          <!-- Indicador de fortaleza de contraseña
           <div *ngIf="loginForm.get('password')?.value" class="mt-2">
             <div class="flex items-center space-x-2 mb-2">
               <span class="text-sm text-gray-600">Fortaleza:</span>
@@ -60,9 +60,9 @@
                 {{ getPasswordStrengthLabel() }}
               </span>
             </div>
-          </div>
+          </div> -->
 
-          <!-- Requisitos de contraseña (se muestran al tocar el campo) -->
+          <!-- Requisitos de contraseña (se muestran al tocar el campo)
           <div *ngIf="loginForm.get('password')?.value" class="mt-2">
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
               <p class="text-gray-700 text-sm mb-2 font-medium">Tu contraseña debe contener:</p>
@@ -129,7 +129,7 @@
                 </li>
               </ul>
             </div>
-          </div>
+          </div> -->
 
           <!-- Mensaje de error de campo requerido (cuando no se ha tocado) -->
           <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']" class="mt-2">
@@ -185,7 +185,7 @@
             class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors"
           />
 
-          <!-- Mensajes de error para email -->
+          Mensajes de error para email
           <div *ngIf="forgotPasswordForm.get('email')?.touched && forgotPasswordForm.get('email')?.errors" class="mt-2">
             <p *ngIf="forgotPasswordForm.get('email')?.errors?.['required']" class="text-red-500 text-sm">El correo electrónico es requerido</p>
             <p *ngIf="forgotPasswordForm.get('email')?.errors?.['email']" class="text-red-500 text-sm">Por favor ingresa un email válido</p>
