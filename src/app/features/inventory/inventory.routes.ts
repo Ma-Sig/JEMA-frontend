@@ -6,38 +6,14 @@ import { InventoryEntryComponent } from './inventory-entry/inventory-entry.compo
 
 export const routes: Routes = [
   { path: 'items', component: ItemListComponent },
-  {
-    path: 'items/new',
-    component: ItemEntryComponent,
-    data: { mode: 'create' },
-  },
-  {
-    path: 'items/:id/edit',
-    component: ItemEntryComponent,
-    data: { mode: 'edit' },
-  },
-  {
-    path: 'items/:id/view',
-    component: ItemEntryComponent,
-    data: { mode: 'view' },
-  },
+  { path: 'items/new', component: ItemEntryComponent, data: { mode: 'create' } },
+  { path: 'items/:id/edit', component: ItemEntryComponent, data: { mode: 'edit' } },
+  { path: 'items/:id/view', component: ItemEntryComponent, data: { mode: 'view' } },
 
   { path: 'inventories', component: InventoryListComponent },
-  {
-    path: 'inventories/new',
-    component: InventoryEntryComponent,
-    data: { mode: 'create' },
-  },
-  {
-    path: 'inventories/:id/edit',
-    component: InventoryEntryComponent,
-    data: { mode: 'edit' },
-  },
-  {
-    path: 'inventories/:id/view',
-    component: InventoryEntryComponent,
-    data: { mode: 'view' },
-  },
+  { path: 'inventories/new', component: InventoryEntryComponent, data: { mode: 'create' } },
+  { path: 'inventories/:id/edit', component: InventoryEntryComponent, data: { mode: 'edit' } },
+  { path: 'inventories/:id/view', component: InventoryEntryComponent, data: { mode: 'view' } },
 
   // Ruta por defecto para inventario
   { path: '', redirectTo: 'items', pathMatch: 'full' },
