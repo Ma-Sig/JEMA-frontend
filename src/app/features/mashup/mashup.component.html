@@ -1,18 +1,18 @@
 <div class="bg-[#F5F6FA] w-screen h-[91vh] overflow-hidden">
     
-    <h2 class="bg-[#F5F6FA] h-10 ml-25 font-bold text-3xl"><br>Mapa</h2>
+    <h2 class="bg-[#F5F6FA] ml-[3vw] font-bold text-3xl md:mt-3 mb-4 md:mb-0">Mapa</h2>
 
-    <div class="h-screen grid grid-rows-[1fr_10fr] grid-cols-[5fr_1fr] gap-4">
+    <div class="h-screen flex flex-col md:grid md:grid-rows-[1fr_10fr] md:grid-cols-[4fr_1fr] gap-4">
         
-        <section class="flex justify-center items-end row-start-1 col-start-1 ">
+        <section class="flex justify-center row-start-1 col-start-1">
             <app-search-bar></app-search-bar>
         </section>
 
-        <section class="flex justify-center items-center row-start-2 col-start-1 w-full h-[calc(90%-2rem)]">
+        <section class="flex justify-center items-start md:row-start-2 col-start-1 w-full h-[33vh] md:h-[calc(90%-2rem)]">
             <app-location-map></app-location-map>
         </section>
         
-        <section class="col-start-2 row-span-2">
+        <section class="col-start-1 md:col-start-2 md:row-span-2 flex justify-center">
             <app-list-view></app-list-view>
         </section>
     </div>

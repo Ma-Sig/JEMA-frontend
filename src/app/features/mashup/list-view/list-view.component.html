@@ -1,10 +1,11 @@
-<div class="bg-white border w-60 h-[calc(90%-2rem)] overflow-y-auto flex flex-col items-center rounded-sm gap-1">
-    <header class="mt-6">
+<div class="bg-white border w-[95vw] md:w-75 h-[36vh] md:h-[80vh] overflow-y-auto flex flex-col items-center rounded-sm gap-1">
+    <header class="mt-2 md:mt-9 w-full flex flex-col items-center">
         <button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF]">+ Añadir nuevo item</button>
-        <h3 class="content-start mt-3 mb-3 font-bold">Inventario</h3>
+        <h3 class="self-start mt-3 mb-3 font-bold ml-[2vw]">Inventario</h3>
     </header>
 
     <div class="flex-1 overflow-auto">
+
         <div class="flex flex-col gap-3">
             <app-item></app-item>
             <app-item></app-item>
@@ -15,5 +16,7 @@
             <app-item></app-item>
             <app-item></app-item>
         </div>
+
     </div>
+    
 </div>
