@@ -1,10 +1,11 @@
 import { Component, HostListener } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { ChatbotComponent } from '../chatbot/chatbot.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, ChatbotComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
