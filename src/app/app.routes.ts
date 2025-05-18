@@ -7,20 +7,29 @@ import { routes as loans_routes  } from './features/loans-folder/loans.routes';
 import { routes as service_consumption_routes } from './features/service-consumption/service-consumption.routes';
 import { routes as user_routes } from './features/users/users.routes'
 import { routes as login_routes } from './features/auth/login/login.routes'
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   ...loans_routes,
+
   ...mashup_routes,
+
   ...auth_routes,
+  
   ...inventory_routes.map((route) => ({
     ...route,
     path: `inventory/${route.path}`,
   })),
+
   ...service_consumption_routes.map((route) => ({
     ...route,
     path: `service-consumption/${route.path}`,
+    canActivate: [AuthGuard],
   })),
 
   ...user_routes,
+
   ...dashboard_routes,
+
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];

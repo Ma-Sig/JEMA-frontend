@@ -10,10 +10,13 @@ import {
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
+import { AuthService } from '../services/auth.service';
+
 type LoginView = 'login' | 'forgot-password' | 'forgot-password-sent' | 'contact';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -143,6 +146,7 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       // Aquí implementarías la lógica de autenticación
       console.log('Login attempt:', this.loginForm.value);
+      localStorage.setItem('token', 'fake-jwt-token');
 
       // Simular login exitoso y redirigir al dashboard
       this.router.navigate(['/dashboard']);

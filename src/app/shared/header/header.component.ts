@@ -1,5 +1,5 @@
 import { Component, HostListener } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { ChatbotComponent } from '../chatbot/chatbot.component';
 
 @Component({
@@ -12,6 +12,8 @@ import { ChatbotComponent } from '../chatbot/chatbot.component';
 export class HeaderComponent {
   sidebarOpen = false;
   dropdownOpen = false;
+
+  constructor(private router: Router) {}
 
   openSidebar() {
     this.sidebarOpen = true;
@@ -32,5 +34,11 @@ export class HeaderComponent {
     if (!target.closest('.user-container')) {
       this.dropdownOpen = false;
     }
+  }
+
+  logOut() {
+    console.log('Cerrar sesión');
+    localStorage.removeItem('token');
+    this.router.navigate(['/login']);
   }
 }
