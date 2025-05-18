@@ -1,6 +1,9 @@
 <div class="bg-white border w-[95vw] md:w-75 h-[36vh] md:h-[80vh] overflow-y-auto flex flex-col items-center rounded-sm gap-1">
     <header class="mt-2 md:mt-9 w-full flex flex-col items-center">
-        <button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF]">+ Añadir nuevo item</button>
+        <button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF] hover:cursor-pointer
+         shadow-md hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)] active:shadow-[0_2px_6px_rgba(0,0,0,0.2)] 
+         transform hover:-translate-y-0.5 active:translate-y-0
+         transition-all duration-200" (click)="navigateTo()">+ Añadir nuevo item</button>
         <h3 class="self-start mt-3 mb-3 font-bold ml-[2vw]">Inventario</h3>
     </header>
 
