@@ -93,7 +93,14 @@
           >Items</a
         >
       </li>
-      <li class="mb-2"><a class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]" href="#">Consumos de servicios</a></li>
+      <li class="mb-2">
+        <a
+          class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]"
+          [routerLink]="['/service-consumption/list']"
+          (click)="closeSidebar()"
+          >Consumos de servicios</a
+        >
+      </li>
       <li class="mb-2">
         <a
           class="block p-2 no-underline text-[#333333] rounded-sm hover:bg-[#f5f5f5]"
