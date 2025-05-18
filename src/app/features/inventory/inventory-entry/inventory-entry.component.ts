@@ -7,6 +7,7 @@ import { DropdownComponent } from '../../../shared/dropdown/dropdown.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { InputFieldComponent } from '../../../shared/input-field/input-field.component';
 import { CalendarComponent } from '../../../shared/calendar/calendar.component';
+import { TableComponent } from '../../../shared/table/table.component';
 
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
@@ -20,6 +21,7 @@ import { firstValueFrom } from 'rxjs';
     CommonModule,
     InputFieldComponent,
     CalendarComponent,
+    TableComponent,
   ],
   templateUrl: './inventory-entry.component.html',
   styleUrls: ['./inventory-entry.component.css'],
@@ -38,6 +40,18 @@ export class InventoryEntryComponent implements OnInit {
   selectedDate: Date = new Date();
   regexOnlyNumbers = /^[0-9]+$/;
   regexCodeBase = /^[a-zA-Z0-9-]+$/;
+  inventoryData: any[] = [];
+  inventoryColumns: any[] = [
+    { key: 'id', label: 'codigo' },
+    { key: 'item', label: 'item' },
+    { key: 'estado', label: 'estado' },
+    { key: 'lugar', label: 'lugar' },
+    { key: 'fecha', label: 'fecha', type: 'date' },
+  ];
+  editingRow: boolean = false;
+  viewingRow: boolean = false;
+  selectedRow: any = null;
+  inventoryCount: number = 0;
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -61,7 +75,7 @@ export class InventoryEntryComponent implements OnInit {
     this.selectedItem = 'Item 1';
     this.selectedState = 'Nuevo';
     this.baseCode = 'ABC123';
-    this.quantity = '10';
+    // this.quantity = '10';
     this.selectedDate = new Date();
   }
 
@@ -84,8 +98,30 @@ export class InventoryEntryComponent implements OnInit {
     this.baseCode = baseCode;
   }
 
+  onQuantityChange(quantity: string) {
+    this.quantity = quantity;
+  }
+
   saveInventory() {
-    console.log('Guardar inventario');
+    if (this.mode == 'create' && this.inventoryData.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No hay datos para guardar.',
+      });
+      return;
+    }
+
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: 'Inventario guardado con éxito',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    console.log('Guardar en la base de datos');
+    this.router.navigate(['/inventory/inventories']);
   }
 
   validate() {
@@ -121,7 +157,7 @@ export class InventoryEntryComponent implements OnInit {
       return false;
     }
 
-    if (!this.baseCode || !this.regexCodeBase.test(this.baseCode)) {
+    if (!this.updateRow && (!this.baseCode || !this.regexCodeBase.test(this.baseCode))) {
       Toast.fire({
         icon: 'error',
         title: 'Ingrese un código base válido (solo letras, números y guiones)',
@@ -129,9 +165,7 @@ export class InventoryEntryComponent implements OnInit {
       return false;
     }
 
-    if (!this.quantity || !this.regexOnlyNumbers.test(this.quantity)) {
-      console.log('Primer if', !this.quantity);
-      console.log('Segundo if', !this.regexOnlyNumbers.test(this.quantity));
+    if (!this.updateRow && (!this.quantity || !this.regexOnlyNumbers.test(this.quantity))) {
       Toast.fire({
         icon: 'error',
         title: 'Ingrese una cantidad válida (solo números)',
@@ -148,16 +182,82 @@ export class InventoryEntryComponent implements OnInit {
       return;
     }
 
-    const inventoryData = {
-      location: this.selectedLocation,
-      item: this.selectedItem,
-      state: this.selectedState,
-      baseCode: this.baseCode,
-      quantity: this.quantity,
-      date: this.selectedDate,
-    };
+    const quantity = parseInt(this.quantity, 10);
+    for (let i = 0; i < quantity; i++) {
+      const inventoryData = {
+        id: this.baseCode + '-' + (this.inventoryCount + 1),
+        item: this.selectedItem,
+        estado: this.selectedState,
+        lugar: this.selectedLocation,
+        fecha: this.selectedDate,
+      };
 
-    console.log('Datos del inventario:', inventoryData);
+      this.inventoryData.push(inventoryData);
+      this.inventoryCount++;
+    }
+
+    this.clearFields();
+  }
+
+  clearFields() {
+    this.selectedLocation = '';
+    this.selectedItem = '';
+    this.selectedState = '';
+    this.baseCode = '';
+    this.quantity = '';
+    this.selectedDate = new Date();
+  }
+
+  onEditInventory(row: any) {
+    this.editingRow = true;
+    this.selectedLocation = row.lugar;
+    this.selectedItem = row.item;
+    this.selectedState = row.estado;
+    this.selectedDate = row.fecha;
+    this.selectedRow = row;
+  }
+
+  updateRow() {
+    if (!this.validate()) {
+      return;
+    }
+
+    this.selectedRow.lugar = this.selectedLocation;
+    this.selectedRow.item = this.selectedItem;
+    this.selectedRow.estado = this.selectedState;
+    this.selectedRow.fecha = this.selectedDate;
+    this.editingRow = false;
+    this.selectedRow = null;
+    this.clearFields();
+
+    Swal.fire('Actualizado!', 'Este elemento ha sido actualizado correctamente.', 'success');
+  }
+
+  async onDeleteInventory(row: any) {
+    const confirmed = await this.confirmDeletion();
+
+    if (confirmed) {
+      this.inventoryData = this.inventoryData.filter((item) => item.id !== row.id);
+      console.log('Eliminar en la base de datos:', row.id);
+      Swal.fire('Eliminado!', 'Este elemento ha sido eliminado correctamente.', 'success');
+    } else {
+      Swal.fire('Cancelado', 'La eliminación ha sido cancelada.', 'error');
+    }
+  }
+
+  async confirmDeletion(): Promise<boolean> {
+    const result = await Swal.fire({
+      title: '¿Está seguro de eliminar este elemento?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    return result.isConfirmed;
   }
 
   get isReadOnly(): boolean {

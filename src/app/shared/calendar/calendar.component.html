@@ -1,76 +1,74 @@
 <div class="date-picker-container">
-    <div class="date-input-container">
-      <input
-        type="text"
-        class="date-input"
-        placeholder="Fecha"
-        [value]="selectedDateText"
-        (click)="toggleCalendar($event)"
-        readonly
-      />
-      <div class="calendar-icon">
-        <!-- ícono de calendario -->
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="16" y1="2" x2="16" y2="6"></line>
-          <line x1="8" y1="2" x2="8" y2="6"></line>
-          <line x1="3" y1="10" x2="21" y2="10"></line>
-        </svg>
-      </div>
-    </div>
-  
-    <div class="calendar-dropdown" [class.active]="calendarOpen">
-      <div class="calendar-header">
-        <div class="month-selector">
-          <button class="nav-button" (click)="changeMonth(-1)">
-            <svg width="16" height="16" viewBox="0 0 24 24">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <span class="month-year">{{ currentMonthName }} {{ currentYear }}</span>
-          <button class="nav-button" (click)="changeMonth(1)">
-            <svg width="16" height="16" viewBox="0 0 24 24">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-        </div>
-        <div class="year-selector">
-          <button class="year-button" (click)="toggleYearDropdown()">{{ currentYear }}</button>
-          <div class="year-dropdown" [class.active]="yearDropdownOpen">
-            <div
-              class="year-option"
-              *ngFor="let year of yearRange"
-              (click)="selectYear(year)">
-              {{ year }}
-            </div>
-          </div>
-        </div>
-      </div>
-  
-      <div class="calendar-body">
-        <div class="weekdays">
-          <div class="weekday" *ngFor="let day of weekDays">{{ day }}</div>
-        </div>
-        <div class="days">
-          <div
-            class="day"
-            *ngFor="let day of days"
-            [ngClass]="{
-              'today': isToday(day.date),
-              'selected': isSelected(day.date),
-              'other-month': day.otherMonth
-            }"
-            (click)="selectDate(day.date)">
-            {{ day.date.getDate() }}
-          </div>
-        </div>
-      </div>
-  
-      <div class="calendar-footer">
-        <button class="today-button" (click)="goToToday()">Hoy</button>
-        <button class="clear-button" (click)="clearDate()">Limpiar</button>
-      </div>
+  <div class="date-input-container">
+    <input type="text" class="date-input" placeholder="Fecha" [value]="selectedDateText" (click)="toggleCalendar($event)" [disabled]="readonly" />
+    <div class="calendar-icon">
+      <!-- ícono de calendario -->
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
     </div>
   </div>
-  
+
+  <div class="calendar-dropdown" [class.active]="calendarOpen">
+    <div class="calendar-header">
+      <div class="month-selector">
+        <button class="nav-button" [disabled]="readonly" (click)="changeMonth(-1)">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <span class="month-year">{{ currentMonthName }} {{ currentYear }}</span>
+        <button class="nav-button" [disabled]="readonly" (click)="changeMonth(1)">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+      <div class="year-selector">
+        <button class="year-button" [disabled]="readonly" (click)="toggleYearDropdown()">{{ currentYear }}</button>
+        <div class="year-dropdown" [class.active]="yearDropdownOpen">
+          <div class="year-option" *ngFor="let year of yearRange" (click)="selectYear(year)">
+            {{ year }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calendar-body">
+      <div class="weekdays">
+        <div class="weekday" *ngFor="let day of weekDays">{{ day }}</div>
+      </div>
+      <div class="days">
+        <div
+          class="day"
+          *ngFor="let day of days"
+          [ngClass]="{
+            today: isToday(day.date),
+            selected: isSelected(day.date),
+            'other-month': day.otherMonth
+          }"
+          (click)="selectDate(day.date)"
+        >
+          {{ day.date.getDate() }}
+        </div>
+      </div>
+    </div>
+
+    <div class="calendar-footer">
+      <button class="today-button" [disabled]="readonly" (click)="goToToday()">Hoy</button>
+      <button class="clear-button" [disabled]="readonly" (click)="clearDate()">Limpiar</button>
+    </div>
+  </div>
+</div>

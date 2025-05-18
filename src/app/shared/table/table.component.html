@@ -16,13 +16,20 @@
       <tr *ngFor="let row of paginatedData">
         <td *ngIf="showActions == true" class="border-b px-4 py-2">
           <div class="flex gap-2">
-            <button class="text-blue-600 hover:underline" (click)="onView(row)">Ver</button>
-            <button class="text-green-600 hover:underline" (click)="onEdit(row)">Editar</button>
-            <button class="text-red-600 hover:underline" (click)="onDelete(row)">Eliminar</button>
+            <button *ngIf="actions.view == true" class="text-blue-600 hover:underline" (click)="onView(row)">Ver</button>
+            <button *ngIf="actions.edit == true" class="text-green-600 hover:underline" (click)="onEdit(row)">Editar</button>
+            <button *ngIf="actions.delete == true" class="text-red-600 hover:underline" (click)="onDelete(row)">Eliminar</button>
           </div>
         </td>
 
-        <td *ngFor="let col of columns">{{ row[col.key] }}</td>
+        <td *ngFor="let col of columns">
+          <ng-container *ngIf="col.type === 'date'; else normalText">
+            {{ row[col.key] | date : 'dd/MM/yyyy' }}
+          </ng-container>
+          <ng-template #normalText>
+            {{ row[col.key] }}
+          </ng-template>
+        </td>
       </tr>
     </tbody>
   </table>

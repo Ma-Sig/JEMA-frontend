@@ -20,6 +20,7 @@ export class CalendarComponent implements OnInit {
   today = new Date();
   currentDate = new Date();
   @Input() selectedDate: Date | null = null;
+  @Input() readonly: boolean = false;
 
   weekDays = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'];
   days: CalendarDay[] = [];

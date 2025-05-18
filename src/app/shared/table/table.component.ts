@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 interface TableColumn {
   key: string;
   label: string;
+  type?: 'text' | 'number' | 'date' | 'boolean';
 }
 
 @Component({
@@ -18,6 +19,11 @@ export class TableComponent {
   @Input() data: any[] = [];
   @Input() columns: TableColumn[] = [];
   @Input() showActions = true;
+  @Input() actions = {
+    view: true,
+    edit: true,
+    delete: true,
+  };
 
   @Output() view = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
@@ -30,7 +36,9 @@ export class TableComponent {
   get filteredData(): any[] {
     const query = this.searchQuery.toLowerCase().trim();
     if (!query) return this.data;
-    return this.data.filter((item) => Object.values(item).some((value) => String(value).toLowerCase().includes(query)));
+    return this.data.filter((item) =>
+      Object.values(item).some((value) => String(value).toLowerCase().includes(query))
+    );
   }
 
   get paginatedData(): any[] {

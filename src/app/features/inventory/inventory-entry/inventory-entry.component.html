@@ -3,9 +3,15 @@
 <h1 class="ml-2 pt-12 font-bold text-xl" *ngIf="isReadOnly">Detalle del inventario</h1>
 
 <div class="bg-white rounded-2xl p-4 mx-8">
-  <div *ngIf="!isReadOnly" class="flex items-center justify-end">
+  <div *ngIf="mode == 'create' && editingRow == false" class="flex items-center justify-end">
     <div class="w-12 h-12">
       <app-button class="w-full h-full" [label]="'+'" (clicked)="addToTable()"></app-button>
+    </div>
+  </div>
+
+  <div *ngIf="!isReadOnly && editingRow == true" class="flex items-center justify-end">
+    <div class="w-20 h-12">
+      <app-button class="w-full h-full" [label]="'Actualizar'" (clicked)="updateRow()"></app-button>
     </div>
   </div>
 
@@ -64,7 +70,7 @@
         <div class="col-span-12">
           <app-input-field
             [placeholder]="'Código base'"
-            [readonly]="isReadOnly"
+            [readonly]="isReadOnly || viewingRow || editingRow"
             (valueChange)="onCodeBaseChange($event)"
             [value]="baseCode"
             [regexExp]="regexCodeBase"
@@ -77,7 +83,7 @@
       <label class="field-title">Fecha</label>
       <div class="grid grid-cols-12 gap-2 items-center">
         <div class="col-span-12">
-          <app-calendar [selectedDate]="selectedDate"></app-calendar>
+          <app-calendar [selectedDate]="selectedDate" [readonly]="isReadOnly"></app-calendar>
         </div>
       </div>
     </div>
@@ -86,9 +92,29 @@
       <label class="field-title">Cantidad</label>
       <div class="grid grid-cols-12 gap-2 items-center">
         <div class="col-span-12">
-          <app-input-field [placeholder]="'Código base'" [readonly]="isReadOnly" [value]="quantity" [regexExp]="regexOnlyNumbers"></app-input-field>
+          <app-input-field
+            [placeholder]="'Cantidad'"
+            [readonly]="isReadOnly || viewingRow || editingRow"
+            (valueChange)="onQuantityChange($event)"
+            [value]="quantity"
+            [regexExp]="regexOnlyNumbers"
+          ></app-input-field>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div *ngIf="mode == 'create'" class="w-full mx-auto px-4 mt-4">
+    <div class="w-full justify-center">
+      <app-table
+        class="w-full"
+        [data]="inventoryData"
+        [columns]="inventoryColumns"
+        [showActions]="true"
+        [actions]="{ view: false, edit: true, delete: true }"
+        (edit)="onEditInventory($event)"
+        (delete)="onDeleteInventory($event)"
+      ></app-table>
     </div>
   </div>
 
