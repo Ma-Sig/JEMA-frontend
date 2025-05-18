@@ -5,37 +5,16 @@
     <div class="h-screen grid grid-rows-[1fr_10fr] grid-cols-[5fr_1fr] gap-4">
         
         <section class="flex justify-center items-end row-start-1 col-start-1 ">
-            <input class="bg-white border rounded-2xl w-150 h-13 placeholder-[#AFAFAF]" type="search" placeholder=" Buscar campus, edificio o aula."> 
+            <app-search-bar></app-search-bar>
         </section>
 
         <section class="flex justify-center items-center row-start-2 col-start-1 w-full h-[calc(90%-2rem)]">
-            <div class="h-[calc(100%-2rem)] w-300 border">Aqui se muestra un mapa.</div>
+            <app-location-map></app-location-map>
         </section>
         
         <section class="col-start-2 row-span-2">
-            <div class="bg-white border w-60 h-[calc(90%-2rem)] overflow-y-auto flex flex-col items-center rounded-sm gap-1">
-                <header class="mt-6">
-                    <button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF]">+ Añadir nuevo item</button>
-                    <h3 class="content-start mt-3 mb-3">Inventario</h3>
-                </header>
-
-                <div class="flex-1 overflow-auto">
-                    <div class="flex flex-col gap-3">
-                        <div class="border w-50 h-60 rounded-sm"></div>
-                        <div class="border w-50 h-60 rounded-sm"></div>
-                        <div class="border w-50 h-60 rounded-sm"></div>
-                        <div class="border w-50 h-60 rounded-sm"></div>
-                        <div class="border w-50 h-60 rounded-sm"></div>
-                        <div class="border w-50 h-60 rounded-sm"></div>
-                        <div class="border w-50 h-60 rounded-sm"></div>
-                        <div class="border w-50 h-60 rounded-sm"></div>
-                    </div>
-                    
-                </div>
-            </div>
-
+            <app-list-view></app-list-view>
         </section>
-
     </div>
 
 </div>
