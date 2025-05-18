@@ -5,7 +5,11 @@
         <section class="flex flex-col md:flex-row gap-4 justify-center items-center mt-2 md:mt-15">
             <div class="w-[80vw] md:w-[30vw]">
                 <h3>Lugar de origen</h3>
-                <app-dropdown [options]="placesOriginOptions"></app-dropdown>
+
+                <app-dropdown 
+                    [options]="placesOriginOptions">
+                </app-dropdown>
+
             </div>
 
             <div class="w-[80vw] md:w-[30vw]">
@@ -27,7 +31,7 @@
                 <app-dropdown [options]="placesDestinationOptions"></app-dropdown>
             </div>
 
-            <button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF]">Registrar Préstamo</button>
+            <button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF]" (click)="showAlert()">Registrar Préstamo</button>
             
         </section>
         
