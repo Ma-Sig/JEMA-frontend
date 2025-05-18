@@ -1,12 +1,7 @@
-<div class="page-container flex">
-  <!-- Contenido principal -->
-  <div class="content-area flex-1 p-6">
-    
-    <!-- Fila: búsqueda + calendario -->
-    <div class="flex flex-row justify-between items-start gap-4 mb-6">
-      
-      <!-- Barra de búsqueda -->
-      <div class="search-bar w-full max-w-md">
+<div class="page-container flex flex-col md:flex-row">
+  <div class="content-area flex-1 p-4 sm:p-6">
+    <div class="flex flex-col items-center gap-6">
+      <div class="w-full max-w-md px-2 sm:px-0">
         <input
           type="text"
           placeholder="Buscar..."
@@ -15,40 +10,42 @@
         />
       </div>
 
-      <!-- Calendarios: Fecha inicio y fin en la misma fila -->
-      <div class="calendar-container flex flex-row gap-4">
-        <div class="flex flex-col">
+      <div class="calendar-container flex flex-col md:flex-row gap-6 items-center w-full justify-center">
+        <div class="flex flex-col items-center">
           <p class="text-gray-600 mb-2">Fecha inicio</p>
           <app-calendar></app-calendar>
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col items-center">
           <p class="text-gray-600 mb-2">Fecha fin</p>
           <app-calendar></app-calendar>
         </div>
       </div>
+
+      <div *ngIf="selectedItem" class="text-center">
+        <h2 class="text-xl font-semibold text-gray-800">{{ selectedItem }}</h2>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md justify-center items-center">
+        <div class="w-full sm:w-40 h-12">
+          <app-button class="w-full h-full" label="Mostrar reporte" (clicked)="onMostrarReporte()"></app-button>
+        </div>
+        <div class="w-full sm:w-40 h-12">
+          <app-button class="w-full h-full" label="Guardar reporte" (clicked)="onGuardarReporte()"></app-button>
+        </div>
+      </div>
     </div>
 
-    <!-- Título del item seleccionado -->
-    <div class="title-container mb-4" *ngIf="selectedItem">
-      <h2 class="text-xl font-semibold text-gray-800">{{ selectedItem }}</h2>
+    <div class="mt-8 overflow-x-auto">
+      <app-table
+        *ngIf="showTable"
+        [columns]="tableColumns"
+        [data]="tableData"
+        class="min-w-full"
+      ></app-table>
     </div>
-
-    <!-- Botones -->
-    <div class="buttons-container flex flex-row gap-4 mb-6">
-      <app-button label="Mostrar reporte" (clicked)="onMostrarReporte()"></app-button>
-      <app-button label="Guardar reporte" class="guardar" (clicked)="onGuardarReporte()"></app-button>
-    </div>
-
-    <!-- Tabla -->
-    <app-table
-      *ngIf="showTable"
-      [columns]="tableColumns"
-      [data]="tableData"
-    ></app-table>
   </div>
 
-  <!-- Sidebar -->
-  <div class="sidebar w-64 bg-gray-100 border-l border-gray-200 p-4">
+  <div class="sidebar w-full md:w-64 bg-gray-100 border-t md:border-t-0 md:border-l border-gray-200 p-4">
     <div
       class="sidebar-item px-4 py-2 rounded cursor-pointer hover:bg-blue-100"
       *ngFor="let item of items"
