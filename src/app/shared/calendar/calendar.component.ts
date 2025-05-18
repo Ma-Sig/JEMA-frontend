@@ -1,10 +1,5 @@
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { Component, HostListener, OnInit, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 interface CalendarDay {
   date: Date;
@@ -13,8 +8,10 @@ interface CalendarDay {
 
 @Component({
   selector: 'app-calendar',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.css']
+  styleUrls: ['./calendar.component.css'],
 })
 export class CalendarComponent implements OnInit {
   calendarOpen = false;
@@ -22,7 +19,7 @@ export class CalendarComponent implements OnInit {
 
   today = new Date();
   currentDate = new Date();
-  selectedDate: Date | null = null;
+  @Input() selectedDate: Date | null = null;
 
   weekDays = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do'];
   days: CalendarDay[] = [];
@@ -48,8 +45,18 @@ export class CalendarComponent implements OnInit {
   }
 
   monthNames = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
   ];
 
   yearRange: number[] = [];
@@ -133,7 +140,7 @@ export class CalendarComponent implements OnInit {
     for (let i = 0; i < firstDayAdjusted; i++) {
       days.push({
         date: new Date(year, month - 1, prevMonthLastDay - firstDayAdjusted + i + 1),
-        otherMonth: true
+        otherMonth: true,
       });
     }
 
@@ -141,13 +148,17 @@ export class CalendarComponent implements OnInit {
     for (let i = 1; i <= lastDay; i++) {
       days.push({
         date: new Date(year, month, i),
-        otherMonth: false
+        otherMonth: false,
       });
     }
 
     // Días del mes siguiente (relleno hasta 42 días)
     while (days.length < 42) {
-      const nextDate = new Date(year, month, lastDay + (days.length - firstDayAdjusted - lastDay + 1));
+      const nextDate = new Date(
+        year,
+        month,
+        lastDay + (days.length - firstDayAdjusted - lastDay + 1)
+      );
       days.push({ date: nextDate, otherMonth: true });
     }
 

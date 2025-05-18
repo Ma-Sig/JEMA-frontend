@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
-
 import { CommonModule } from '@angular/common';
+
 import { DropdownComponent } from '../../../shared/dropdown/dropdown.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { InputFieldComponent } from '../../../shared/input-field/input-field.component';

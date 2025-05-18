@@ -1,1 +1,100 @@
-<p>inventory-entry works!</p>
+<h1 class="ml-2 pt-12 font-bold text-xl" *ngIf="isCreate">Registro de inventario</h1>
+<h1 class="ml-2 pt-12 font-bold text-xl" *ngIf="isEdit">Editar inventario</h1>
+<h1 class="ml-2 pt-12 font-bold text-xl" *ngIf="isReadOnly">Detalle del inventario</h1>
+
+<div class="bg-white rounded-2xl p-4 mx-8">
+  <div *ngIf="!isReadOnly" class="flex items-center justify-end">
+    <div class="w-12 h-12">
+      <app-button class="w-full h-full" [label]="'+'" (clicked)="addToTable()"></app-button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-4">
+    <div class="space-y-2 col-span-6">
+      <label class="field-title">Lugar</label>
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <div class="col-span-12">
+          <app-dropdown
+            class="w-full block"
+            [options]="locations"
+            [placeholder]="'Lugar'"
+            [readonly]="isReadOnly"
+            [selectedLabel]="selectedLocation"
+            (selectionChange)="onLocationChange($event)"
+          ></app-dropdown>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-2 col-span-6">
+      <label class="field-title">Item</label>
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <div class="col-span-12">
+          <app-dropdown
+            class="w-full block"
+            [options]="items"
+            [placeholder]="'Item'"
+            [readonly]="isReadOnly"
+            [selectedLabel]="selectedItem"
+            (selectionChange)="onItemChange($event)"
+          ></app-dropdown>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-2 col-span-6">
+      <label class="field-title">Estado</label>
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <div class="col-span-12">
+          <app-dropdown
+            class="w-full block"
+            [options]="states"
+            [placeholder]="'Estado'"
+            [readonly]="isReadOnly"
+            [selectedLabel]="selectedState"
+            (selectionChange)="onStateChange($event)"
+          ></app-dropdown>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-2 col-span-6">
+      <label class="field-title">Código base</label>
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <div class="col-span-12">
+          <app-input-field
+            [placeholder]="'Código base'"
+            [readonly]="isReadOnly"
+            (valueChange)="onCodeBaseChange($event)"
+            [value]="baseCode"
+            [regexExp]="regexCodeBase"
+          ></app-input-field>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-2 col-span-6">
+      <label class="field-title">Fecha</label>
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <div class="col-span-12">
+          <app-calendar [selectedDate]="selectedDate"></app-calendar>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-2 col-span-6">
+      <label class="field-title">Cantidad</label>
+      <div class="grid grid-cols-12 gap-2 items-center">
+        <div class="col-span-12">
+          <app-input-field [placeholder]="'Código base'" [readonly]="isReadOnly" [value]="quantity" [regexExp]="regexOnlyNumbers"></app-input-field>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isReadOnly" class="flex h-48 items-center justify-center">
+    <div class="w-3xs h-10">
+      <app-button class="w-full h-full" [label]="'Guardar'" (clicked)="saveInventory()"></app-button>
+    </div>
+  </div>
+</div>

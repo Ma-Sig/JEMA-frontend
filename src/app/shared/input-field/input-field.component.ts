@@ -12,9 +12,11 @@ import { FormsModule } from '@angular/forms';
 export class InputFieldComponent {
   @Input() placeholder: string = 'Ingrese texto';
   @Input() readonly: boolean = false;
+  @Input() value: string = '';
+  @Input() regexExp: RegExp = /^[a-zA-ZÀ-ÿ\s]+$/;
+
   @Output() valueChange = new EventEmitter<string>();
 
-  @Input() value: string = '';
   validationMessage: string = '';
   isValid: boolean | null = null;
 
@@ -32,15 +34,15 @@ export class InputFieldComponent {
       return;
     }
 
-    if (trimmed.length < 2) {
+    if (trimmed.length < 1) {
       this.isValid = false;
-      this.validationMessage = 'El nombre debe tener al menos 2 caracteres';
+      this.validationMessage = 'El nombre debe tener al menos 1 caracter';
       return;
     }
 
-    if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(trimmed)) {
+    if (!this.regexExp.test(trimmed)) {
       this.isValid = false;
-      this.validationMessage = 'El nombre solo debe contener letras';
+      this.validationMessage = 'El texto no cumple el formato requerido';
       return;
     }
 
