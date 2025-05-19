@@ -23,9 +23,29 @@ export class StatisticsDashboardComponent implements OnInit {
   locations: string[] = [];
   selectedItem = '';
   items: string[] = [];
+  itemsPerLocationXLabels: string[] = [];
+  itemsPerLocationDatasets: any[] = [];
 
   ngOnInit(): void {
     this.loadSystemData();
+    this.itemsPerLocationXLabels.push('Ene');
+    this.itemsPerLocationXLabels.push('Feb');
+    this.itemsPerLocationXLabels.push('Mar');
+    this.itemsPerLocationXLabels.push('Abr');
+    this.itemsPerLocationXLabels.push('May');
+    this.itemsPerLocationXLabels.push('Jun');
+    this.itemsPerLocationXLabels.push('Jul');
+
+    this.itemsPerLocationDatasets = [
+      {
+        label: 'Computadora',
+        data: [65, 59, 80, 81, 56, 55, 40],
+      },
+      {
+        label: 'Proyector',
+        data: [28, 48, 40, 19, 86, 27, 90],
+      },
+    ];
   }
 
   loadSystemData() {

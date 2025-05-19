@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
-
 import {
   Chart,
   CategoryScale,
@@ -16,7 +15,6 @@ import {
   ChartData,
 } from 'chart.js';
 
-// Registrar los componentes que usará la gráfica
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, BarController);
 
 @Component({
@@ -25,53 +23,65 @@ Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, B
   imports: [CommonModule, BaseChartDirective],
   templateUrl: './bar-chart.component.html',
 })
-export class BarChartComponent {
+export class BarChartComponent implements OnChanges {
+  @Input() title = 'Gráfico de barras';
+  @Input() xAxisLabel = 'Meses';
+  @Input() yAxisLabel = 'Cantidad';
+  @Input() xLabels: string[] = [];
+  @Input() datasets: any[] = [];
+
   public barChartType: ChartType = 'bar';
+  public barChartOptions: ChartOptions = {};
+  public barChartData: ChartData<'bar'> = { labels: [], datasets: [] };
 
-  public barChartOptions: ChartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Gráfico barras por meses',
-        font: {
-          size: 20,
-        },
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'Meses',
-        },
-      },
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Ventas',
-        },
-      },
-    },
-  };
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['datasets'] || changes['xLabels']) {
+      if (this.datasets?.length && this.xLabels?.length) {
+        console.log('✅ Actualizando gráfico con datasets:', this.datasets);
+        this.barChartOptions = {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: this.title,
+              font: { size: 20 },
+            },
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: this.xAxisLabel,
+              },
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: this.yAxisLabel,
+              },
+            },
+          },
+        };
 
-  public barChartData: ChartData<'bar'> = {
-    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'],
-    datasets: [
-      {
-        label: '2024',
-        data: [65, 59, 80, 81, 56, 55, 40],
-        backgroundColor: '#3B82F6',
-      },
-      {
-        label: '2025',
-        data: [28, 48, 40, 19, 86, 27, 90],
-        backgroundColor: '#10B981',
-      },
-    ],
-  };
+        this.barChartData = {
+          labels: this.xLabels,
+          datasets: this.datasets.map((d, i) => ({
+            ...d,
+            backgroundColor: this.getColor(i),
+          })),
+        };
+      } else {
+        console.warn('⚠️ Datasets o xLabels vacíos, se ignora actualización');
+      }
+    }
+  }
+
+  private getColor(index: number): string {
+    const colors = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'];
+    return colors[index % colors.length];
+  }
 }

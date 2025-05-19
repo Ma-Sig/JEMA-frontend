@@ -36,7 +36,13 @@
     </div>
 
     <div class="col-span-12 space-y-2">
-      <app-bar-chart></app-bar-chart>
+      <app-bar-chart
+        [title]="'Items por lugar'"
+        [xAxisLabel]="'Items'"
+        [yAxisLabel]="'Cantidad'"
+        [xLabels]="itemsPerLocationXLabels"
+        [datasets]="itemsPerLocationDatasets"
+      ></app-bar-chart>
     </div>
   </div>
 </div>
