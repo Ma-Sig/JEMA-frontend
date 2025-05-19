@@ -157,6 +157,18 @@
         </button>
       </form>
 
+      <div id="g_id_onload" [attr.data-client_id]="clientId" data-auto_prompt="false" data-callback="handleCredentialResponse"></div>
+
+      <div
+        class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="outline"
+        data-text="sign_in_with"
+        data-size="large"
+        data-logo_alignment="left"
+      ></div>
+
       <div class="mt-6 text-center">
         <span class="text-gray-600 text-sm">¿No tienes una cuenta? </span>
         <button (click)="goToContact()" class="text-blue-500 text-sm cursor-pointer hover:text-blue-700 transition-colors font-medium">

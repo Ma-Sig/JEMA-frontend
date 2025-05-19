@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -21,7 +21,8 @@ type LoginView = 'login' | 'forgot-password' | 'forgot-password-sent' | 'contact
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent {
+export class LoginComponent implements AfterViewInit {
+  clientId: string = '138953176056-560ah7nhnpkb49p33enfgmqcsd8s2qqr.apps.googleusercontent.com';
   currentView: LoginView = 'login';
   loginForm: FormGroup;
   forgotPasswordForm: FormGroup;
@@ -37,6 +38,30 @@ export class LoginComponent {
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (typeof window !== 'undefined') {
+      // @ts-ignore
+      window.handleCredentialResponse = (response: any) => {
+        const token = response.credential;
+        const user = this.decodeJwt(token);
+        console.log('Google info:', user);
+        localStorage.setItem('token', 'fake-jwt-token');
+        this.router.navigate(['/dashboard']);
+      };
+    }
+  }
+
+  private decodeJwt(token: string): any {
+    const base64Url = token.split('.')[1];
+    const base64 = decodeURIComponent(
+      atob(base64Url)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(base64);
   }
 
   // Validador personalizado para fortaleza de contraseña
