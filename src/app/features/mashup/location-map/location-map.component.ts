@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component} from '@angular/core';
 
 @Component({
   selector: 'app-location-map',
@@ -7,5 +7,4 @@ import { Component } from '@angular/core';
   styleUrl: './location-map.component.css'
 })
 export class LocationMapComponent {
-
 }

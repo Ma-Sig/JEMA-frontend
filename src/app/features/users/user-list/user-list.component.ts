@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 export class UserListComponent {
   constructor(private router: Router) {}
 
-  inventoryData = [
+  userData = [
     {
       nombres: 'Christine',
       apellidos: 'Brooks',
@@ -51,8 +51,8 @@ export class UserListComponent {
     },
   ];
 
-  inventoryColumns = [
-    { key: 'nombres', label: 'Nombre' },
+  userColumns = [
+    { key: 'nombres', label: 'Nombres' },
     { key: 'apellidos', label: 'Apellidos' },
     { key: 'cedula', label: 'Cédula' },
     { key: 'email', label: 'E-mail' },
@@ -61,12 +61,12 @@ export class UserListComponent {
 
   onViewItem(row: any) {
     console.log('onViewItem recibido:', row);
-    this.router.navigate(['/inventory/inventories', row.id, 'view']);
+    this.router.navigate(['/users/user', row.usuario, 'view']);
   }
 
   onEditItem(row: any) {
     console.log('onEditItem recibido:', row);
-    this.router.navigate(['/inventory/inventories', row.id, 'edit']);
+    this.router.navigate(['/users/user', row.usuario, 'edit']);
   }
 
   async onDeleteItem(row: any) {
@@ -75,7 +75,7 @@ export class UserListComponent {
     const confirmed = await this.confirmDeletion();
 
     if (confirmed) {
-      this.inventoryData = this.inventoryData.filter((item) => item.apellidos !== row.id);
+      this.userData = this.userData.filter((item) => item.usuario !== row.usuario);
       console.log('Eliminar en la base de datos:', row.id);
       Swal.fire('Eliminado!', 'Este elemento ha sido eliminado correctamente.', 'success');
     } else {

@@ -1,15 +1,26 @@
 <!-- Header -->
 <header class="flex items-center justify-between px-4 py-3 border border-[#e5e5e5] shadow-sm bg-white">
-  <button class="bg-none border-none p-2 cursor-pointer rounded-sm hover:bg-[#f5f5f5]" (click)="openSidebar()" aria-label="Abrir menú">
-    <!-- Icono de menú -->
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="3" y1="12" x2="21" y2="12"></line>
-      <line x1="3" y1="6" x2="21" y2="6"></line>
-      <line x1="3" y1="18" x2="21" y2="18"></line>
-    </svg>
-  </button>
+  <div class="flex items-center">
+    <button class="bg-none border-none p-2 cursor-pointer rounded-sm hover:bg-[#f5f5f5]" (click)="openSidebar()" aria-label="Abrir menú">
+      <!-- Icono de menú -->
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
 
-  <div class="font-bold text-xl cursor-pointer" routerLink="/"><span class="text-accent">JE</span><span class="text-black">MA</span></div>
+    <a class="font-bold text-xl cursor-pointer" routerLink="/"><span class="text-accent">JE</span><span class="text-black">MA</span></a>
+  </div>
 
   <div class="flex items-center gap-4 cursor-pointer">
     <div class="relative">
@@ -28,10 +39,14 @@
         (click)="$event.stopPropagation()"
       >
         <div class="px-4 py-3 border border-[#e5e5e5]">
-          <div class="font-bold mb-1">Usuario JEMA</div>
+          <div class="font-bold mb-1">Usuario <span class="text-accent">JE</span><span class="text-black">MA</span></div>
           <div class="text-xs text-[#666666]">usuario&#64;jema.com</div>
         </div>
         <div class="py-2">
+          <!-- <div class="py-2 px-4 flex items-center gap-2 cursor-pointer transition-colors duration-200 hover:bg-[#f5f5f5]">Mi perfil</div>
+          <div class="py-2 px-4 flex items-center gap-2 cursor-pointer transition-colors duration-200 hover:bg-[#f5f5f5]">Seguridad</div>
+          <div class="py-2 px-4 flex items-center gap-2 cursor-pointer transition-colors duration-200 hover:bg-[#f5f5f5]">Configuración</div> -->
+          <!-- <div class="h-0.5 bg-[#e5e5e5] mx-2 my-0"></div> -->
           <div class="py-2 px-4 flex items-center gap-2 cursor-pointer transition-colors duration-200 hover:bg-[#f5f5f5]" (click)="logOut()">
             Cerrar sesión
           </div>
@@ -47,7 +62,7 @@
   [class.translate-x-full]="sidebarOpen"
 >
   <div class="flex justify-between items-center p-4 border border-[#e5e5e5]">
-    <div class="logo"><span class="logo-blue">JE</span><span class="logo-black">MA</span></div>
+    <div class="font-bold text-xl cursor-pointer"><span class="text-accent">JE</span><span class="text-black">MA</span></div>
     <button class="bg-none border-none cursor-pointer p-1 rounded-s hover:bg-[#f5f5f5]" (click)="closeSidebar()" aria-label="Cerrar menú">
       <!-- Icono de cerrar -->
       <svg

@@ -1,10 +1,9 @@
 import { Component, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-chatbot',
-  imports: [FormsModule, NgIf],
+  imports: [FormsModule],
   templateUrl: './chatbot.component.html',
   styleUrl: './chatbot.component.css',
 })

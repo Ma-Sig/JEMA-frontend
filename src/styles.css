@@ -30,7 +30,7 @@
 }
 
 .section-title {
-  @apply ml-[3vw] font-bold text-3xl md:mt-3 mb-4 md:mb-3;
+  @apply text-2xl font-bold mb-6;
 }
 
 body {

@@ -15,13 +15,13 @@ export class LoanListComponent {
   constructor(private router: Router) {}
 
 
-  inventoryColumns = [
+  loanColumns = [
     { key: 'id', label: 'Código' },
     { key: 'lugarO', label: 'Lugar Origen' },
     { key: 'lugarD', label: 'Lugar Destino' },
     { key: 'item', label: 'Item' },
   ];
-  inventoryData = [
+  loanData = [
     {
       id: '00001',
       lugarO: 'Christine Brooks',
@@ -57,7 +57,7 @@ export class LoanListComponent {
       const confirmed = await this.confirmDeletion();
   
       if (confirmed) {
-        this.inventoryData = this.inventoryData.filter((item) => item.id !== row.id);
+        this.loanData = this.loanData.filter((item) => item.id !== row.id);
         console.log('Eliminar en la base de datos:', row.id);
         Swal.fire('Eliminado!', 'Este elemento ha sido eliminado correctamente.', 'success');
       } else {

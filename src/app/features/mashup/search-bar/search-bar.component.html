@@ -1,1 +1,7 @@
-<input class="bg-white border rounded-2xl w-[80vw] md:w-[50vw] h-13 placeholder-[#AFAFAF]" type="search" placeholder=" Buscar campus, edificio o aula."> 
+<input
+  [(ngModel)]="searchTerm"
+  class="bg-white rounded-2xl w-[80vw] md:w-[50vw] h-13 placeholder-[#AFAFAF]"
+  type="search"
+  placeholder=" Buscar campus, edificio o aula."
+  (keydown.enter)="onSearch()"
+/>

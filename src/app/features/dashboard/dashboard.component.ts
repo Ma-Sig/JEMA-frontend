@@ -19,12 +19,12 @@ export class DashboardComponent {
     {
       title: 'Servicios',
       backgroundColor: 'bg-green-400',
-      route: '/servicios',
+      route: '/service-consumption/list',
     },
     {
       title: 'Items',
       backgroundColor: 'bg-red-400',
-      route: '/items',
+      route: '/inventory/items',
     },
     {
       title: 'Usuarios',
@@ -34,7 +34,7 @@ export class DashboardComponent {
     {
       title: 'Préstamos',
       backgroundColor: 'bg-indigo-500',
-      route: '/prestamos',
+      route: '/loans',
     },
     {
       title: 'Mapa',
@@ -44,7 +44,7 @@ export class DashboardComponent {
     {
       title: 'Reportes',
       backgroundColor: 'bg-yellow-400',
-      route: '/reportes',
+      route: '/reports',
     },
     {
       title: 'Estadísticas',

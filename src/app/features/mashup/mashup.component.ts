@@ -10,5 +10,9 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
   styleUrl: './mashup.component.css'
 })
 export class MashupComponent {
-  
+  searchedPlace = '';
+
+  onSearch(place: string) {
+    this.searchedPlace = place;
+  }
 }
