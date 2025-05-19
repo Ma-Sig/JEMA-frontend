@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { AuthService } from '../services/auth.service';
+import { environment } from '../../../../environments/environment';
 
 type LoginView = 'login' | 'forgot-password' | 'forgot-password-sent' | 'contact';
 
@@ -22,7 +23,7 @@ type LoginView = 'login' | 'forgot-password' | 'forgot-password-sent' | 'contact
   styleUrl: './login.component.css',
 })
 export class LoginComponent implements AfterViewInit {
-  clientId: string = '138953176056-560ah7nhnpkb49p33enfgmqcsd8s2qqr.apps.googleusercontent.com';
+  clientId: string = environment.googleClientId;
   currentView: LoginView = 'login';
   loginForm: FormGroup;
   forgotPasswordForm: FormGroup;
