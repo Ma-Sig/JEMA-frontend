@@ -27,15 +27,16 @@
     </div>
 
     <!-- Columna derecha: Dropdown que ocupa dos filas de alto -->
-    <div class="col-span-12 md:col-span-6 flex items-stretch">
-      <div class="flex justify-center mt-4 w-full">
+    <div class="col-span-12 md:col-span-6">
+      <div class="space-y-0">
+        <label class="field-title block">Items</label>
         <div class="overflow-auto h-40 w-full">
           <app-check-list></app-check-list>
         </div>
       </div>
     </div>
 
-    <div class="col-span-12 space-y-2">
+    <div class="col-span-12 space-y-2 w-full">
       <app-bar-chart
         [title]="'Items por lugar'"
         [xAxisLabel]="'Items'"
@@ -47,35 +48,56 @@
   </div>
 </div>
 
-<h1 class="section-title">Consumo de servicios por mes</h1>
+<h1 class="section-title">Consumo de servicios</h1>
 <div class="bg-white rounded-2xl p-4 mx-8">
   <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12 md:col-span-6 space-y-2">
-      <label class="field-title">Lugar</label>
-      <app-dropdown
-        class="w-full block"
-        [options]="locations"
-        [placeholder]="'Lugar'"
-        [selectedLabel]="selectedLocation"
-        (selectionChange)="onLocationChange($event)"
-      ></app-dropdown>
+    <!-- Columna izquierda -->
+    <div class="col-span-12 md:col-span-6 space-y-4">
+      <!-- Dropdown -->
+      <div class="space-y-2">
+        <label class="field-title">Lugar</label>
+        <app-dropdown
+          class="w-full block"
+          [options]="locations"
+          [placeholder]="'Lugar'"
+          [selectedLabel]="selectedLocation"
+          (selectionChange)="onLocationChange($event)"
+        ></app-dropdown>
+      </div>
+
+      <!-- Fecha inicio -->
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 md:col-span-6 space-y-2">
+          <label class="field-title">Fecha inicio</label>
+          <app-calendar [selectedDate]="servicesConsumpstionDateStart"></app-calendar>
+        </div>
+
+        <!-- Fecha fin -->
+        <div class="col-span-12 md:col-span-6 space-y-2">
+          <label class="field-title">Fecha fin</label>
+          <app-calendar [selectedDate]="servicesConsumpstionDateEnd"></app-calendar>
+        </div>
+      </div>
     </div>
 
-    <div class="col-span-12 md:col-span-6 space-y-2"></div>
-
-    <div class="col-span-12 md:col-span-6 space-y-2">
-      <label class="field-title">Item</label>
-      <app-dropdown
-        class="w-full block"
-        [options]="items"
-        [placeholder]="'Item'"
-        [selectedLabel]="selectedItem"
-        (selectionChange)="onItemChange($event)"
-      ></app-dropdown>
+    <!-- Columna derecha -->
+    <div class="col-span-12 md:col-span-6">
+      <div class="space-y-0">
+        <label class="field-title block">Servicios</label>
+        <div class="overflow-auto h-40 w-full">
+          <app-check-list></app-check-list>
+        </div>
+      </div>
     </div>
 
-    <div class="col-span-12 space-y-2">
-      <app-line-chart></app-line-chart>
+    <div class="col-span-12 space-y-2 w-full">
+      <app-line-chart
+        [title]="'Consumo de servicios'"
+        [xAxisLabel]="'Fecha'"
+        [yAxisLabel]="'Cantidad'"
+        [xLabels]="servicesConsumptionXLabels"
+        [datasets]="servicesConsumptionDatasets"
+      ></app-line-chart>
     </div>
   </div>
 </div>

@@ -4,6 +4,7 @@ import { BarChartComponent } from '../bar-chart/bar-chart.component';
 import { LineChartComponent } from '../line-chart/line-chart.component';
 import { DropdownComponent } from '../../../shared/dropdown/dropdown.component';
 import { CheckListComponent } from '../../../shared/check-list/check-list.component';
+import { CalendarComponent } from '../../../shared/calendar/calendar.component';
 
 @Component({
   selector: 'app-statistics-dashboard',
@@ -14,6 +15,7 @@ import { CheckListComponent } from '../../../shared/check-list/check-list.compon
     LineChartComponent,
     DropdownComponent,
     CheckListComponent,
+    CalendarComponent,
   ],
   templateUrl: './statistics-dashboard.component.html',
   styleUrl: './statistics-dashboard.component.css',
@@ -25,16 +27,15 @@ export class StatisticsDashboardComponent implements OnInit {
   items: string[] = [];
   itemsPerLocationXLabels: string[] = [];
   itemsPerLocationDatasets: any[] = [];
+  servicesConsumpstionDateStart: Date = new Date();
+  servicesConsumpstionDateEnd: Date = new Date();
+
+  servicesConsumptionXLabels: string[] = [];
+  servicesConsumptionDatasets: any[] = [];
 
   ngOnInit(): void {
     this.loadSystemData();
-    this.itemsPerLocationXLabels.push('Ene');
-    this.itemsPerLocationXLabels.push('Feb');
-    this.itemsPerLocationXLabels.push('Mar');
-    this.itemsPerLocationXLabels.push('Abr');
-    this.itemsPerLocationXLabels.push('May');
-    this.itemsPerLocationXLabels.push('Jun');
-    this.itemsPerLocationXLabels.push('Jul');
+    this.itemsPerLocationXLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'];
 
     this.itemsPerLocationDatasets = [
       {
@@ -44,6 +45,26 @@ export class StatisticsDashboardComponent implements OnInit {
       {
         label: 'Proyector',
         data: [28, 48, 40, 19, 86, 27, 90],
+      },
+      {
+        label: 'Silla',
+        data: [10, 20, 30, 40, 50, 60, 70],
+      },
+    ];
+
+    this.servicesConsumptionXLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'];
+    this.servicesConsumptionDatasets = [
+      {
+        label: 'Agua',
+        data: [65, 59, 80, 81, 56, 55, 40],
+      },
+      {
+        label: 'Luz',
+        data: [28, 48, 40, 19, 86, 27, 90],
+      },
+      {
+        label: 'Gas',
+        data: [10, 20, 30, 40, 50, 60, 70],
       },
     ];
   }
