@@ -1,45 +1,36 @@
-<div class="bg-[#F5F6FA] w-screen h-[91vh] flex flex-col items-center">
-    <h1 class="section-title" *ngIf="isCreate">Registro de prestamo</h1>
-    <h1 class="section-title" *ngIf="isEdit">Editar prestamo</h1>
-    <h1 class="section-title" *ngIf="isReadOnly">Detalle del prestamo</h1>
+<div class="container px-4 py-8 mx-auto">
+  <h1 class="section-title" *ngIf="isCreate">Registro de prestamo</h1>
+  <h1 class="section-title" *ngIf="isEdit">Editar prestamo</h1>
+  <h1 class="section-title" *ngIf="isReadOnly">Detalle del prestamo</h1>
 
-    <article class="border h-[80vh] w-[95vw] md:w-[80vw] bg-white rounded-sm ">
-        
-        <section class="flex flex-col md:flex-row gap-4 justify-center items-center mt-2 md:mt-15">
-            <div class="w-[80vw] md:w-[30vw]">
-                <h3>Lugar de origen</h3>
+  <article class="bg-white rounded-2xl p-10">
+    <section class="flex flex-col md:flex-row gap-4 justify-center items-center mt-2 md:mt-15">
+      <div class="w-[80vw] md:w-[30vw]">
+        <h3>Lugar de origen</h3>
 
-                <app-dropdown 
-                    [options]="placesOriginOptions"
-                    [readonly]="isReadOnly"></app-dropdown>
-            </div>
-            
-            <div class="w-[80vw] md:w-[30vw]">
-                <h3>Item</h3>
-                <app-dropdown [options]="itemOptions"
-                [readonly]="isReadOnly"></app-dropdown>
-            </div>
-        </section>
-        
+        <app-dropdown [options]="placesOriginOptions" [readonly]="isReadOnly"></app-dropdown>
+      </div>
 
-        <section class="flex justify-center h-[30vh] mt-4">
-            <div class="overflow-auto h-[30vh] w-[80vw] md:w-[37vw]">
-                <app-check-list></app-check-list>
-            </div>
-        </section>
+      <div class="w-[80vw] md:w-[30vw]">
+        <h3>Item</h3>
+        <app-dropdown [options]="itemOptions" [readonly]="isReadOnly"></app-dropdown>
+      </div>
+    </section>
 
+    <section class="flex justify-center h-[30vh] mt-4">
+      <div class="overflow-auto h-[30vh] w-[80vw] md:w-[37vw]">
+        <app-check-list></app-check-list>
+      </div>
+    </section>
 
-
-        <section class="flex flex-col gap-4 items-center ">
-
-            <div class="w-[80vw] md:w-[30vw] md:mt-15">
-                <h3>Lugar de destino</h3>
-                <app-dropdown [options]="placesDestinationOptions" [readonly]="isReadOnly"></app-dropdown>
-            </div>
-            <div *ngIf="!isReadOnly">
-                <app-button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF]" [label]="'Guardar'" (clicked)="showAlert()" ></app-button>
-            </div>
-        </section>
-        
-    </article>
+    <section class="flex flex-col gap-4 items-center">
+      <div class="w-[80vw] md:w-[30vw] md:mt-15">
+        <h3>Lugar de destino</h3>
+        <app-dropdown [options]="placesDestinationOptions" [readonly]="isReadOnly"></app-dropdown>
+      </div>
+      <div *ngIf="!isReadOnly">
+        <app-button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF]" [label]="'Guardar'" (clicked)="showAlert()"></app-button>
+      </div>
+    </section>
+  </article>
 </div>

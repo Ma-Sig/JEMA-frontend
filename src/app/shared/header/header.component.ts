@@ -20,6 +20,7 @@ export class HeaderComponent {
     { label: 'Consumos de servicios', routerLink: '/service-consumption/list' },
     { label: 'Inventario', routerLink: '/inventory/inventories' },
     { label: 'Reportes', routerLink: '/reports' },
+    { label: 'Usuarios', routerLink: '/users' },
     { label: 'Sobre nosotros', routerLink: '/info' },
     { label: 'Mapa', routerLink: '/mashup' },
     { label: 'Préstamos', routerLink: '/loans' },

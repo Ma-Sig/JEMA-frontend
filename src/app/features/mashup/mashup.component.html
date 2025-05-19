@@ -1,20 +1,17 @@
-<div class="bg-[#F5F6FA] w-screen h-[91vh] overflow-hidden">
-    
-    <h2 class="bg-[#F5F6FA] ml-[3vw] font-bold text-3xl md:mt-3 mb-4 md:mb-0">Mapa</h2>
+<div class="container px-4 py-8 mx-auto">
+  <h1 class="section-title">Mapa</h1>
 
-    <div class="h-screen flex flex-col md:grid md:grid-rows-[1fr_10fr] md:grid-cols-[4fr_1fr] gap-4">
-        
-        <section class="flex justify-center row-start-1 col-start-1">
-            <app-search-bar (search)="onSearch($event)"></app-search-bar>
-        </section>
+  <div class="flex flex-col md:grid md:grid-rows-[1fr_10fr] md:grid-cols-[4fr_1fr] gap-4">
+    <section class="flex justify-center row-start-1 col-start-1">
+      <app-search-bar (search)="onSearch($event)"></app-search-bar>
+    </section>
 
-        <section class="flex justify-center items-start md:row-start-2 col-start-1 w-full h-[33vh] md:h-[calc(90%-2rem)]">
-            <app-location-map></app-location-map>
-        </section>
-        
-        <section class="col-start-1 md:col-start-2 md:row-span-2 flex justify-center">
-            <app-list-view [placeName]="searchedPlace"></app-list-view>
-        </section>
-    </div>
+    <section class="flex justify-center items-start md:row-start-2 col-start-1 w-full h-[33vh] md:h-[calc(90%-2rem)]">
+      <app-location-map></app-location-map>
+    </section>
 
+    <section class="col-start-1 md:col-start-2 md:row-span-2 flex justify-center">
+      <app-list-view [placeName]="searchedPlace"></app-list-view>
+    </section>
+  </div>
 </div>

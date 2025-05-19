@@ -1,0 +1,64 @@
+<div class="container px-4 py-8 mx-auto">
+  <h1 class="section-title" *ngIf="isCreate">Registrar Usuario</h1>
+  <h1 class="section-title" *ngIf="isEdit">Editar Usuario</h1>
+  <h1 class="section-title" *ngIf="isReadOnly">Detalles de Usuario</h1>
+
+  <div class="bg-white rounded-2xl p-10">
+    <div class="">
+      <img class="block mx-auto w-40 h-40 rounded-full object-cover" src="{{ uploadedImage }}" alt="" />
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <label class="field-title">Nombres</label>
+        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onNameChange($event)" [value]="name"></app-input-field>
+      </div>
+
+      <div>
+        <label class="field-title">Apellidos</label>
+        <app-input-field
+          [placeholder]="'Nombres'"
+          [readonly]="isReadOnly"
+          (valueChange)="onSurnameChange($event)"
+          [value]="surname"
+        ></app-input-field>
+      </div>
+
+      <div>
+        <label class="field-title">C&eacute;dula</label>
+        <app-input-field
+          [placeholder]="'Nombres'"
+          [readonly]="isReadOnly"
+          (valueChange)="onIdNumberChange($event)"
+          [value]="idNumber"
+        ></app-input-field>
+      </div>
+
+      <div>
+        <label class="field-title">Correo electr&oacute;nico</label>
+        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onEmailChange($event)" [value]="email"></app-input-field>
+      </div>
+
+      <!-- <div>
+        <label class="field-title">Usuario</label>
+        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onUsernameChange($event)" [value]="name"></app-input-field>
+      </div> -->
+
+      <div>
+        <label class="field-title">Contraseña</label>
+        <app-input-field
+          [placeholder]="'Nombres'"
+          [readonly]="isReadOnly"
+          (valueChange)="onPasswordChange($event)"
+          [value]="password"
+        ></app-input-field>
+      </div>
+    </div>
+
+    <div *ngIf="!isReadOnly" class="flex h-48 items-center justify-center">
+      <div class="w-3xs h-10">
+        <app-button class="w-full h-full" [label]="'Guardar'" (clicked)="saveItem()"></app-button>
+      </div>
+    </div>
+  </div>
+</div>
