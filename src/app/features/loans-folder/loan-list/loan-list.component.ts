@@ -43,12 +43,12 @@ export class LoanListComponent {
   ]
   onViewItem(row: any) {
       console.log('onViewItem recibido:', row);
-      this.router.navigate(['/loans-folder/loans', row.id, 'view']);
+      this.router.navigate(['/loans', row.id, 'view']);
     }
   
     onEditItem(row: any) {
       console.log('onEditItem recibido:', row);
-      this.router.navigate(['/loans-folder/loans', row.id, 'edit']);
+      this.router.navigate(['/loans', row.id, 'edit']);
     }
   
     async onDeleteItem(row: any) {
