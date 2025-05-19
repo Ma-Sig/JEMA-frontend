@@ -23,6 +23,7 @@ export class HeaderComponent {
     { label: 'Sobre nosotros', routerLink: '/info' },
     { label: 'Mapa', routerLink: '/mashup' },
     { label: 'Préstamos', routerLink: '/loans' },
+    { label: 'Estadísticas', routerLink: '/statistics/statistics-dashboard' },
     { label: 'Cerrar sesión', action: 'logout' },
   ];
 

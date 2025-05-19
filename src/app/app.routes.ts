@@ -7,6 +7,7 @@ import { routes as loans_routes  } from './features/loans-folder/loans.routes';
 import { routes as service_consumption_routes } from './features/service-consumption/service-consumption.routes';
 import { routes as user_routes } from './features/users/users.routes'
 import { routes as login_routes } from './features/auth/login/login.routes'
+import { routes as statistics_routes } from './features/statistics/statistics.routes';
 import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -24,12 +25,16 @@ export const routes: Routes = [
   ...service_consumption_routes.map((route) => ({
     ...route,
     path: `service-consumption/${route.path}`,
-    canActivate: [AuthGuard],
   })),
 
   ...user_routes,
 
   ...dashboard_routes,
+
+  ...statistics_routes.map((route) => ({
+    ...route,
+    path: `statistics/${route.path}`,
+  })),
 
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];

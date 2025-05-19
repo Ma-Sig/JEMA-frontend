@@ -46,5 +46,10 @@ export class DashboardComponent {
       backgroundColor: 'bg-yellow-400',
       route: '/reportes',
     },
+    {
+      title: 'Estadísticas',
+      backgroundColor: 'bg-purple-400',
+      route: '/statistics/statistics-dashboard',
+    },
   ];
 }
