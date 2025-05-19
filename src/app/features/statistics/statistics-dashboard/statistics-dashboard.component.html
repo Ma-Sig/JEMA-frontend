@@ -1,23 +1,75 @@
-<div class="bg-[#F5F6FA]">
-  <h1 class="section-title">Inventario</h1>
-
-  <div class="bg-white rounded-2xl p-4 mx-8">
-    <div class="grid grid-cols-12 gap-4">
-      <div class="space-y-2 col-span-12">
-        <div class="grid grid-cols-12 gap-2 items-center">
-          <div class="col-span-12">
-            <app-bar-chart></app-bar-chart>
-          </div>
-        </div>
+<h1 class="section-title">Items por lugar</h1>
+<div class="bg-white rounded-2xl p-4 mx-8">
+  <div class="grid grid-cols-12 gap-4">
+    <!-- Columna izquierda: Lugar + Item -->
+    <div class="col-span-12 md:col-span-6 space-y-4">
+      <div class="space-y-2">
+        <label class="field-title">Lugar</label>
+        <app-dropdown
+          class="w-full block"
+          [options]="locations"
+          [placeholder]="'Lugar'"
+          [selectedLabel]="selectedLocation"
+          (selectionChange)="onLocationChange($event)"
+        ></app-dropdown>
       </div>
 
-      <div class="space-y-2 col-span-12">
-        <div class="grid grid-cols-12 gap-2 items-center">
-          <div class="col-span-12">
-            <app-line-chart></app-line-chart>
-          </div>
+      <div class="space-y-2">
+        <label class="field-title">Item</label>
+        <app-dropdown
+          class="w-full block"
+          [options]="items"
+          [placeholder]="'Item'"
+          [selectedLabel]="selectedItem"
+          (selectionChange)="onItemChange($event)"
+        ></app-dropdown>
+      </div>
+    </div>
+
+    <!-- Columna derecha: Dropdown que ocupa dos filas de alto -->
+    <div class="col-span-12 md:col-span-6 flex items-stretch">
+      <div class="flex justify-center mt-4 w-full">
+        <div class="overflow-auto h-40 w-full">
+          <app-check-list></app-check-list>
         </div>
       </div>
+    </div>
+
+    <div class="col-span-12 space-y-2">
+      <app-bar-chart></app-bar-chart>
+    </div>
+  </div>
+</div>
+
+<h1 class="section-title">Consumo de servicios por mes</h1>
+<div class="bg-white rounded-2xl p-4 mx-8">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 md:col-span-6 space-y-2">
+      <label class="field-title">Lugar</label>
+      <app-dropdown
+        class="w-full block"
+        [options]="locations"
+        [placeholder]="'Lugar'"
+        [selectedLabel]="selectedLocation"
+        (selectionChange)="onLocationChange($event)"
+      ></app-dropdown>
+    </div>
+
+    <div class="col-span-12 md:col-span-6 space-y-2"></div>
+
+    <div class="col-span-12 md:col-span-6 space-y-2">
+      <label class="field-title">Item</label>
+      <app-dropdown
+        class="w-full block"
+        [options]="items"
+        [placeholder]="'Item'"
+        [selectedLabel]="selectedItem"
+        (selectionChange)="onItemChange($event)"
+      ></app-dropdown>
+    </div>
+
+    <div class="col-span-12 space-y-2">
+      <app-line-chart></app-line-chart>
     </div>
   </div>
 </div>
