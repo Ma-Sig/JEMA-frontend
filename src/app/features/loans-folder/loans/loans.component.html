@@ -1,5 +1,8 @@
 <div class="bg-[#F5F6FA] w-screen h-[91vh] flex flex-col items-center">
-    <h2 class="bg-[#F5F6FA] ml-[3vw] font-bold text-3xl md:mt-3 mb-4 md:mb-3 self-start">Préstamo de items</h2>
+    <h1 class="section-title" *ngIf="isCreate">Registro de prestamo</h1>
+    <h1 class="section-title" *ngIf="isEdit">Editar prestamo</h1>
+    <h1 class="section-title" *ngIf="isReadOnly">Detalle del prestamo</h1>
+
     <article class="border h-[80vh] w-[95vw] md:w-[80vw] bg-white rounded-sm ">
         
         <section class="flex flex-col md:flex-row gap-4 justify-center items-center mt-2 md:mt-15">
@@ -7,16 +10,17 @@
                 <h3>Lugar de origen</h3>
 
                 <app-dropdown 
-                    [options]="placesOriginOptions">
-                </app-dropdown>
-
+                    [options]="placesOriginOptions"
+                    [readonly]="isReadOnly"></app-dropdown>
             </div>
-
+            
             <div class="w-[80vw] md:w-[30vw]">
                 <h3>Item</h3>
-                <app-dropdown [options]="itemOptions"></app-dropdown>
+                <app-dropdown [options]="itemOptions"
+                [readonly]="isReadOnly"></app-dropdown>
             </div>
         </section>
+        
 
         <section class="flex justify-center h-[30vh] mt-4">
             <div class="overflow-auto h-[30vh] w-[80vw] md:w-[37vw]">
@@ -24,15 +28,17 @@
             </div>
         </section>
 
+
+
         <section class="flex flex-col gap-4 items-center ">
 
             <div class="w-[80vw] md:w-[30vw] md:mt-15">
                 <h3>Lugar de destino</h3>
-                <app-dropdown [options]="placesDestinationOptions"></app-dropdown>
+                <app-dropdown [options]="placesDestinationOptions" [readonly]="isReadOnly"></app-dropdown>
             </div>
-
-            <button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF]" (click)="showAlert()">Registrar Préstamo</button>
-            
+            <div *ngIf="!isReadOnly">
+                <app-button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF]" [label]="'Guardar'" (clicked)="showAlert()" ></app-button>
+            </div>
         </section>
         
     </article>
