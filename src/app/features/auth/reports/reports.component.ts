@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { ReportService } from './reports.service';
+import { AuthService } from '../services/auth.service';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { TableComponent } from '../../../shared/table/table.component';
 import { CalendarComponent } from '../../../shared/calendar/calendar.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-reports',
@@ -13,66 +16,94 @@ import { CommonModule } from '@angular/common';
   standalone: true,
 })
 export class ReportsComponent {
-  
   searchTerm = '';
   selectedItem: string | null = null;
   showTable = false;
+
+  codigoItem: string = '';
+  idLugar: number = 0;
 
   items = ['Historico de Item', 'Item por lugar', 'Estado de item'];
 
   tableColumns: { key: string, label: string }[] = [];
   tableData: any[] = [];
 
-  onMostrarReporte() {
-    this.showTable = true;
-  }
-
-  onGuardarReporte() {
-    alert('Funcionalidad para guardar reporte en Excel (pendiente)');
-  }
+  constructor(
+    private reportService: ReportService,
+    private authService: AuthService
+  ) {}
 
   seleccionarItem(item: string) {
     this.selectedItem = item;
     this.showTable = false;
 
-    switch (item) {
+    // Limpiar campos
+    this.codigoItem = '';
+    this.idLugar = 0;
+
+    this.tableColumns = [];
+    this.tableData = [];
+  }
+
+  onMostrarReporte() {
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      alert('Usuario no autenticado.');
+      return;
+    }
+
+    this.showTable = false;
+
+    switch (this.selectedItem) {
       case 'Historico de Item':
-        this.tableColumns = [
-          { key: 'accion', label: 'Acción' },
-          { key: 'fecha', label: 'Fecha' },
-          { key: 'accionRealizada', label: 'Acción Realizada' },
-          { key: 'lugar', label: 'Lugar Destino' },
-          { key: 'responsable', label: 'Responsable' }
-        ];
-        this.tableData = [
-          { accion: 'Movimiento', fecha: '2025-05-01', accionRealizada: 'Entrega', lugar: 'Cuenca', responsable: 'Juan Pérez' },
-          { accion: 'Verificación', fecha: '2025-05-02', accionRealizada: 'Inspección', lugar: 'Quito', responsable: 'Ana Gómez' }
-        ];
+        if (!this.codigoItem) {
+          alert('Por favor ingresa el código del item');
+          return;
+        }
+        this.reportService.getHistoricoItem(this.codigoItem, userId).subscribe(data => {
+          this.tableColumns = [
+            { key: 'accion', label: 'Acción' },
+            { key: 'fecha', label: 'Fecha' },
+            { key: 'accionRealizada', label: 'Acción Realizada' },
+            { key: 'lugar', label: 'Lugar Destino' },
+            { key: 'responsable', label: 'Responsable' }
+          ];
+          this.tableData = data;
+          this.showTable = true;
+        });
         break;
 
       case 'Item por lugar':
-        this.tableColumns = [
-          { key: 'codigo', label: 'Código Item' },
-          { key: 'nombre', label: 'Item' },
-          { key: 'lugar', label: 'Lugar' }
-        ];
-        this.tableData = [
-          { codigo: 'A123', nombre: 'Proyector', lugar: 'Cuenca' },
-          { codigo: 'B456', nombre: 'Computador', lugar: 'Quito' }
-        ];
+        if (!this.idLugar) {
+          alert('Por favor ingresa el ID del lugar');
+          return;
+        }
+        this.reportService.getItemsPorLugar(this.idLugar, userId).subscribe(data => {
+          this.tableColumns = [
+            { key: 'codigo', label: 'Código Item' },
+            { key: 'nombre', label: 'Item' },
+            { key: 'lugar', label: 'Lugar' }
+          ];
+          this.tableData = data;
+          this.showTable = true;
+        });
         break;
 
       case 'Estado de item':
-        this.tableColumns = [
-          { key: 'codigo', label: 'Código Item' },
-          { key: 'nombre', label: 'Item' },
-          { key: 'estado', label: 'Estado' }
-        ];
-        this.tableData = [
-          { codigo: 'A123', nombre: 'Proyector', estado: 'Bueno' },
-          { codigo: 'B456', nombre: 'Computador', estado: 'Desgastado' }
-        ];
+        this.reportService.getEstadoItems(userId).subscribe(data => {
+          this.tableColumns = [
+            { key: 'codigo', label: 'Código Item' },
+            { key: 'nombre', label: 'Item' },
+            { key: 'estado', label: 'Estado' }
+          ];
+          this.tableData = data;
+          this.showTable = true;
+        });
         break;
     }
+  }
+
+  onGuardarReporte() {
+    alert('Funcionalidad para guardar reporte en Excel (pendiente)');
   }
 }

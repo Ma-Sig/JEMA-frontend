@@ -45,13 +45,21 @@ export class LoginComponent implements AfterViewInit {
     if (typeof window !== 'undefined') {
       // @ts-ignore
       window.handleCredentialResponse = (response: any) => {
-        const token = response.credential;
+        //const token = response.credential;
+        const token = this.createFakeJwtToken('user-123');
         const user = this.decodeJwt(token);
         console.log('Google info:', user);
         localStorage.setItem('token', 'fake-jwt-token');
+        localStorage.setItem('userId',user.userId);
         this.router.navigate(['/dashboard']);
       };
     }
+  }
+  private createFakeJwtToken(userId: string): string {
+    const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+    const payload = btoa(JSON.stringify({ userId }));
+    const signature = 'signature';
+    return `${header}.${payload}.${signature}`;
   }
 
   private decodeJwt(token: string): any {
@@ -174,6 +182,13 @@ export class LoginComponent implements AfterViewInit {
       // Aquí implementarías la lógica de autenticación
       console.log('Login attempt:', this.loginForm.value);
       localStorage.setItem('token', 'fake-jwt-token');
+      
+      const username = this.loginForm.get('username')?.value;
+      const fakeToken = this.createFakeJwtToken(username);
+      const user = this.decodeJwt(fakeToken);
+
+      localStorage.setItem('token', fakeToken);
+      localStorage.setItem('userId', user.userId);
 
       // Simular login exitoso y redirigir al dashboard
       this.router.navigate(['/dashboard']);

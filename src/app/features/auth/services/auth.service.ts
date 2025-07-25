@@ -37,4 +37,11 @@ export class AuthService {
     }
     return null;
   }
+//Ah den revisando, si esto si va o no
+  getUserId(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('userId');
+    }
+    return null;
+  }
 }
