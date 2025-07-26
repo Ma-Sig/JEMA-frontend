@@ -4,6 +4,14 @@ import { InputFieldComponent } from '../../../shared/input-field/input-field.com
 import { ButtonComponent } from '../../../shared/button/button.component';
 
 import Swal from 'sweetalert2';
+import { ModalsService } from '../services/modals.service';
+
+interface Servicio {
+  id_servicio?: number;
+  id_unidad: number;
+  nombre: string;
+  precio: number;
+}
 
 @Component({
   selector: 'app-service-modal',
@@ -23,24 +31,34 @@ export class ServiceModalComponent {
 
   priceRegex: RegExp = /^[0-9]+(\.[0-9]{1,2})?$/;
 
+  constructor(private modalsService: ModalsService) {}
+
   public close() {
     if (!this.validate()) {
       return;
     }
 
-    this.emitDataSelected.emit({
-      serviceName: this.serviceName,
-      unitOfMeasure: this.unitOfMeasure,
-      price: this.price,
+    this.modalsService.createUnit({ nombre: this.unitOfMeasure }).then((unitResponse) => {
+      console.log('Unidad creada:', unitResponse);
+      const unitId = unitResponse.id_unidad;
+      this.modalsService
+        .createService({
+          id_unidad: unitId,
+          nombre: this.serviceName,
+          precio: parseFloat(this.price),
+        })
+        .then((serviceResponse) => {
+          console.log('Servicio creado:', serviceResponse);
+          this.emitDataSelected.emit(serviceResponse);
+          // Reset the form fields
+          this.serviceName = '';
+          this.unitOfMeasure = '';
+          this.price = '';
+
+          this.isOpen = false;
+          this.isOpenChange.emit(this.isOpen);
+        });
     });
-
-    // Reset the form fields
-    this.serviceName = '';
-    this.unitOfMeasure = '';
-    this.price = '';
-
-    this.isOpen = false;
-    this.isOpenChange.emit(this.isOpen);
   }
 
   public closeWithoutSave() {

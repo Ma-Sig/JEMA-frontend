@@ -39,6 +39,15 @@ export class LocationModalComponent {
     this.isOpenChange.emit(this.isOpen);
   }
 
+  public closeWithoutSave() {
+    this.isOpen = false;
+    this.isOpenChange.emit(this.isOpen);
+
+    // Reset the form fields
+    this.locationName = '';
+    this.description = '';
+  }
+
   validate() {
     const Toast = Swal.mixin({
       toast: true,
