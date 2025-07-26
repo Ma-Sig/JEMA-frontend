@@ -3,6 +3,7 @@ import { TableComponent } from '../../../shared/table/table.component';
 import { Router, RouterLink } from '@angular/router';
 
 import Swal from 'sweetalert2';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-user-list',
@@ -11,46 +12,9 @@ import Swal from 'sweetalert2';
   styleUrl: './user-list.component.css',
 })
 export class UserListComponent {
-  constructor(private router: Router) {}
+   constructor(private router: Router, private userService: UserService) {}
 
-  userData = [
-    {
-      nombres: 'Christine',
-      apellidos: 'Brooks',
-      cedula: '0109383728',
-      email: 'c@brooks.com',
-      usuario: 'cbrooks',
-    },
-    {
-      nombres: 'Rosie',
-      apellidos: 'Pearson',
-      cedula: '0302910923',
-      email: 'r@pearson.com',
-      usuario: 'rpearson',
-    },
-    {
-      nombres: 'Michael',
-      apellidos: 'Johnson',
-      cedula: '0103928392',
-      email: 'm@johnson.com',
-      usuario: 'mjohnson',
-    },
-    {
-      nombres: 'Sarah',
-      apellidos: 'Williams',
-      cedula: '0108378783',
-      email: 's@williams@.com',
-      usuario: 'swilliams',
-    },
-    {
-      nombres: 'David',
-      apellidos: 'Brown',
-      cedula: '0509383472',
-      email: 'd@brown.com',
-      usuario: 'dbrown',
-    },
-  ];
-
+  userData: any[] = [];
   userColumns = [
     { key: 'nombres', label: 'Nombres' },
     { key: 'apellidos', label: 'Apellidos' },
@@ -59,33 +23,49 @@ export class UserListComponent {
     { key: 'usuario', label: 'Usuario' },
   ];
 
+  ngOnInit(): void {
+    this.loadUsers();
+  }
+
+  loadUsers(): void {
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        this.userData = users.map(user => ({
+          ...user,
+          usuario: user.email  // si no tienes campo "usuario", usar email
+        }));
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios', err);
+        Swal.fire('Error', 'No se pudieron cargar los usuarios.', 'error');
+      }
+    });
+  }
+
   onViewItem(row: any) {
-    console.log('onViewItem recibido:', row);
-    this.router.navigate(['/users/user', row.usuario, 'view']);
+    this.router.navigate(['/users/user', row.id_usuario, 'view']);
   }
 
   onEditItem(row: any) {
-    console.log('onEditItem recibido:', row);
-    this.router.navigate(['/users/user', row.usuario, 'edit']);
+    this.router.navigate(['/users/user', row.id_usuario, 'edit']);
   }
 
   async onDeleteItem(row: any) {
-    console.log('onDeleteItem recibido:', row);
-
     const confirmed = await this.confirmDeletion();
-
     if (confirmed) {
-      this.userData = this.userData.filter((item) => item.usuario !== row.usuario);
-      console.log('Eliminar en la base de datos:', row.id);
-      Swal.fire('Eliminado!', 'Este elemento ha sido eliminado correctamente.', 'success');
-    } else {
-      Swal.fire('Cancelado', 'La eliminación ha sido cancelada.', 'error');
+      this.userService.deleteUser(row.id_usuario).subscribe({
+        next: () => {
+          this.loadUsers();
+          Swal.fire('Eliminado!', 'Usuario eliminado exitosamente.', 'success');
+        },
+        error: () => Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error'),
+      });
     }
   }
 
   async confirmDeletion(): Promise<boolean> {
     const result = await Swal.fire({
-      title: '¿Está seguro de eliminar este elemento?',
+      title: '¿Está seguro de eliminar este usuario?',
       text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,

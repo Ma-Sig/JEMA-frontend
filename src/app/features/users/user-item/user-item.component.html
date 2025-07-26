@@ -5,7 +5,10 @@
 
   <div class="bg-white rounded-2xl p-10">
     <div class="">
-      <img class="block mx-auto w-40 h-40 rounded-full object-cover" src="{{ uploadedImage }}" alt="" />
+      <img class="block mx-auto w-40 h-40 rounded-full object-cover" [src]="'data:image/jpeg;base64,' + uploadedImageFile" *ngIf="uploadedImageFile" alt="Imagen de usuario" />
+      <div class="mt-4 flex justify-center">
+        <app-upload-image (imageChange)="onImageUploaded($event)"></app-upload-image>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -53,6 +56,15 @@
           [value]="password"
         ></app-input-field>
       </div>
+    </div>
+    <div>
+      <label class="field-title">Celular</label>
+      <app-input-field
+        [placeholder]="'Celular'"
+        [readonly]="isReadOnly"
+        (valueChange)="onCellphoneChange($event)"
+        [value]="cellphone"
+      ></app-input-field>
     </div>
 
     <div *ngIf="!isReadOnly" class="flex h-48 items-center justify-center">

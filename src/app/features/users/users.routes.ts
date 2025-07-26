@@ -6,6 +6,6 @@ import { UserItemComponent } from "./user-item/user-item.component";
 export const routes: Routes = [
     {path: 'users', component: UserListComponent, canActivate: [AuthGuard] },
     { path: 'users/new', component: UserItemComponent, canActivate: [AuthGuard], data: { mode: 'create' } },
-    { path: 'users/user/:username/edit', component: UserItemComponent, canActivate: [AuthGuard], data: { mode: 'edit' } },
-    { path: 'users/user/:username/view', component: UserItemComponent, canActivate: [AuthGuard], data: { mode: 'view' } },
+    { path: 'users/user/:id/edit', component: UserItemComponent, canActivate: [AuthGuard], data: { mode: 'edit' } },
+    { path: 'users/user/:id/view', component: UserItemComponent, canActivate: [AuthGuard], data: { mode: 'view' } },
 ]

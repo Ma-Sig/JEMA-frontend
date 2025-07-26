@@ -8,10 +8,10 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 import { InputFieldComponent } from '../../../shared/input-field/input-field.component';
 import { TextareaFieldComponent } from '../../../shared/textarea-field/textarea-field.component';
 import { UploadImageComponent } from '../../../shared/upload-image/upload-image.component';
-// import { TypeStateEntryComponent } from '../type-state-entry/type-state-entry.component';
 
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
+import { UserService } from '../user.service'; 
 
 @Component({
   selector: 'app-user-item',
@@ -19,43 +19,59 @@ import { firstValueFrom } from 'rxjs';
     ButtonComponent,
     CommonModule,
     InputFieldComponent,
-    // TypeStateEntryComponent,
+    UploadImageComponent, 
   ],
   templateUrl: './user-item.component.html',
-  styleUrl: './user-item.component.css',
+  styleUrls: ['./user-item.component.css'],
 })
 export class UserItemComponent implements OnInit {
   mode: 'create' | 'edit' | 'view' = 'view';
-  username?: string;
+  userId?: number;
   name: string = '';
   surname: string = '';
   idNumber: string = '';
   email: string = '';
   password: string = '';
-  uploadedImage: string | null =
-    'https://t3.ftcdn.net/jpg/00/92/53/56/360_F_92535664_IvFsQeHjBzfE6sD4VHdO8u5OHUSc6yHF.jpg';
+  cellphone: string = '';
+  uploadedImageFile: string | null = null; // base64 sin prefijo
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService) {}
 
   async ngOnInit(): Promise<void> {
     const data = await firstValueFrom(this.route.data);
     this.mode = data['mode'] ?? 'view';
 
     const params = await firstValueFrom(this.route.paramMap);
-    this.username = params.get('username') ?? undefined;
+    const idParam = params.get('id');
+    this.userId = idParam ? Number(idParam) : undefined;
 
-    if (this.mode === 'edit' || this.mode === 'view') {
-      this.loadItemData();
+    if ((this.mode === 'edit' || this.mode === 'view') && this.userId !== undefined) {
+      this.loadItemData(this.userId);
     }
   }
 
-  loadItemData() {
-    console.log('Cargar datos del usuario con username:', this.username);
-    this.name = 'Item de ejemplo';
-    this.surname = 'Item de ejemplo';
-    this.idNumber = 'Item de ejemplo';
-    this.email = 'Item de ejemplo';
-    this.password = 'Item de ejemplo';
+  loadItemData(id: number) {
+    this.userService.getUserById(id).subscribe({
+      next: (user) => {
+        this.name = user.nombres;
+        this.surname = user.apellidos;
+        this.idNumber = user.cedula;
+        this.email = user.email;
+        this.password = '';
+        this.cellphone = user.celular || '';
+
+        if (user.imagen) {
+          // user.imagen viene como base64 string sin prefijo
+          this.uploadedImageFile = user.imagen;
+        } else {
+          this.uploadedImageFile = null;
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar usuario', err);
+        Swal.fire('Error', 'No se pudo cargar el usuario.', 'error');
+      }
+    });
   }
 
   get isReadOnly(): boolean {
@@ -68,10 +84,6 @@ export class UserItemComponent implements OnInit {
 
   get isCreate(): boolean {
     return this.mode === 'create';
-  }
-
-  addItem() {
-    console.log('Item added!');
   }
 
   onNameChange(value: string): void {
@@ -91,34 +103,78 @@ export class UserItemComponent implements OnInit {
   }
 
   onPasswordChange(value: string): void {
-    this.name = value;
+    this.password = value;
   }
 
-  saveItem() {
+  onCellphoneChange(value: string): void {
+    this.cellphone = value;
+  }
+
+  onImageUploaded(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result as string;
+        // Guardamos solo el base64 sin prefijo "data:image/xxx;base64,"
+        this.uploadedImageFile = base64.split(',')[1];
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async saveItem() {
     if (
       !this.name.trim() ||
       !this.surname.trim() ||
-      !this.email ||
-      !this.idNumber ||
-      !this.password
+      !this.email.trim() ||
+      !this.idNumber.trim() ||
+      (this.isCreate && !this.password.trim())
     ) {
-      console.warn('Por favor, completa todos los campos antes de guardar.');
-      console.log('this.name', this.name);
-      console.log('this.description', this.surname);
-      console.log('this.selectedType', this.email);
-      console.log('this.selectedState', this.idNumber);
-      console.log('this.uploadedImage', this.password);
+      Swal.fire('Error', 'Completa todos los campos.', 'warning');
       return;
     }
 
-    this.showToast();
-    console.log('Guardar en la base de datos');
-    this.router.navigate(['/users']);
+    const userPayload: any = {
+      nombres: this.name,
+      apellidos: this.surname,
+      cedula: this.idNumber,
+      email: this.email,
+      celular: this.cellphone,
+    };
+
+    if (this.uploadedImageFile) {
+      const blob = this.base64StringToBlob(this.uploadedImageFile);
+      const arrayBuffer = await blob.arrayBuffer();
+      userPayload.imagen = Array.from(new Uint8Array(arrayBuffer)); 
+    }
+
+    if (this.password.trim()) {
+      userPayload.password = this.password;
+    }
+
+    const request$ = this.isCreate
+      ? this.userService.createUser(userPayload)
+      : this.userService.updateUser(this.userId!, userPayload);
+
+    request$.subscribe({
+      next: () => {
+        this.showToast();
+        this.router.navigate(['/users']);
+      },
+      error: (err) => {
+        console.error('Error al guardar', err);
+        Swal.fire('Error', 'No se pudo guardar el usuario.', 'error');
+      }
+    });
   }
 
-  onImageUploaded(imageData: string | null): void {
-    console.log('Imagen subida');
-    this.uploadedImage = imageData;
+  base64StringToBlob(base64: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length).fill(0).map((_, i) => byteCharacters.charCodeAt(i));
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: 'image/jpeg' });
   }
 
   showToast() {
