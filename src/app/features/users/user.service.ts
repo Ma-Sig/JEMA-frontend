@@ -27,20 +27,26 @@ export class UserService {
   }
 
   createUser(user: any): Observable<any> {
-    const userId = localStorage.getItem('userId');  // correo del que crea
-    return this.http.post<any>(this.baseUrl, { ...user, userId }, { headers: this.getAuthHeaders() });
-  }
+  const userId = localStorage.getItem('userId');
+  return this.http.request<any>('post', this.baseUrl, {
+    headers: this.getAuthHeaders(),
+    body: { ...user, userId }
+  });
+}
 
-  updateUser(id: number, user: any): Observable<any> {
-    const userId = localStorage.getItem('userId');  // correo del que modifica
-    return this.http.put<any>(`${this.baseUrl}/${id}`, { ...user, userId }, { headers: this.getAuthHeaders() });
-  }
+updateUser(id: number, user: any): Observable<any> {
+  const userId = localStorage.getItem('userId');
+  return this.http.request<any>('put', `${this.baseUrl}/${id}`, {
+    headers: this.getAuthHeaders(),
+    body: { ...user, userId }
+  });
+}
 
   deleteUser(id: number): Observable<any> {
-    const userId = localStorage.getItem('userId');  // correo del que elimina
-    return this.http.delete<any>(`${this.baseUrl}/${id}`, {
+    const userId = localStorage.getItem('userId');
+    return this.http.request<any>('delete', `${this.baseUrl}/${id}`, {
       headers: this.getAuthHeaders(),
-      body: { userId }, // IMPORTANTE para backend
+      body: { userId },
     });
   }
 }

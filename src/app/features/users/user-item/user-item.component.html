@@ -57,6 +57,15 @@
         ></app-input-field>
       </div>
     </div>
+    <div>
+      <label class="field-title">Celular</label>
+      <app-input-field
+        [placeholder]="'Celular'"
+        [readonly]="isReadOnly"
+        (valueChange)="onCellphoneChange($event)"
+        [value]="cellphone"
+      ></app-input-field>
+    </div>
 
     <div *ngIf="!isReadOnly" class="flex h-48 items-center justify-center">
       <div class="w-3xs h-10">
