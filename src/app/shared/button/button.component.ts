@@ -12,6 +12,7 @@ export class ButtonComponent {
   @Input() class: string = '';
   @Input() label: string = 'Add Item';
   @Input() readonly: boolean = false;
+  @Input() title: string = '';
   @Output() clicked: EventEmitter<void> = new EventEmitter();
 
   onClick(event: MouseEvent): void {

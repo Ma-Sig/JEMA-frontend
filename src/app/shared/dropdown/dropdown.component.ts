@@ -1,4 +1,4 @@
-import { CommonModule} from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
@@ -9,12 +9,13 @@ import { Component, HostListener, Input, Output, EventEmitter } from '@angular/c
   styleUrls: ['./dropdown.component.css'],
 })
 export class DropdownComponent {
-  @Input() options: string[] = [];
+  @Input() options: any[] = [];
+  @Input() propertyName: string = '';
   @Input() placeholder: string = 'Seleccionar';
   @Input() readonly: boolean = false;
   @Input() selectedLabel: string = '';
   @Input() hostClass: string | string[] = '';
-  @Output() selectionChange = new EventEmitter<string>();
+  @Output() selectionChange = new EventEmitter<any>();
 
   isOpen = false;
 
@@ -24,7 +25,7 @@ export class DropdownComponent {
     }
   }
 
-  selectOption(option: string) {
+  selectOption(option: any) {
     if (!this.readonly) {
       this.selectedLabel = option;
       this.isOpen = false;

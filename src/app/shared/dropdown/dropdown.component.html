@@ -18,7 +18,7 @@
 
   <div class="dropdown-menu" [class.active]="isOpen">
     <div class="dropdown-item" *ngFor="let option of options" [class.selected]="option === selectedLabel" (click)="selectOption(option)">
-      {{ option }}
+      {{ propertyName === '' ? option : option[propertyName] }}
     </div>
   </div>
 </div>

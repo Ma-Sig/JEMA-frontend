@@ -14,6 +14,41 @@ import { ServiceModalComponent } from '../service-modal/service-modal.component'
 
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
+import { ServiceConsumptionService } from '../services/service-consumption.service';
+
+interface Unit {
+  id_unidad: number;
+  nombre: string;
+}
+
+interface Service {
+  id_servicio: number;
+  id_unidad: number;
+  nombre: string;
+  precio: number;
+  unidades: Unit;
+}
+
+interface LugarPadre {
+  id_lugar: number;
+  nombre: string;
+}
+
+interface Lugar {
+  id_lugar: number;
+  id_lugar_padre: number;
+  nombre: string;
+  descripcion: string;
+  lugarPadre: LugarPadre;
+}
+
+interface ConsumoServicio {
+  id_consumo_servicio?: number;
+  id_servicio: number;
+  id_lugar: number;
+  cantidad: number;
+  fecha: string;
+}
 
 @Component({
   selector: 'app-consumption-entry',
@@ -34,11 +69,19 @@ import { firstValueFrom } from 'rxjs';
 export class ConsumptionEntryComponent {
   mode: 'create' | 'edit' | 'view' = 'view';
   itemId?: string;
-  selectedService = '';
+  selectedService: Service | null = null;
   selectedLocation = '';
   isServiceModalOpen = false;
   isLocationModalOpen = false;
-  services: string[] = [];
+
+  services: any[] = [];
+  selectedUnit: string = '';
+  selectedPricePerUnit: string = '';
+  allServices: Service[] = [];
+  places: Lugar[] = [];
+  selectedPlace: Lugar | null = null;
+  servicesConsumption: ConsumoServicio[] = [];
+
   locations: string[] = [];
   name: string = '';
   description: string = '';
@@ -56,7 +99,11 @@ export class ConsumptionEntryComponent {
   selectedRow: any = null;
   quantityRegex: RegExp = /^[0-9]+(\.[0-9]{1,2})?$/;
   consumptionCount: number = 0;
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private serviceConsumptionService: ServiceConsumptionService
+  ) {}
 
   async ngOnInit(): Promise<void> {
     const data = await firstValueFrom(this.route.data);
@@ -73,14 +120,18 @@ export class ConsumptionEntryComponent {
   }
 
   loadSystemData() {
-    this.services = ['Agua', 'Luz', 'Gas'];
-    this.locations = ['Aula 1', 'Aula 2', 'Aula 3'];
+    this.serviceConsumptionService.getServices().then((services) => {
+      this.allServices = services;
+    });
+    this.serviceConsumptionService.getLugares().then((lugares) => {
+      this.places = lugares;
+    });
   }
 
   loadItemData() {
     console.log('Cargar datos del item con ID:', this.itemId);
-    this.selectedService = 'Agua';
-    this.selectedLocation = 'Aula 1';
+    // this.selectedService = 'Agua';
+    // this.selectedLocation = 'Aula 1';
     this.quantity = '10';
     this.selectedDate = new Date();
   }
@@ -95,10 +146,6 @@ export class ConsumptionEntryComponent {
 
   get isCreate(): boolean {
     return this.mode === 'create';
-  }
-
-  addItem() {
-    console.log('Item added!');
   }
 
   onQuantityChange(value: string) {
@@ -135,14 +182,14 @@ export class ConsumptionEntryComponent {
     console.log('Data selected:', data);
   }
 
-  onServiceChange(value: string) {
-    console.log('Estado seleccionado:', value);
+  onServiceChange(value: any) {
+    console.log('Servicio seleccionado:', value);
     this.selectedService = value;
   }
 
-  onLocationChange(value: string): void {
-    console.log('Tipo cambiado:', value);
-    this.selectedLocation = value;
+  onLocationChange(value: any): void {
+    console.log('Ubicación seleccionada:', value);
+    this.selectedPlace = value;
   }
 
   saveConsumption() {
@@ -159,29 +206,42 @@ export class ConsumptionEntryComponent {
       return;
     }
 
-    this.showToast();
-    console.log('Guardar en la base de datos');
-    this.router.navigate(['/service-consumption/list']);
+    this.serviceConsumptionService
+      .createServiceConsumption(this.servicesConsumption)
+      .then((response) => {
+        this.showToast();
+        this.router.navigate(['/service-consumption/list']);
+      });
   }
 
   onEditService(row: any) {
     console.log('Editar servicio:', row);
-    this.selectedService = row.servicio;
-    this.selectedLocation = row.lugar;
+    this.selectedService =
+      this.allServices.find((service) => service.nombre === row.servicio) || null;
+    this.selectedPlace = this.places.find((place) => place.nombre === row.lugar) || null;
     this.quantity = row.cantidad;
     this.selectedDate = new Date(row.fecha);
     this.selectedRow = row;
   }
 
-  updateRow() {
+  public updateRow() {
     if (!this.validate()) {
       return;
     }
 
-    this.selectedRow.servicio = this.selectedService;
-    this.selectedRow.lugar = this.selectedLocation;
+    this.selectedRow.servicio = this.selectedService?.nombre;
+    this.selectedRow.lugar = this.selectedPlace?.nombre;
     this.selectedRow.cantidad = this.quantity;
     this.selectedRow.fecha = this.selectedDate;
+
+    this.servicesConsumption[this.selectedRow.id - 1] = {
+      id_servicio: this.selectedService?.id_servicio || 0,
+      id_lugar: this.selectedPlace?.id_lugar || 0,
+      cantidad: this.toNumber(this.quantity),
+      fecha:
+        this.selectedDate?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
+    };
+
     this.clearFields();
     this.selectedRow = null;
 
@@ -193,6 +253,8 @@ export class ConsumptionEntryComponent {
 
     if (confirmed) {
       this.tableData = this.tableData.filter((item) => item.id !== row.id);
+      this.servicesConsumption.splice(row.id - 1, 1);
+      this.consumptionCount--;
       console.log('Eliminar en la base de datos:', row.id);
       Swal.fire('Eliminado!', 'Este elemento ha sido eliminado correctamente.', 'success');
     } else {
@@ -246,19 +308,41 @@ export class ConsumptionEntryComponent {
 
     const newConsumption = {
       id: this.consumptionCount + 1,
-      lugar: this.selectedLocation,
-      servicio: this.selectedService,
+      lugar: this.selectedPlace?.nombre,
+      servicio: this.selectedService?.nombre,
       cantidad: this.quantity,
       fecha: this.selectedDate,
     };
     this.tableData.push(newConsumption);
+
+    this.servicesConsumption.push({
+      id_servicio: this.selectedService?.id_servicio || 0,
+      id_lugar: this.selectedPlace?.id_lugar || 0,
+      cantidad: this.toNumber(this.quantity),
+      fecha:
+        this.selectedDate?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0],
+    });
+
     this.consumptionCount++;
     this.clearFields();
+
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+    });
+
+    Toast.fire({
+      icon: 'success',
+      title: 'Consumo agregado a la tabla',
+    });
   }
 
   clearFields() {
-    this.selectedLocation = '';
-    this.selectedService = '';
+    this.selectedPlace = null;
+    this.selectedService = null;
     this.quantity = '';
     this.selectedDate = new Date();
   }
@@ -280,7 +364,7 @@ export class ConsumptionEntryComponent {
       return false;
     }
 
-    if (!this.selectedLocation) {
+    if (!this.selectedPlace) {
       Toast.fire({
         icon: 'error',
         title: 'Seleccione una ubicación',
@@ -315,5 +399,10 @@ export class ConsumptionEntryComponent {
     } else if (value.field === 'Estado') {
       this.services.push(value.name);
     }
+  }
+
+  toNumber(value: string): number {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? 0 : parsed;
   }
 }

@@ -28,9 +28,12 @@
         </div>
       </div>
     </div>
-    <div class="mt-4 flex justify-center">
-      <div class="w-3xs h-10">
-        <app-button class="w-full h-full" [label]="'Guardar'" (clicked)="close()"> </app-button>
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <app-button class="w-full h-full my-2" [label]="'Guardar'" (clicked)="close()"> </app-button>
+      </div>
+      <div>
+        <app-button class="w-full h-full my-2" [label]="'Regresar'" (clicked)="closeWithoutSave()"> </app-button>
       </div>
     </div>
   </div>

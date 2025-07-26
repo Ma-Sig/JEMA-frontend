@@ -23,7 +23,7 @@ export class ServiceModalComponent {
 
   priceRegex: RegExp = /^[0-9]+(\.[0-9]{1,2})?$/;
 
-  close() {
+  public close() {
     if (!this.validate()) {
       return;
     }
@@ -41,6 +41,16 @@ export class ServiceModalComponent {
 
     this.isOpen = false;
     this.isOpenChange.emit(this.isOpen);
+  }
+
+  public closeWithoutSave() {
+    this.isOpen = false;
+    this.isOpenChange.emit(this.isOpen);
+
+    // Reset the form fields
+    this.serviceName = '';
+    this.unitOfMeasure = '';
+    this.price = '';
   }
 
   validate() {

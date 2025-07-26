@@ -4,18 +4,6 @@
   <h1 class="section-title" *ngIf="isReadOnly">Detalle del consumo de servicio</h1>
 
   <div class="bg-white rounded-2xl p-10">
-    <div *ngIf="mode == 'create' && selectedRow == null">
-      <div class="w-12 h-12">
-        <app-button class="w-full h-full" [label]="'+'" (clicked)="addToTable()"></app-button>
-      </div>
-    </div>
-
-    <div *ngIf="!isReadOnly && selectedRow != null">
-      <div class="w-20 h-12">
-        <app-button class="w-full h-full" [label]="'Actualizar'" (clicked)="updateRow()"></app-button>
-      </div>
-    </div>
-
     <div class="grid grid-cols-12 gap-4">
       <div class="space-y-2 col-span-12 md:col-span-6">
         <label class="field-title">Servicio</label>
@@ -23,18 +11,57 @@
           <div class="col-span-11">
             <app-dropdown
               class="w-full block"
-              [options]="services"
+              [options]="allServices"
+              [propertyName]="'nombre'"
               [placeholder]="'Servicio'"
               [readonly]="isReadOnly"
-              [selectedLabel]="selectedService"
+              [selectedLabel]="selectedService ? selectedService.nombre : ''"
               (selectionChange)="onServiceChange($event)"
             ></app-dropdown>
           </div>
           <div class="col-span-1 h-full">
-            <app-button class="w-full h-full" [label]="'+'" (clicked)="openServiceModal()" [readonly]="isReadOnly"></app-button>
+            <app-button
+              class="w-full h-full"
+              [label]="'+'"
+              [title]="'Agregar nuevo servicio'"
+              (clicked)="openServiceModal()"
+              [readonly]="isReadOnly"
+            ></app-button>
             <app-service-modal [(isOpen)]="isServiceModalOpen" (emitDataSelected)="serviceModalData($event)"></app-service-modal>
           </div>
         </div>
+      </div>
+
+      <div class="space-y-2 col-span-12 md:col-span-6">
+        <label class="field-title">Unidad</label>
+        <div class="grid grid-cols-12 gap-2 items-center">
+          <div class="col-span-12">
+            <app-input-field
+              [placeholder]="'Unidad'"
+              [readonly]="true"
+              [value]="selectedService ? selectedService.unidades.nombre : ''"
+            ></app-input-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2 col-span-12 md:col-span-6">
+        <label class="field-title">Precio por unidad</label>
+        <div class="grid grid-cols-12 gap-2 items-center">
+          <div class="col-span-12">
+            <app-input-field
+              [placeholder]="'Precio por unidad'"
+              [readonly]="true"
+              [value]="selectedService ? selectedService.precio.toString() : ''"
+            ></app-input-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2 col-span-12 md:col-span-6"></div>
+
+      <div class="space-y-2 col-span-12 md:col-span-12">
+        <hr class="my-4 h-px border-t-0 bg-neutral-500 dark:bg-neutral-500" />
       </div>
 
       <div class="space-y-2 col-span-12 md:col-span-6">
@@ -43,15 +70,22 @@
           <div class="col-span-11">
             <app-dropdown
               class="w-full block"
-              [options]="locations"
+              [options]="places"
+              [propertyName]="'nombre'"
               [placeholder]="'Lugar'"
               [readonly]="isReadOnly"
-              [selectedLabel]="selectedLocation"
+              [selectedLabel]="selectedPlace ? selectedPlace.nombre : ''"
               (selectionChange)="onLocationChange($event)"
             ></app-dropdown>
           </div>
           <div class="col-span-1 h-full">
-            <app-button class="w-full h-full" [label]="'+'" (clicked)="openLocationModal()" [readonly]="isReadOnly"></app-button>
+            <app-button
+              class="w-full h-full"
+              [label]="'+'"
+              [title]="'Agregar nuevo lugar'"
+              (clicked)="openLocationModal()"
+              [readonly]="isReadOnly"
+            ></app-button>
             <app-location-modal [(isOpen)]="isLocationModalOpen" (emitDataSelected)="locationModalData($event)"></app-location-modal>
           </div>
         </div>
@@ -80,6 +114,30 @@
           </div>
         </div>
       </div>
+
+      <div class="space-y-2 col-span-12 md:col-span-6">
+        <label class="field-title">Total</label>
+        <div class="grid grid-cols-12 gap-2 items-center">
+          <div class="col-span-12">
+            <app-input-field
+              [placeholder]="'Total'"
+              [readonly]="true"
+              [value]="quantity && selectedService ? (toNumber(quantity) * selectedService.precio).toString() : ''"
+            ></app-input-field>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-4">
+      <div></div>
+      <div *ngIf="selectedRow == null">
+        <app-button class="w-full h-full my-2" [label]="'Agregar a la tabla'" [title]="'Agregar a la tabla'" (clicked)="addToTable()"></app-button>
+      </div>
+      <div *ngIf="!isReadOnly && selectedRow != null">
+        <app-button class="w-full h-full my-2" [label]="'Actualizar registro'" (clicked)="updateRow()"></app-button>
+      </div>
+      <div></div>
     </div>
 
     <div *ngIf="mode == 'create'" class="w-full mx-auto px-4 mt-4">

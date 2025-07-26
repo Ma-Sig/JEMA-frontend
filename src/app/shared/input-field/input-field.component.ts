@@ -47,6 +47,6 @@ export class InputFieldComponent {
     }
 
     this.isValid = true;
-    this.validationMessage = 'Nombre válido';
+    this.validationMessage = this.value !== '' ? 'Campo válido' : '';
   }
 }
