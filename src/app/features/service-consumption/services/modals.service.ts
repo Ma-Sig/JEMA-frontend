@@ -14,7 +14,7 @@ export class ModalsService {
 
   constructor(private http: HttpClient) {}
 
-  public createUnit(unit: any): Promise<any> {
+  public async createUnit(unit: any): Promise<any> {
     const URL = `${this.baseUrl}/unidades`;
     const headers = new HttpHeaders({
       Authorization: `Bearer ${this.getToken()}`,
@@ -28,7 +28,7 @@ export class ModalsService {
     return firstValueFrom(this.http.post<any>(URL, body, { headers }));
   }
 
-  public createService(service: any): Promise<any> {
+  public async createService(service: any): Promise<any> {
     const URL = `${this.baseUrl}/servicios`;
     const headers = new HttpHeaders({
       Authorization: `Bearer ${this.getToken()}`,
@@ -42,7 +42,7 @@ export class ModalsService {
     return firstValueFrom(this.http.post<any>(URL, body, { headers }));
   }
 
-  public createPlace(place: any): Promise<any> {
+  public async createPlace(place: any): Promise<any> {
     const URL = `${this.baseUrl}/lugares`;
     const headers = new HttpHeaders({
       Authorization: `Bearer ${this.getToken()}`,
@@ -54,6 +54,16 @@ export class ModalsService {
     };
 
     return firstValueFrom(this.http.post<any>(URL, body, { headers }));
+  }
+
+  public async getPlaces(): Promise<any[]> {
+    const URL = `${this.baseUrl}/lugares`;
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.getToken()}`,
+      'Content-Type': 'application/json',
+    });
+
+    return firstValueFrom(this.http.get<any[]>(URL, { headers }));
   }
 
   // Funciones obligatorias

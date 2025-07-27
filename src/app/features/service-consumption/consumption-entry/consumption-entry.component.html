@@ -122,7 +122,7 @@
             <app-input-field
               [placeholder]="'Total'"
               [readonly]="true"
-              [value]="quantity && selectedService ? (toNumber(quantity) * selectedService.precio).toString() : ''"
+              [value]="quantity && selectedService ? (toNumber(quantity) * selectedService.precio).toFixed(5) : ''"
             ></app-input-field>
           </div>
         </div>

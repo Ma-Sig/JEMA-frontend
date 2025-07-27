@@ -1,11 +1,42 @@
 <div *ngIf="isOpen" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50 py-4 px-4">
   <div class="bg-white rounded-2xl p-4 mx-8 w-full">
     <div class="grid grid-cols-12 gap-4">
-      <div class="space-y-2 col-span-12">
+      <div class="space-y-2 col-span-12 sm:col-span-6">
+        <label class="field-title">Lugar padre</label>
+        <div class="grid grid-cols-12 gap-2 items-center">
+          <div class="col-span-12">
+            <app-dropdown
+              class="w-full block"
+              [options]="places"
+              [propertyName]="'nombre'"
+              [placeholder]="'Lugar padre'"
+              [readonly]="false"
+              [selectedLabel]="fatherPlace ? fatherPlace.nombre : ''"
+              (selectionChange)="onPlaceChange($event)"
+            ></app-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2 col-span-12 sm:col-span-6">
         <label class="field-title">Nombre del lugar</label>
         <div class="grid grid-cols-12 gap-2 items-center">
           <div class="col-span-12">
             <app-input-field [placeholder]="'Nombre del lugar'" (valueChange)="onLocationNameChange($event)" [value]="locationName"></app-input-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2 col-span-12">
+        <label class="field-title">Coordenadas</label>
+        <div class="grid grid-cols-12 gap-2 items-center">
+          <div class="col-span-12">
+            <app-input-field
+              [placeholder]="'Coordenadas'"
+              (valueChange)="onCoordinatesChange($event)"
+              [value]="coordinates"
+              [regexExp]="coordinatesRegex"
+            ></app-input-field>
           </div>
         </div>
       </div>
@@ -19,7 +50,7 @@
         </div>
       </div>
     </div>
-    <div class="grid grid-cols-2 gap-2">
+    <div class="grid grid-cols-2 gap-2 mt-2">
       <div>
         <app-button class="w-full h-full my-2" [label]="'Guardar'" (clicked)="close()"> </app-button>
       </div>

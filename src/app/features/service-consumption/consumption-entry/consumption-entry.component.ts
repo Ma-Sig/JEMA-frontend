@@ -280,16 +280,15 @@ export class ConsumptionEntryComponent {
   serviceModalData(value: any) {
     console.log('Esto llega desde el modal de servicio', value);
     this.serviceConsumptionService.getServices().then((services) => {
-      console.log('Servicios de la DB:', services);
       this.allServices = services;
-      console.log('Servicios disponibles:', this.allServices);
     });
   }
 
   locationModalData(value: any) {
     console.log('Esto llega desde el modal', value);
-    console.log('locationModalData', value);
-    this.locations.push(value.locationName);
+    this.serviceConsumptionService.getLugares().then((lugares) => {
+      this.places = lugares;
+    });
   }
 
   showToast() {
