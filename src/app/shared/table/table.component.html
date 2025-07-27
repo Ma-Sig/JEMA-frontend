@@ -1,38 +1,54 @@
-<div class="table-container">
-  <div class="table-controls w-full">
-    <div class="">
-      <input type="text" class="border-1 border-[#ced0db] rounded-full" [(ngModel)]="searchQuery" (input)="currentPage = 1" placeholder="Buscar..." />
+<div class="bg-white rounded-lg overflow-hidden shadow-sm p-10">
+  <div class="flex justify-between items-center px-5 py-4 border-b border-gray-100 w-full">
+    <div class="w-full">
+      <input
+        type="text"
+        class="w-full px-4 py-2.5 pl-10 border border-gray-200 rounded-md text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#4880FF] focus:border-transparent"
+        [(ngModel)]="searchQuery"
+        (input)="currentPage = 1"
+        placeholder="Buscar..."
+      />
     </div>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th *ngIf="showActions == true" class="text-left w-20">Acción</th>
-        <th *ngFor="let col of columns">{{ col.label }}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let row of paginatedData">
-        <td *ngIf="showActions == true" class="border-b px-4 py-2">
-          <div class="flex gap-2">
-            <button *ngIf="actions.view == true" class="text-blue-600 hover:underline" (click)="onView(row)">Ver</button>
-            <button *ngIf="actions.edit == true" class="text-green-600 hover:underline" (click)="onEdit(row)">Editar</button>
-            <button *ngIf="actions.delete == true" class="text-red-600 hover:underline" (click)="onDelete(row)">Eliminar</button>
-          </div>
-        </td>
+  <div class="overflow-x-auto">
+    <table class="w-full border-collapse">
+      <thead class="bg-white border-b border-gray-100">
+        <tr>
+          <th *ngIf="showActions == true" class="text-left w-20 px-5 py-4 font-semibold text-sm text-gray-700 uppercase tracking-wider">Acción</th>
+          <th *ngFor="let col of columns" class="px-5 py-4 text-left font-semibold text-sm text-gray-700 uppercase tracking-wider">
+            {{ col.label }}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let row of paginatedData; let i = index"
+          [class]="i % 2 === 0 ? 'bg-white hover:bg-gray-50' : 'bg-gray-50 hover:bg-gray-100'"
+          class="transition-colors"
+        >
+          <td *ngIf="showActions == true" class="px-5 py-4 text-sm text-gray-700 border-b border-gray-100 last:border-b-0">
+            <div class="flex gap-2">
+              <button *ngIf="actions.view == true" class="cursor-pointer text-blue-600 hover:underline text-sm" (click)="onView(row)">Ver</button>
+              <button *ngIf="actions.edit == true" class="cursor-pointer text-green-600 hover:underline text-sm" (click)="onEdit(row)">Editar</button>
+              <button *ngIf="actions.delete == true" class="cursor-pointer text-red-600 hover:underline text-sm" (click)="onDelete(row)">
+                Eliminar
+              </button>
+            </div>
+          </td>
 
-        <td *ngFor="let col of columns">
-          <ng-container *ngIf="col.type === 'date'; else normalText">
-            {{ row[col.key] | date : 'dd/MM/yyyy' }}
-          </ng-container>
-          <ng-template #normalText>
-            {{ row[col.key] }}
-          </ng-template>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          <td *ngFor="let col of columns" class="px-5 py-4 text-sm text-gray-700 border-b border-gray-100 last:border-b-0">
+            <ng-container *ngIf="col.type === 'date'; else normalText">
+              {{ row[col.key] | date : 'dd/MM/yyyy' }}
+            </ng-container>
+            <ng-template #normalText>
+              {{ row[col.key] }}
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="pagination">
     <span>{{ paginationInfo }}</span>

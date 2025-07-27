@@ -37,11 +37,19 @@ export class AuthService {
     }
     return null;
   }
-//Ah den revisando, si esto si va o no
+
+  //Ah den revisando, si esto si va o no
   getUserId(): string | null {
     if (isPlatformBrowser(this.platformId)) {
       return localStorage.getItem('userId');
     }
     return null;
+  }
+
+  /**
+   * Obtiene userId por el email del usuario
+   */
+  getUserIdByEmail(email: string): Observable<{ id_usuario: string }> {
+    return this.http.get<{ id_usuario: string }>(`${this.baseUrl}/usuarios/email/${email}`);
   }
 }

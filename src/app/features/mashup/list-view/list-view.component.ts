@@ -79,7 +79,7 @@ export class ListViewComponent{
   }
 
   navigateTo(): void {
-    this.router.navigate(["/inventory/inventories/new"]);
+    this.router.navigate(["inventory/items/new"]);
   }
 
 }

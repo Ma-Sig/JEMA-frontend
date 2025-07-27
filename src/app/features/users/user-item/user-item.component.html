@@ -4,23 +4,47 @@
   <h1 class="section-title" *ngIf="isReadOnly">Detalles de Usuario</h1>
 
   <div class="bg-white rounded-2xl p-10">
-    <div class="">
-      <img class="block mx-auto w-40 h-40 rounded-full object-cover" [src]="'data:image/jpeg;base64,' + uploadedImageFile" *ngIf="uploadedImageFile" alt="Imagen de usuario" />
-      <div class="mt-4 flex justify-center">
-        <app-upload-image (imageChange)="onImageUploaded($event)"></app-upload-image>
+    <!-- Imagen y botón quitar -->
+    <div class="mb-6 flex flex-col items-center">
+      <div class="relative w-40 h-40">
+        <img
+          *ngIf="imagePreviewUrl"
+          class="block w-full h-full rounded-full object-cover"
+          [src]="imagePreviewUrl"
+          alt="Imagen de usuario"
+        />
+        <button
+          *ngIf="uploadedImageFile "
+          (click)="removeImage()"
+          class="absolute top-0 right-0 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
+          title="Quitar imagen"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Componente cargar imagen -->
+      <div class="mt-4" *ngIf="!isReadOnly">
+        <app-upload-image [imageSrc]="uploadedImageFile" [readonly]="false" (imageUploaded)="onImageUploaded($event)"></app-upload-image>
       </div>
     </div>
 
+    <!-- Campos -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <div>
         <label class="field-title">Nombres</label>
-        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onNameChange($event)" [value]="name"></app-input-field>
+        <app-input-field
+          [placeholder]="'Nombres'"
+          [readonly]="isReadOnly"
+          (valueChange)="onNameChange($event)"
+          [value]="name"
+        ></app-input-field>
       </div>
 
       <div>
         <label class="field-title">Apellidos</label>
         <app-input-field
-          [placeholder]="'Nombres'"
+          [placeholder]="'Apellidos'"
           [readonly]="isReadOnly"
           (valueChange)="onSurnameChange($event)"
           [value]="surname"
@@ -28,9 +52,9 @@
       </div>
 
       <div>
-        <label class="field-title">C&eacute;dula</label>
+        <label class="field-title">Cédula</label>
         <app-input-field
-          [placeholder]="'Nombres'"
+          [placeholder]="'Cédula'"
           [readonly]="isReadOnly"
           (valueChange)="onIdNumberChange($event)"
           [value]="idNumber"
@@ -38,38 +62,43 @@
       </div>
 
       <div>
-        <label class="field-title">Correo electr&oacute;nico</label>
-        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onEmailChange($event)" [value]="email"></app-input-field>
+        <label class="field-title">Correo electrónico</label>
+        <app-input-field
+          [placeholder]="'Correo electrónico'"
+          [readonly]="isReadOnly"
+          (valueChange)="onEmailChange($event)"
+          [value]="email"
+        ></app-input-field>
       </div>
 
-      <!-- <div>
-        <label class="field-title">Usuario</label>
-        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onUsernameChange($event)" [value]="name"></app-input-field>
-      </div> -->
+      <input
+        class="custom-input"
+        [readonly]="isReadOnly"
+        [value]="password"
+        (input)="onPasswordChange($any($event.target).value)"
+        placeholder="Contraseña"
+        type="password"
+      />
 
       <div>
-        <label class="field-title">Contraseña</label>
+        <label class="field-title">Celular</label>
         <app-input-field
-          [placeholder]="'Nombres'"
+          [placeholder]="'Celular'"
           [readonly]="isReadOnly"
-          (valueChange)="onPasswordChange($event)"
-          [value]="password"
+          (valueChange)="onCellphoneChange($event)"
+          [value]="cellphone"
         ></app-input-field>
       </div>
     </div>
-    <div>
-      <label class="field-title">Celular</label>
-      <app-input-field
-        [placeholder]="'Celular'"
-        [readonly]="isReadOnly"
-        (valueChange)="onCellphoneChange($event)"
-        [value]="cellphone"
-      ></app-input-field>
-    </div>
 
-    <div *ngIf="!isReadOnly" class="flex h-48 items-center justify-center">
+    <!-- Botón guardar -->
+    <div class="flex h-48 items-center justify-center space-x-4" *ngIf="!isReadOnly">
       <div class="w-3xs h-10">
-        <app-button class="w-full h-full" [label]="'Guardar'" (clicked)="saveItem()"></app-button>
+        <app-button
+          class="w-full h-full"
+          [label]="'Guardar'"
+          (clicked)="saveItem()"
+        ></app-button>
       </div>
     </div>
   </div>

@@ -1,76 +1,175 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
-import { DropdownComponent } from '../../../shared/dropdown/dropdown.component';
-import { ButtonComponent } from '../../../shared/button/button.component';
-import { InputFieldComponent } from '../../../shared/input-field/input-field.component';
-import { TextareaFieldComponent } from '../../../shared/textarea-field/textarea-field.component';
+import { FormsModule } from '@angular/forms';
 import { UploadImageComponent } from '../../../shared/upload-image/upload-image.component';
-import { TypeStateEntryComponent } from '../type-state-entry/type-state-entry.component';
-
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
+import { ItemService, CaracteristicasItem } from '../services/items.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-item-entry',
   standalone: true,
-  imports: [
-    DropdownComponent,
-    ButtonComponent,
-    CommonModule,
-    InputFieldComponent,
-    TextareaFieldComponent,
-    UploadImageComponent,
-    TypeStateEntryComponent,
-  ],
+  imports: [CommonModule, FormsModule, UploadImageComponent],
   templateUrl: './item-entry.component.html',
   styleUrls: ['./item-entry.component.css'],
 })
 export class ItemEntryComponent implements OnInit {
   mode: 'create' | 'edit' | 'view' = 'view';
-  itemId?: string;
-  selectedState = '';
-  selectedType = '';
-  isModalOpen = false;
-  states: string[] = [];
-  types: string[] = [];
-  name: string = '';
-  description: string = '';
-  uploadedImage: string | null = null;
+  itemId?: number;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  // Propiedades del formulario
+  nombre: string = '';
+  marca: string = '';
+  descripcion: string = '';
+  uploadedImageFile: string | null = null; // base64 sin prefijo
+  imagePreviewUrl: SafeUrl | null = null;
+
+  // Estados del componente
+  isSubmitting: boolean = false;
+  errorMessage: string = '';
+  successMessage: string = '';
+
+  constructor(
+    private route: ActivatedRoute,
+    public router: Router, // Cambiado a public para acceso desde template
+    private itemService: ItemService,
+    private sanitizer: DomSanitizer
+  ) {}
 
   async ngOnInit(): Promise<void> {
-    const data = await firstValueFrom(this.route.data);
-    this.mode = data['mode'] ?? 'view';
+    try {
+      const data = await firstValueFrom(this.route.data);
+      this.mode = data['mode'] ?? 'view';
 
-    const params = await firstValueFrom(this.route.paramMap);
-    this.itemId = params.get('id') ?? undefined;
+      const params = await firstValueFrom(this.route.paramMap);
+      const idParam = params.get('id');
+      this.itemId = idParam ? Number(idParam) : undefined;
 
-    this.loadSystemData();
-
-    if (this.mode === 'edit' || this.mode === 'view') {
-      this.loadItemData();
+      if ((this.mode === 'edit' || this.mode === 'view') && this.itemId !== undefined) {
+        await this.loadItemData(this.itemId);
+      }
+    } catch (error) {
+      console.error('Error al inicializar componente:', error);
+      this.errorMessage = 'Error al cargar los datos';
     }
   }
 
-  loadSystemData() {
-    this.states = ['Nuevo', 'Usado', 'Dañado'];
-    this.types = ['Computador', 'Mueble', 'Herramienta'];
+  async loadItemData(id: number): Promise<void> {
+    try {
+      const item = await firstValueFrom(this.itemService.getItemById(id));
+
+      this.nombre = item.nombre;
+      this.marca = item.marca;
+      this.descripcion = item.descripcion;
+
+      if (item.imagen) {
+        this.uploadedImageFile = item.imagen; // base64 desde el backend
+        this.imagePreviewUrl = this.sanitizer.bypassSecurityTrustUrl(
+          `data:image/jpeg;base64,${item.imagen}`
+        );
+      } else {
+        this.uploadedImageFile = null;
+        this.imagePreviewUrl = null;
+      }
+
+      this.errorMessage = '';
+    } catch (error) {
+      console.error('Error al cargar item:', error);
+      this.errorMessage = 'No se pudo cargar la información del item';
+      Swal.fire('Error', 'No se pudo cargar el item.', 'error');
+    }
   }
 
-  loadItemData() {
-    console.log('Cargar datos del item con ID:', this.itemId);
-    this.name = 'Item de ejemplo';
-    this.description = 'Descripción del item de ejemplo';
-    this.selectedState = 'Nuevo';
-    this.selectedType = 'Computador';
-    this.uploadedImage =
-      'https://t3.ftcdn.net/jpg/00/92/53/56/360_F_92535664_IvFsQeHjBzfE6sD4VHdO8u5OHUSc6yHF.jpg';
+  onImageUploaded(base64: string | null): void {
+    this.uploadedImageFile = base64;
+    if (base64) {
+      // Crear una URL de datos segura para la previsualización
+      const dataUrl = `data:image/jpeg;base64,${base64}`;
+      this.imagePreviewUrl = this.sanitizer.bypassSecurityTrustUrl(dataUrl);
+    } else {
+      this.imagePreviewUrl = null;
+    }
   }
 
+  async saveItem(): Promise<void> {
+    if (!this.validateForm()) {
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    try {
+      const itemPayload: CaracteristicasItem = {
+        userId: this.itemService.getUserId(),
+        nombre: this.nombre.trim(),
+        marca: this.marca.trim(),
+        descripcion: this.descripcion.trim(),
+      };
+
+      // Procesar imagen si existe
+      if (this.uploadedImageFile) {
+        const blob = this.base64StringToBlob(this.uploadedImageFile);
+        const arrayBuffer = await blob.arrayBuffer();
+        itemPayload.imagen = Array.from(new Uint8Array(arrayBuffer));
+      } else {
+        itemPayload.imagen = null;
+      }
+
+      const request$ = this.isCreate
+        ? this.itemService.createItem(itemPayload)
+        : this.itemService.updateItem(this.itemId!, itemPayload);
+
+      await firstValueFrom(request$);
+
+      this.showSuccessToast();
+      this.router.navigate(['/inventory/items']); // Ajusta la ruta según tu aplicación
+    } catch (error) {
+      console.error('Error al guardar item:', error);
+      this.errorMessage = 'No se pudo guardar el item. Inténtalo de nuevo.';
+      Swal.fire('Error', 'No se pudo guardar el item.', 'error');
+    } finally {
+      this.isSubmitting = false;
+    }
+  }
+
+  private validateForm(): boolean {
+    if (!this.nombre.trim()) {
+      this.errorMessage = 'El nombre es obligatorio';
+      return false;
+    }
+
+    if (!this.marca.trim()) {
+      this.errorMessage = 'La marca es obligatoria';
+      return false;
+    }
+
+    if (!this.descripcion.trim()) {
+      this.errorMessage = 'La descripción es obligatoria';
+      return false;
+    }
+
+    return true;
+  }
+
+  base64StringToBlob(base64: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length)
+      .fill(0)
+      .map((_, i) => byteCharacters.charCodeAt(i));
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: 'image/jpeg' });
+  }
+
+  removeImage(): void {
+    this.uploadedImageFile = null;
+    this.imagePreviewUrl = null;
+  }
+
+  // Getters para el template
   get isReadOnly(): boolean {
     return this.mode === 'view';
   }
@@ -83,96 +182,43 @@ export class ItemEntryComponent implements OnInit {
     return this.mode === 'create';
   }
 
-  onPriorityChange1(value: string) {
-    this.selectedState = value;
-    console.log('Prioridad seleccionada:', value);
+  get canSubmit(): boolean {
+    return (
+      this.nombre.trim() !== '' &&
+      this.marca.trim() !== '' &&
+      this.descripcion.trim() !== '' &&
+      !this.isSubmitting
+    );
   }
 
-  onPriorityChange2(value: string) {
-    this.selectedType = value;
-    console.log('Prioridad seleccionada:', value);
-  }
-
-  addItem() {
-    console.log('Item added!');
-  }
-
-  onNameChange(value: string): void {
-    this.name = value;
-  }
-
-  onDescriptionChange(value: string): void {
-    this.description = value;
-  }
-
-  openTypeStateModal() {
-    this.isModalOpen = true;
-  }
-
-  closeModal() {
-    this.isModalOpen = false;
-  }
-
-  onDataSelected(data: any) {
-    console.log('onDataSelected');
-    console.log('Data selected:', data);
-  }
-
-  onStateChange(value: string) {
-    console.log('Estado seleccionado:', value);
-    this.selectedState = value;
-  }
-
-  onTypeChange(value: string): void {
-    console.log('Tipo cambiado:', value);
-    this.selectedType = value;
-  }
-
-  saveItem() {
-    if (
-      !this.name.trim() ||
-      !this.description.trim() ||
-      !this.selectedType ||
-      !this.selectedState ||
-      !this.uploadedImage
-    ) {
-      console.warn('Por favor, completa todos los campos antes de guardar.');
-      console.log('this.name', this.name);
-      console.log('this.description', this.description);
-      console.log('this.selectedType', this.selectedType);
-      console.log('this.selectedState', this.selectedState);
-      console.log('this.uploadedImage', this.uploadedImage);
-      return;
+  get buttonText(): string {
+    if (this.isSubmitting) {
+      return 'Guardando...';
     }
-
-    this.showToast();
-    console.log('Guardar en la base de datos');
-    this.router.navigate(['/inventory/items']);
+    return this.isCreate ? 'Crear Item' : 'Actualizar Item';
   }
 
-  onImageUploaded(imageData: string | null): void {
-    console.log('Imagen subida');
-    this.uploadedImage = imageData;
-  }
+  private showSuccessToast(): void {
+    const message = this.isCreate ? 'Item creado con éxito' : 'Item actualizado con éxito';
 
-  showToast() {
     Swal.fire({
       toast: true,
       position: 'top-end',
       icon: 'success',
-      title: 'Item guardado con éxito',
+      title: message,
       showConfirmButton: false,
       timer: 1500,
     });
   }
 
-  modalData(value: any) {
-    console.log('Esto llega desde el modal');
-    console.log('modalData', value);
-    if (value.field === 'Tipo') {
-      this.types.push(value.name);
-    } else if (value.field === 'Estado') {
-      this.states.push(value.name);
-    }
+  // Método para limpiar mensajes cuando el usuario empiece a escribir
+  clearMessages(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
+
+  // Método público para navegación desde el template
+  navigateToInventory(): void {
+    this.router.navigate(['/inventory/items']);
   }
 }

@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 interface TableColumn {
   key: string;
   label: string;
-  type?: 'text' | 'number' | 'date' | 'boolean';
+  type?: string;
 }
 
 @Component({

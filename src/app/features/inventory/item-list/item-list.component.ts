@@ -1,88 +1,139 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TableComponent } from '../../../shared/table/table.component';
 import { RouterModule, Router } from '@angular/router';
-
+import { CommonModule } from '@angular/common';
+import { ItemService, CaracteristicasItemResponse } from '../services/items.service';
+import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
+
+interface ItemTableData {
+  id_caracteristicas_item: number;
+  nombre: string;
+  marca: string;
+  descripcion: string;
+  imagen: string | null;
+}
 
 @Component({
   selector: 'app-item-list',
   standalone: true,
-  imports: [TableComponent, RouterModule],
+  imports: [TableComponent, RouterModule, CommonModule],
   templateUrl: './item-list.component.html',
   styleUrls: ['./item-list.component.css'],
 })
-export class ItemListComponent {
-  constructor(private router: Router) {}
-  inventoryData = [
-    {
-      id: '00001',
-      lugar: 'Christine Brooks',
-      servicio: 'Electric',
-      cantidad: '5',
-      fecha: '2024-05-01',
-    },
-    { id: '00002', lugar: 'Rosie Pearson', servicio: 'Book', cantidad: '10', fecha: '2024-05-02' },
-    {
-      id: '00003',
-      lugar: 'Michael Johnson',
-      servicio: 'Water',
-      cantidad: '7',
-      fecha: '2024-05-03',
-    },
-    { id: '00004', lugar: 'Sarah Williams', servicio: 'Gas', cantidad: '3', fecha: '2024-05-04' },
-    {
-      id: '00005',
-      lugar: 'David Brown',
-      servicio: 'Internet',
-      cantidad: '12',
-      fecha: '2024-05-05',
-    },
-  ];
+export class ItemListComponent implements OnInit {
+  inventoryData: ItemTableData[] = [];
+  isLoading: boolean = true;
+  errorMessage: string = '';
 
   inventoryColumns = [
-    { key: 'id', label: 'ID' },
-    { key: 'lugar', label: 'Lugar' },
-    { key: 'servicio', label: 'Servicio' },
-    { key: 'cantidad', label: 'Cantidad' },
-    { key: 'fecha', label: 'Fecha' },
+    { key: 'id_caracteristicas_item', label: 'ID', type: 'number' },
+    { key: 'nombre', label: 'Nombre', type: 'text' },
+    { key: 'marca', label: 'Marca', type: 'text' },
+    { key: 'descripcion', label: 'Descripción', type: 'text' },
   ];
 
-  onViewItem(row: any) {
-    console.log('onViewItem recibido:', row);
-    this.router.navigate(['/inventory/items', row.id, 'view']);
+  constructor(private router: Router, private itemService: ItemService) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.loadItems();
   }
 
-  onEditItem(row: any) {
-    console.log('onEditItem recibido:', row);
-    this.router.navigate(['/inventory/items', row.id, 'edit']);
-  }
+  async loadItems(): Promise<void> {
+    try {
+      this.isLoading = true;
+      this.errorMessage = '';
 
-  async onDeleteItem(row: any) {
-    console.log('onDeleteItem recibido:', row);
+      const items = await firstValueFrom(this.itemService.getAllItems());
+      this.inventoryData = items;
+    } catch (error) {
+      console.error('Error al cargar items:', error);
+      this.errorMessage = 'No se pudieron cargar los items. Inténtalo de nuevo.';
 
-    const confirmed = await this.confirmDeletion();
-
-    if (confirmed) {
-      this.inventoryData = this.inventoryData.filter((item) => item.id !== row.id);
-      console.log('Eliminar en la base de datos:', row.id);
-      Swal.fire('Eliminado!', 'Este elemento ha sido eliminado correctamente.', 'success');
-    } else {
-      Swal.fire('Cancelado', 'La eliminación ha sido cancelada.', 'error');
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudieron cargar los items.',
+        icon: 'error',
+        confirmButtonText: 'Reintentar',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.loadItems();
+        }
+      });
+    } finally {
+      this.isLoading = false;
     }
   }
 
-  async confirmDeletion(): Promise<boolean> {
+  onViewItem(row: ItemTableData): void {
+    console.log('Ver item:', row);
+    this.router.navigate(['/inventory/items', row.id_caracteristicas_item, 'view']);
+  }
+
+  onEditItem(row: ItemTableData): void {
+    console.log('Editar item:', row);
+    this.router.navigate(['/inventory/items', row.id_caracteristicas_item, 'edit']);
+  }
+
+  async onDeleteItem(row: ItemTableData): Promise<void> {
+    console.log('Eliminar item:', row);
+
+    const confirmed = await this.confirmDeletion(row.nombre);
+
+    if (confirmed) {
+      try {
+        await firstValueFrom(this.itemService.deleteItem(row.id_caracteristicas_item));
+
+        // Actualizar la lista local
+        this.inventoryData = this.inventoryData.filter(
+          (item) => item.id_caracteristicas_item !== row.id_caracteristicas_item
+        );
+
+        Swal.fire({
+          title: 'Eliminado!',
+          text: `El item "${row.nombre}" ha sido eliminado correctamente.`,
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } catch (error) {
+        console.error('Error al eliminar item:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo eliminar el item. Inténtalo de nuevo.',
+          icon: 'error',
+          confirmButtonText: 'Entendido',
+        });
+      }
+    }
+  }
+
+  private async confirmDeletion(itemName: string): Promise<boolean> {
     const result = await Swal.fire({
-      title: '¿Está seguro de eliminar este elemento?',
-      text: 'Esta acción no se puede deshacer.',
+      title: '¿Estás seguro?',
+      html: `¿Deseas eliminar el item <strong>"${itemName}"</strong>?<br><small>Esta acción no se puede deshacer.</small>`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Eliminar',
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+      focusCancel: true,
     });
 
     return result.isConfirmed;
+  }
+
+  // Método para refrescar la lista
+  async refreshItems(): Promise<void> {
+    await this.loadItems();
+  }
+
+  // Método para navegar a crear nuevo item
+  createNewItem(): void {
+    this.router.navigate(['/inventory/items/new']);
   }
 }

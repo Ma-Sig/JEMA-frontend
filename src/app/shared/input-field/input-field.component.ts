@@ -14,7 +14,7 @@ export class InputFieldComponent {
   @Input() readonly: boolean = false;
   @Input() value: string = '';
   @Input() regexExp: RegExp = /^[a-zA-ZÀ-ÿ\s]+$/;
-
+  @Input() type: string = 'text';
   @Output() valueChange = new EventEmitter<string>();
 
   validationMessage: string = '';

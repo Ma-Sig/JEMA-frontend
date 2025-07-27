@@ -1,45 +1,124 @@
-<div class="upload-container h-full relative">
-  <label class="upload-button h-full w-full block" for="photoUpload" [class.pointer-events-none]="readonly">
-    <div class="upload-circle h-full w-40 relative overflow-hidden">
-      <img *ngIf="imageSrc" [src]="imageSrc" class="preview-image h-full w-full object-cover rounded-md" />
+<div class="flex flex-col items-center gap-4 mb-8">
+  <div class="relative">
+    <label
+      class="flex flex-col items-center gap-2.5 cursor-pointer group"
+      [class.pointer-events-none]="readonly"
+      [class.cursor-not-allowed]="readonly"
+      for="photoUpload"
+    >
+      <!-- Círculo de carga / previsualización -->
+      <div
+        class="relative h-40 w-40 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden transition-all duration-300 border-4 border-dashed border-gray-300 group-hover:border-[#4880FF] group-hover:bg-gradient-to-br group-hover:from-blue-50 group-hover:to-blue-100"
+        [class.border-solid]="displayImageSrc"
+        [class.border-[#4880FF]]="displayImageSrc"
+        [class.bg-gradient-to-br]="displayImageSrc"
+        [class.from-transparent]="displayImageSrc"
+        [class.to-transparent]="displayImageSrc"
+      >
+        <!-- Imagen previsualizada -->
+        <img
+          *ngIf="displayImageSrc && !hasImageError"
+          [src]="displayImageSrc"
+          class="h-full w-full object-cover absolute inset-0 rounded-full"
+          alt="Preview"
+          (load)="onImageLoad()"
+          (error)="onImageError()"
+        />
 
+        <!-- Ícono de error de imagen -->
+        <div *ngIf="hasImageError" class="flex flex-col items-center gap-2 text-red-500">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span class="text-xs text-center">Error al cargar</span>
+        </div>
+
+        <!-- Ícono de cámara cuando no hay imagen -->
+        <div
+          *ngIf="!displayImageSrc && !hasImageError"
+          class="flex flex-col items-center gap-2 text-gray-500 transition-all duration-300 group-hover:text-[#4880FF] group-hover:scale-110"
+        >
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+          <span class="text-sm font-medium">
+            {{ readonly ? 'Sin imagen' : 'Subir imagen' }}
+          </span>
+        </div>
+
+        <!-- Overlay hover cuando hay imagen -->
+        <div
+          *ngIf="displayImageSrc && !readonly && !hasImageError"
+          class="absolute inset-0 bg-transparent hover:bg-black hover:opacity-30 transition-all duration-300 rounded-full flex items-center justify-center"
+        >
+          <svg
+            class="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+        </div>
+      </div>
+    </label>
+
+    <!-- Botón de eliminar imagen -->
+    <button
+      *ngIf="displayImageSrc && !readonly && !hasImageError"
+      (click)="removeImage($event)"
+      class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-2 shadow-lg hover:bg-red-600 transition-all duration-200 border-2 border-white transform hover:scale-110"
+      aria-label="Eliminar imagen"
+    >
       <svg
-        *ngIf="!imageSrc"
-        class="camera-icon mx-auto my-auto text-gray-500"
-        width="32"
-        height="32"
+        width="16"
+        height="16"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        stroke-width="2"
+        stroke-width="2.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       >
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-        <circle cx="12" cy="13" r="4"></circle>
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
-    </div>
-  </label>
+    </button>
+  </div>
 
-  <button
-    *ngIf="imageSrc && !readonly"
-    (click)="removeImage($event)"
-    class="absolute top-2 right-2 bg-white text-red-600 rounded-full p-2 shadow-lg hover:bg-gray-100 z-10"
-  >
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <line x1="18" y1="6" x2="6" y2="18"></line>
-      <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
-  </button>
+  <!-- Texto informativo -->
+  <div class="text-center">
+    <p class="text-sm text-gray-600" *ngIf="!readonly">Formatos soportados: JPG, PNG, GIF</p>
+    <p class="text-xs text-gray-500" *ngIf="!readonly">Tamaño máximo: 5MB</p>
+  </div>
 
-  <input type="file" id="photoUpload" class="upload-input hidden" accept="image/*" (change)="onFileSelected($event)" [disabled]="readonly" />
+  <!-- Input oculto -->
+  <input type="file" id="photoUpload" class="hidden" accept="image/*" (change)="onFileSelected($event)" [disabled]="readonly" />
 </div>

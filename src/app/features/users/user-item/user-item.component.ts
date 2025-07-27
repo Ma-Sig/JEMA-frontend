@@ -2,16 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
-import { DropdownComponent } from '../../../shared/dropdown/dropdown.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { InputFieldComponent } from '../../../shared/input-field/input-field.component';
-import { TextareaFieldComponent } from '../../../shared/textarea-field/textarea-field.component';
 import { UploadImageComponent } from '../../../shared/upload-image/upload-image.component';
-
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
 import { UserService } from '../user.service'; 
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser'; // <-- Importa DomSanitizer
 
 @Component({
   selector: 'app-user-item',
@@ -35,7 +32,14 @@ export class UserItemComponent implements OnInit {
   cellphone: string = '';
   uploadedImageFile: string | null = null; // base64 sin prefijo
 
-  constructor(private route: ActivatedRoute, private router: Router, private userService: UserService) {}
+  imagePreviewUrl: SafeUrl | null = null; // <-- Cambiado a SafeUrl
+
+  constructor(
+    private route: ActivatedRoute, 
+    private router: Router, 
+    private userService: UserService,
+    private sanitizer: DomSanitizer // <-- Inyecta DomSanitizer
+  ) {}
 
   async ngOnInit(): Promise<void> {
     const data = await firstValueFrom(this.route.data);
@@ -61,10 +65,12 @@ export class UserItemComponent implements OnInit {
         this.cellphone = user.celular || '';
 
         if (user.imagen) {
-          // user.imagen viene como base64 string sin prefijo
-          this.uploadedImageFile = user.imagen;
+          this.uploadedImageFile = user.imagen; // base64 sin prefijo
+          // Crea URL segura para imagen
+          this.imagePreviewUrl = this.sanitizer.bypassSecurityTrustUrl(`data:image/jpeg;base64,${user.imagen}`);
         } else {
           this.uploadedImageFile = null;
+          this.imagePreviewUrl = null;
         }
       },
       error: (err) => {
@@ -74,53 +80,12 @@ export class UserItemComponent implements OnInit {
     });
   }
 
-  get isReadOnly(): boolean {
-    return this.mode === 'view';
-  }
-
-  get isEdit(): boolean {
-    return this.mode === 'edit';
-  }
-
-  get isCreate(): boolean {
-    return this.mode === 'create';
-  }
-
-  onNameChange(value: string): void {
-    this.name = value;
-  }
-
-  onSurnameChange(value: string): void {
-    this.surname = value;
-  }
-
-  onIdNumberChange(value: string): void {
-    this.idNumber = value;
-  }
-
-  onEmailChange(value: string): void {
-    this.email = value;
-  }
-
-  onPasswordChange(value: string): void {
-    this.password = value;
-  }
-
-  onCellphoneChange(value: string): void {
-    this.cellphone = value;
-  }
-
-  onImageUploaded(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = reader.result as string;
-        // Guardamos solo el base64 sin prefijo "data:image/xxx;base64,"
-        this.uploadedImageFile = base64.split(',')[1];
-      };
-      reader.readAsDataURL(file);
+  onImageUploaded(base64: string | null): void {
+    this.uploadedImageFile = base64;
+    if (base64) {
+      this.imagePreviewUrl = this.sanitizer.bypassSecurityTrustUrl(`data:image/jpeg;base64,${base64}`);
+    } else {
+      this.imagePreviewUrl = null;
     }
   }
 
@@ -144,15 +109,21 @@ export class UserItemComponent implements OnInit {
       celular: this.cellphone,
     };
 
+    // Si la imagen es null, se envía null para borrar
     if (this.uploadedImageFile) {
       const blob = this.base64StringToBlob(this.uploadedImageFile);
       const arrayBuffer = await blob.arrayBuffer();
-      userPayload.imagen = Array.from(new Uint8Array(arrayBuffer)); 
+      userPayload.imagen = Array.from(new Uint8Array(arrayBuffer));
+    } else {
+      userPayload.imagen = null; // importante para borrar imagen en backend
     }
 
     if (this.password.trim()) {
       userPayload.password = this.password;
     }
+
+    const storedUserId = Number(localStorage.getItem('userId')) || 13;
+    userPayload.userId = storedUserId;
 
     const request$ = this.isCreate
       ? this.userService.createUser(userPayload)
@@ -176,6 +147,30 @@ export class UserItemComponent implements OnInit {
     const byteArray = new Uint8Array(byteNumbers);
     return new Blob([byteArray], { type: 'image/jpeg' });
   }
+
+  removeImage(): void {
+    this.uploadedImageFile = null;
+    this.imagePreviewUrl = null;
+  }
+
+  get isReadOnly(): boolean {
+    return this.mode === 'view';
+  }
+
+  get isEdit(): boolean {
+    return this.mode === 'edit';
+  }
+
+  get isCreate(): boolean {
+    return this.mode === 'create';
+  }
+
+  onNameChange(value: string): void { this.name = value; }
+  onSurnameChange(value: string): void { this.surname = value; }
+  onIdNumberChange(value: string): void { this.idNumber = value; }
+  onEmailChange(value: string): void { this.email = value; }
+  onPasswordChange(value: string): void { this.password = value; }
+  onCellphoneChange(value: string): void { this.cellphone = value; }
 
   showToast() {
     Swal.fire({
