@@ -1,66 +1,125 @@
 <div class="container px-4 py-8 mx-auto">
-  <h1 class="section-title" *ngIf="isCreate">Registrar Usuario</h1>
-  <h1 class="section-title" *ngIf="isEdit">Editar Usuario</h1>
-  <h1 class="section-title" *ngIf="isReadOnly">Detalles de Usuario</h1>
+  <!-- Título dinámico -->
+  <h1 class="section-title" *ngIf="isCreate">Registrar Item</h1>
+  <h1 class="section-title" *ngIf="isEdit">Editar Item</h1>
+  <h1 class="section-title" *ngIf="isReadOnly">Detalles del Item</h1>
 
-  <div class="bg-white rounded-2xl p-10">
-    <app-upload-image (imageUploaded)="onImageUploaded($event)" [readonly]="isReadOnly"></app-upload-image>
+  <div class="bg-white rounded-2xl p-10 shadow-sm">
+    <!-- Componente de subida de imagen -->
+    <app-upload-image
+      [imageSrc]="uploadedImageFile ? 'data:image/jpeg;base64,' + uploadedImageFile : null"
+      [readonly]="isReadOnly"
+      (imageUploaded)="onImageUploaded($event)"
+    >
+    </app-upload-image>
 
-    <!-- <div class="">
-      <img class="block mx-auto w-40 h-40 rounded-full object-cover" src="" alt="" />
-    </div> -->
+    <!-- Formulario -->
+    <form class="mt-8" (ngSubmit)="saveItem()" #itemForm="ngForm">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <!-- Campo Nombre -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"> Nombre <span class="text-red-500" *ngIf="!isReadOnly">*</span> </label>
+          <input
+            class="block border placeholder-[#9aa0a6] border-[#e1e1e1] bg-[#f8f9fa] w-full p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4880FF] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            type="text"
+            placeholder="Nombre del item"
+            [(ngModel)]="nombre"
+            name="nombre"
+            [readonly]="isReadOnly"
+            [disabled]="isReadOnly"
+            (input)="clearMessages()"
+            required
+          />
+        </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-      <div>
-        <label class="field-title">Nombres</label>
-        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onNameChange($event)" [value]="name"></app-input-field>
+        <!-- Campo Marca -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"> Marca <span class="text-red-500" *ngIf="!isReadOnly">*</span> </label>
+          <input
+            class="block border placeholder-[#9aa0a6] border-[#e1e1e1] bg-[#f8f9fa] w-full p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4880FF] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+            type="text"
+            placeholder="Marca del item"
+            [(ngModel)]="marca"
+            name="marca"
+            [readonly]="isReadOnly"
+            [disabled]="isReadOnly"
+            (input)="clearMessages()"
+            required
+          />
+        </div>
+
+        <!-- Campo Descripción -->
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2"> Descripción <span class="text-red-500" *ngIf="!isReadOnly">*</span> </label>
+          <textarea
+            class="block border placeholder-[#9aa0a6] border-[#e1e1e1] bg-[#f8f9fa] w-full p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4880FF] focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
+            placeholder="Descripción detallada del item"
+            rows="4"
+            [(ngModel)]="descripcion"
+            name="descripcion"
+            [readonly]="isReadOnly"
+            [disabled]="isReadOnly"
+            (input)="clearMessages()"
+            required
+          ></textarea>
+        </div>
       </div>
 
-      <div>
-        <label class="field-title">Apellidos</label>
-        <app-input-field
-          [placeholder]="'Nombres'"
-          [readonly]="isReadOnly"
-          (valueChange)="onSurnameChange($event)"
-          [value]="surname"
-        ></app-input-field>
-      </div>
+      <!-- Sección de botones y mensajes -->
+      <section class="flex flex-col gap-4 items-center mt-8">
+        <!-- Botón de guardar (solo visible si no es modo view) -->
+        <div *ngIf="!isReadOnly" class="mt-4">
+          <button
+            type="submit"
+            class="bg-[#4880FF] rounded-md px-8 py-3 text-white font-medium hover:bg-blue-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+            [disabled]="!canSubmit"
+          >
+            <!-- Spinner de carga -->
+            <span *ngIf="isSubmitting" class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
 
-      <div>
-        <label class="field-title">C&eacute;dula</label>
-        <app-input-field
-          [placeholder]="'Nombres'"
-          [readonly]="isReadOnly"
-          (valueChange)="onIdNumberChange($event)"
-          [value]="idNumber"
-        ></app-input-field>
-      </div>
+            <!-- Icono de guardado cuando no está enviando -->
+            <svg *ngIf="!isSubmitting" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
 
-      <div>
-        <label class="field-title">Correo electr&oacute;nico</label>
-        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onEmailChange($event)" [value]="email"></app-input-field>
-      </div>
+            {{ buttonText }}
+          </button>
+        </div>
 
-      <!-- <div>
-        <label class="field-title">Usuario</label>
-        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onUsernameChange($event)" [value]="name"></app-input-field>
-      </div> -->
+        <!-- Mensajes de error -->
+        <div *ngIf="errorMessage" class="mt-4 p-4 bg-red-50 border border-red-200 text-red-800 rounded-md w-full max-w-md text-center">
+          <div class="flex items-center justify-center gap-2">
+            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {{ errorMessage }}
+          </div>
+        </div>
 
-      <div>
-        <label class="field-title">Contraseña</label>
-        <app-input-field
-          [placeholder]="'Nombres'"
-          [readonly]="isReadOnly"
-          (valueChange)="onPasswordChange($event)"
-          [value]="password"
-        ></app-input-field>
-      </div>
-    </div>
+        <!-- Mensaje de éxito -->
+        <div *ngIf="successMessage" class="mt-4 p-4 bg-green-50 border border-green-200 text-green-800 rounded-md w-full max-w-md text-center">
+          <div class="flex items-center justify-center gap-2">
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {{ successMessage }}
+          </div>
+        </div>
 
-    <div *ngIf="!isReadOnly" class="flex h-48 items-center justify-center">
-      <div class="w-3xs h-10">
-        <app-button class="w-full h-full" [label]="'Guardar'" (clicked)="saveItem()"></app-button>
-      </div>
-    </div>
+        <!-- Botón de volver (solo en modo view) -->
+        <div *ngIf="isReadOnly" class="mt-4">
+          <button
+            type="button"
+            class="bg-gray-500 rounded-md px-8 py-3 text-white font-medium hover:bg-gray-600 transition-colors flex items-center gap-2"
+            (click)="navigateToInventory()"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Volver al Inventario
+          </button>
+        </div>
+      </section>
+    </form>
   </div>
 </div>

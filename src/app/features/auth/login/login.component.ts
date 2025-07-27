@@ -21,7 +21,7 @@ export class LoginComponent implements AfterViewInit {
   loginForm: FormGroup;
   forgotPasswordForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
@@ -90,10 +90,17 @@ export class LoginComponent implements AfterViewInit {
 
       const username = this.loginForm.get('username')?.value;
       const fakeToken = this.createFakeJwtToken(username);
-      const user = this.decodeJwt(fakeToken);
+
+      this.authService.getUserIdByEmail(username).subscribe({
+        next: ({ id_usuario }) => {
+          localStorage.setItem('userId', id_usuario);
+        },
+        error: (error) => {
+          console.error('Error al obtener el user ID:', error);
+        },
+      });
 
       localStorage.setItem('token', fakeToken);
-      localStorage.setItem('userId', user.userId);
 
       // Simular login exitoso y redirigir al dashboard
       this.router.navigate(['/dashboard']);
