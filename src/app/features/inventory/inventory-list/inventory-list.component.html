@@ -1,18 +1,107 @@
-<div class="flex justify-between items-start pt-12 pr-8">
-  <h1 class="section-title">Inventario</h1>
-  <button [routerLink]="['/inventory/inventories/new']" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Nuevo</button>
-</div>
+<div class="container px-4 py-8 mx-auto">
+  <!-- Header con título y botón -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Gestión de Inventario</h1>
+      <p class="text-gray-600">Administra los items de tu inventario</p>
+    </div>
 
-<div class="w-full mx-auto px-4 mt-4">
-  <div class="w-full justify-center">
+    <div class="flex gap-3">
+      <!-- Botón de refrescar -->
+      <button
+        (click)="refreshInventory()"
+        [disabled]="isLoading"
+        class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        title="Refrescar lista"
+      >
+        <svg class="w-4 h-4" [class.animate-spin]="isLoading" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          ></path>
+        </svg>
+        <span *ngIf="!isLoading">Refrescar</span>
+        <span *ngIf="isLoading">Cargando...</span>
+      </button>
+
+      <!-- Botón nuevo item -->
+      <button
+        (click)="createNewInventoryItem()"
+        class="bg-[#4880FF] text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 font-medium shadow-sm"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Nuevo Item de Inventario
+      </button>
+    </div>
+  </div>
+
+  <!-- Estado de carga -->
+  <div *ngIf="isLoading && inventoryData.length === 0" class="flex justify-center items-center py-12">
+    <div class="flex flex-col items-center gap-4">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4880FF]"></div>
+      <p class="text-gray-600">Cargando inventario...</p>
+    </div>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="errorMessage && !isLoading" class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
+    <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <div>
+      <p class="font-medium">Error al cargar datos</p>
+      <p class="text-sm">{{ errorMessage }}</p>
+    </div>
+  </div>
+
+  <!-- Tabla de inventario -->
+  <div *ngIf="!isLoading || inventoryData.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <!-- Estado vacío -->
+    <div *ngIf="inventoryData.length === 0 && !isLoading && !errorMessage" class="text-center py-12">
+      <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1"
+          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M9 21V9l6-3"
+        ></path>
+      </svg>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No hay items en el inventario</h3>
+      <p class="text-gray-600 mb-6">Comienza agregando tu primer item al inventario</p>
+      <button
+        (click)="createNewInventoryItem()"
+        class="bg-[#4880FF] text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors inline-flex items-center gap-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Crear primer item de inventario
+      </button>
+    </div>
+
+    <!-- Tabla con datos -->
     <app-table
+      *ngIf="inventoryData.length > 0"
       class="w-full"
       [data]="inventoryData"
       [columns]="inventoryColumns"
       [showActions]="true"
-      (view)="onViewItem($event)"
-      (edit)="onEditItem($event)"
-      (delete)="onDeleteItem($event)"
+      (view)="onViewInventoryItem($event)"
+      (edit)="onEditInventoryItem($event)"
+      (delete)="onDeleteInventoryItem($event)"
     ></app-table>
+  </div>
+
+  <!-- Indicador de carga para refresh -->
+  <div
+    *ngIf="isLoading && inventoryData.length > 0"
+    class="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg px-4 py-3 border border-gray-200 flex items-center gap-3"
+  >
+    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-[#4880FF]"></div>
+    <span class="text-sm text-gray-700">Actualizando...</span>
   </div>
 </div>

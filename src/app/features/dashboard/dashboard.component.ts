@@ -27,6 +27,11 @@ export class DashboardComponent {
       route: '/inventory/items',
     },
     {
+      title: 'Inventario',
+      backgroundColor: 'bg-fuchsia-400',
+      route: '/inventory/inventories',
+    },
+    {
       title: 'Usuarios',
       backgroundColor: 'bg-blue-400',
       route: '/users',

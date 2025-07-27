@@ -1,265 +1,213 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
-import { DropdownComponent } from '../../../shared/dropdown/dropdown.component';
-import { ButtonComponent } from '../../../shared/button/button.component';
-import { InputFieldComponent } from '../../../shared/input-field/input-field.component';
-import { CalendarComponent } from '../../../shared/calendar/calendar.component';
-import { TableComponent } from '../../../shared/table/table.component';
-
+import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
+import {
+  InventoryService,
+  InventoryItem,
+  EstadoItem,
+  Lugar,
+  CaracteristicasItemForSelection,
+} from '../services/inventories.service';
 
 @Component({
   selector: 'app-inventory-entry',
   standalone: true,
-  imports: [
-    DropdownComponent,
-    ButtonComponent,
-    CommonModule,
-    InputFieldComponent,
-    CalendarComponent,
-    TableComponent,
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './inventory-entry.component.html',
   styleUrls: ['./inventory-entry.component.css'],
 })
 export class InventoryEntryComponent implements OnInit {
   mode: 'create' | 'edit' | 'view' = 'view';
-  itemId?: string;
-  locations: string[] = [];
-  items: string[] = [];
-  states: string[] = [];
-  selectedLocation = '';
-  selectedItem = '';
-  selectedState = '';
-  baseCode: string = '';
-  quantity: string = '';
-  selectedDate: Date = new Date();
-  regexOnlyNumbers = /^[0-9]+$/;
-  regexCodeBase = /^[a-zA-Z0-9-]+$/;
-  inventoryData: any[] = [];
-  inventoryColumns: any[] = [
-    { key: 'id', label: 'codigo' },
-    { key: 'item', label: 'item' },
-    { key: 'estado', label: 'estado' },
-    { key: 'lugar', label: 'lugar' },
-    { key: 'fecha', label: 'fecha', type: 'date' },
-  ];
-  editingRow: boolean = false;
-  viewingRow: boolean = false;
-  selectedRow: any = null;
-  inventoryCount: number = 0;
+  inventoryItemId?: number;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  // Propiedades del formulario
+  codigo: string = '';
+  selectedCaracteristicaId: number | null = null;
+  selectedEstadoId: number | null = null;
+  selectedLugarId: number | null = null;
+
+  // Datos para dropdowns
+  estados: EstadoItem[] = [];
+  lugares: Lugar[] = [];
+  caracteristicasDisponibles: CaracteristicasItemForSelection[] = [];
+
+  // Características seleccionada
+  selectedCaracteristica: CaracteristicasItemForSelection | null = null;
+
+  // Estados del componente
+  isSubmitting: boolean = false;
+  errorMessage: string = '';
+  successMessage: string = '';
+  showCaracteristicasModal: boolean = false;
+
+  constructor(
+    private route: ActivatedRoute,
+    public router: Router,
+    private inventoryService: InventoryService
+  ) {}
 
   async ngOnInit(): Promise<void> {
-    const data = await firstValueFrom(this.route.data);
-    this.mode = data['mode'] ?? 'view';
+    try {
+      const data = await firstValueFrom(this.route.data);
+      this.mode = data['mode'] ?? 'view';
 
-    const params = await firstValueFrom(this.route.paramMap);
-    this.itemId = params.get('id') ?? undefined;
+      const params = await firstValueFrom(this.route.paramMap);
+      const idParam = params.get('id');
+      this.inventoryItemId = idParam ? Number(idParam) : undefined;
 
-    this.loadSystemData();
+      // Cargar datos necesarios para dropdowns
+      await this.loadDropdownData();
 
-    if (this.mode === 'edit' || this.mode === 'view') {
-      this.loadItemData();
+      if ((this.mode === 'edit' || this.mode === 'view') && this.inventoryItemId !== undefined) {
+        await this.loadInventoryItemData(this.inventoryItemId);
+      }
+    } catch (error) {
+      console.error('Error al inicializar componente:', error);
+      this.errorMessage = 'Error al cargar los datos';
     }
   }
 
-  loadItemData() {
-    // Simulate loading item data
-    this.selectedLocation = 'Aula 1';
-    this.selectedItem = 'Item 1';
-    this.selectedState = 'Nuevo';
-    this.baseCode = 'ABC123';
-    // this.quantity = '10';
-    this.selectedDate = new Date();
+  async loadDropdownData(): Promise<void> {
+    try {
+      // Cargar estados, lugares y características en paralelo
+      const [estados, lugares, caracteristicas] = await Promise.all([
+        firstValueFrom(this.inventoryService.getAllEstados()),
+        firstValueFrom(this.inventoryService.getAllLugares()),
+        firstValueFrom(this.inventoryService.getAllCaracteristicasForSelection(false)),
+      ]);
+
+      this.estados = estados;
+      this.lugares = lugares;
+      this.caracteristicasDisponibles = caracteristicas;
+    } catch (error) {
+      console.error('Error al cargar datos de dropdowns:', error);
+      this.errorMessage = 'Error al cargar las opciones disponibles';
+    }
   }
 
-  loadSystemData() {
-    this.locations = ['Aula 1', 'Aula 2', 'Aula 3'];
-    this.items = ['Item 1', 'Item 2', 'Item 3'];
-    this.states = ['Nuevo', 'Usado', 'Dañado'];
+  async loadInventoryItemData(id: number): Promise<void> {
+    try {
+      const inventoryItem = await firstValueFrom(this.inventoryService.getInventoryItemById(id));
+
+      this.codigo = inventoryItem.codigo;
+      this.selectedCaracteristicaId = inventoryItem.id_caracteristicas_item;
+      this.selectedEstadoId = inventoryItem.id_item_estado;
+      this.selectedLugarId = inventoryItem.id_lugar;
+
+      // Buscar y establecer la característica seleccionada
+      this.selectedCaracteristica =
+        this.caracteristicasDisponibles.find(
+          (c) => c.id_caracteristicas_item === inventoryItem.id_caracteristicas_item
+        ) || null;
+
+      // Si no encontramos la característica en la lista, cargarla individualmente
+      if (!this.selectedCaracteristica && this.selectedCaracteristicaId) {
+        try {
+          this.selectedCaracteristica = await firstValueFrom(
+            this.inventoryService.getCaracteristicaById(this.selectedCaracteristicaId, false)
+          );
+        } catch (error) {
+          console.warn('No se pudo cargar la característica específica:', error);
+        }
+      }
+
+      this.errorMessage = '';
+    } catch (error) {
+      console.error('Error al cargar item de inventario:', error);
+      this.errorMessage = 'No se pudo cargar la información del item de inventario';
+      Swal.fire('Error', 'No se pudo cargar el item de inventario.', 'error');
+    }
   }
 
-  onLocationChange(location: string) {
-    this.selectedLocation = location;
-  }
-  onItemChange(item: string) {
-    this.selectedItem = item;
-  }
-  onStateChange(state: string) {
-    this.selectedState = state;
-  }
-  onCodeBaseChange(baseCode: string) {
-    this.baseCode = baseCode;
+  // Modal de características
+  openCaracteristicasModal(): void {
+    if (this.isReadOnly) return;
+    this.showCaracteristicasModal = true;
   }
 
-  onQuantityChange(quantity: string) {
-    this.quantity = quantity;
+  closeCaracteristicasModal(): void {
+    this.showCaracteristicasModal = false;
+    this.selectedCaracteristicaId = this.selectedCaracteristica?.id_caracteristicas_item || null;
   }
 
-  saveInventory() {
-    if (this.mode == 'create' && this.inventoryData.length === 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'No hay datos para guardar.',
-      });
+  selectCaracteristica(caracteristica: CaracteristicasItemForSelection): void {
+    this.selectedCaracteristicaId = caracteristica.id_caracteristicas_item;
+  }
+
+  confirmCaracteristicaSelection(): void {
+    if (this.selectedCaracteristicaId) {
+      this.selectedCaracteristica =
+        this.caracteristicasDisponibles.find(
+          (c) => c.id_caracteristicas_item === this.selectedCaracteristicaId
+        ) || null;
+      this.showCaracteristicasModal = false;
+      this.clearMessages();
+    }
+  }
+
+  async saveInventoryItem(): Promise<void> {
+    if (!this.validateForm()) {
       return;
     }
 
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'success',
-      title: 'Inventario guardado con éxito',
-      showConfirmButton: false,
-      timer: 1500,
-    });
-    console.log('Guardar en la base de datos');
-    this.router.navigate(['/inventory/inventories']);
+    this.isSubmitting = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    try {
+      const inventoryItemPayload: InventoryItem = {
+        codigo: this.codigo.trim(),
+        id_caracteristicas_item: this.selectedCaracteristicaId!,
+        id_item_estado: this.selectedEstadoId!,
+        id_lugar: this.selectedLugarId!,
+      };
+
+      const request$ = this.isCreate
+        ? this.inventoryService.createInventoryItem(inventoryItemPayload)
+        : this.inventoryService.updateInventoryItem(this.inventoryItemId!, inventoryItemPayload);
+
+      console.log(typeof this.selectedEstadoId);
+      await firstValueFrom(request$);
+
+      this.showSuccessToast();
+      this.router.navigate(['/inventory/inventories']);
+    } catch (error) {
+      console.error('Error al guardar item de inventario:', error);
+      this.errorMessage = 'No se pudo guardar el item de inventario. Inténtalo de nuevo.';
+      Swal.fire('Error', 'No se pudo guardar el item de inventario.', 'error');
+    } finally {
+      this.isSubmitting = false;
+    }
   }
 
-  validate() {
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-    });
-
-    if (!this.selectedLocation) {
-      Toast.fire({
-        icon: 'error',
-        title: 'Seleccione una ubicación',
-      });
+  private validateForm(): boolean {
+    if (!this.codigo.trim()) {
+      this.errorMessage = 'El código es obligatorio';
       return false;
     }
 
-    if (!this.selectedItem) {
-      Toast.fire({
-        icon: 'error',
-        title: 'Seleccione un item',
-      });
+    if (!this.selectedCaracteristicaId) {
+      this.errorMessage = 'Debe seleccionar las características del item';
       return false;
     }
 
-    if (!this.selectedState) {
-      Toast.fire({
-        icon: 'error',
-        title: 'Seleccione un estado',
-      });
+    if (!this.selectedEstadoId) {
+      this.errorMessage = 'Debe seleccionar un estado';
       return false;
     }
 
-    if (!this.updateRow && (!this.baseCode || !this.regexCodeBase.test(this.baseCode))) {
-      Toast.fire({
-        icon: 'error',
-        title: 'Ingrese un código base válido (solo letras, números y guiones)',
-      });
-      return false;
-    }
-
-    if (!this.updateRow && (!this.quantity || !this.regexOnlyNumbers.test(this.quantity))) {
-      Toast.fire({
-        icon: 'error',
-        title: 'Ingrese una cantidad válida (solo números)',
-      });
+    if (!this.selectedLugarId) {
+      this.errorMessage = 'Debe seleccionar un lugar';
       return false;
     }
 
     return true;
   }
 
-  addToTable() {
-    console.log('Agregar a la tabla');
-    if (!this.validate()) {
-      return;
-    }
-
-    const quantity = parseInt(this.quantity, 10);
-    for (let i = 0; i < quantity; i++) {
-      const inventoryData = {
-        id: this.baseCode + '-' + (this.inventoryCount + 1),
-        item: this.selectedItem,
-        estado: this.selectedState,
-        lugar: this.selectedLocation,
-        fecha: this.selectedDate,
-      };
-
-      this.inventoryData.push(inventoryData);
-      this.inventoryCount++;
-    }
-
-    this.clearFields();
-  }
-
-  clearFields() {
-    this.selectedLocation = '';
-    this.selectedItem = '';
-    this.selectedState = '';
-    this.baseCode = '';
-    this.quantity = '';
-    this.selectedDate = new Date();
-  }
-
-  onEditInventory(row: any) {
-    this.editingRow = true;
-    this.selectedLocation = row.lugar;
-    this.selectedItem = row.item;
-    this.selectedState = row.estado;
-    this.selectedDate = row.fecha;
-    this.selectedRow = row;
-  }
-
-  updateRow() {
-    if (!this.validate()) {
-      return;
-    }
-
-    this.selectedRow.lugar = this.selectedLocation;
-    this.selectedRow.item = this.selectedItem;
-    this.selectedRow.estado = this.selectedState;
-    this.selectedRow.fecha = this.selectedDate;
-    this.editingRow = false;
-    this.selectedRow = null;
-    this.clearFields();
-
-    Swal.fire('Actualizado!', 'Este elemento ha sido actualizado correctamente.', 'success');
-  }
-
-  async onDeleteInventory(row: any) {
-    const confirmed = await this.confirmDeletion();
-
-    if (confirmed) {
-      this.inventoryData = this.inventoryData.filter((item) => item.id !== row.id);
-      console.log('Eliminar en la base de datos:', row.id);
-      Swal.fire('Eliminado!', 'Este elemento ha sido eliminado correctamente.', 'success');
-    } else {
-      Swal.fire('Cancelado', 'La eliminación ha sido cancelada.', 'error');
-    }
-  }
-
-  async confirmDeletion(): Promise<boolean> {
-    const result = await Swal.fire({
-      title: '¿Está seguro de eliminar este elemento?',
-      text: 'Esta acción no se puede deshacer.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Eliminar',
-      cancelButtonText: 'Cancelar',
-    });
-
-    return result.isConfirmed;
-  }
-
+  // Getters para el template
   get isReadOnly(): boolean {
     return this.mode === 'view';
   }
@@ -270,5 +218,53 @@ export class InventoryEntryComponent implements OnInit {
 
   get isCreate(): boolean {
     return this.mode === 'create';
+  }
+
+  get canSubmit(): boolean {
+    return (
+      this.codigo.trim() !== '' &&
+      this.selectedCaracteristicaId !== null &&
+      this.selectedEstadoId !== null &&
+      this.selectedLugarId !== null &&
+      !this.isSubmitting
+    );
+  }
+
+  get buttonText(): string {
+    if (this.isSubmitting) {
+      return 'Guardando...';
+    }
+    return this.isCreate ? 'Crear Item de Inventario' : 'Actualizar Item de Inventario';
+  }
+
+  private showSuccessToast(): void {
+    const message = this.isCreate
+      ? 'Item de inventario creado con éxito'
+      : 'Item de inventario actualizado con éxito';
+
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: message,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  }
+
+  // Método para limpiar mensajes cuando el usuario empiece a escribir
+  clearMessages(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+  }
+
+  // Método público para navegación desde el template
+  navigateToInventory(): void {
+    this.router.navigate(['/inventory/inventories']);
+  }
+
+  // Método público para navegación desde el template
+  navigateToItem(): void {
+    this.router.navigate([`/inventory/items/${this.selectedCaracteristicaId}/view`]);
   }
 }
