@@ -1,14 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { isPlatformBrowser } from '@angular/common';
+
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private baseUrl = environment.apiBaseUrl + '/usuarios';  // ejemplo: http://localhost:3000/usuarios
+  private baseUrl = environment.apiBaseUrl + '/usuarios';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -16,6 +21,13 @@ export class UserService {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     });
+  }
+
+  private getUserId(): number {
+    if (isPlatformBrowser(this.platformId)) {
+      return Number(localStorage.getItem('userId')) || 13; // por defecto 13
+    }
+    return 13;
   }
 
   getAllUsers(): Observable<any[]> {
@@ -27,23 +39,17 @@ export class UserService {
   }
 
   createUser(user: any): Observable<any> {
-  const userId = localStorage.getItem('userId');
-  return this.http.request<any>('post', this.baseUrl, {
-    headers: this.getAuthHeaders(),
-    body: { ...user, userId }
-  });
-}
+    const userId = this.getUserId();
+    return this.http.post<any>(this.baseUrl, { ...user, userId }, { headers: this.getAuthHeaders() });
+  }
 
-updateUser(id: number, user: any): Observable<any> {
-  const userId = localStorage.getItem('userId');
-  return this.http.request<any>('put', `${this.baseUrl}/${id}`, {
-    headers: this.getAuthHeaders(),
-    body: { ...user, userId }
-  });
-}
+  updateUser(id: number, user: any): Observable<any> {
+    const userId = this.getUserId();
+    return this.http.put<any>(`${this.baseUrl}/${id}`, { ...user, userId }, { headers: this.getAuthHeaders() });
+  }
 
   deleteUser(id: number): Observable<any> {
-    const userId = localStorage.getItem('userId');
+    const userId = this.getUserId();
     return this.http.request<any>('delete', `${this.baseUrl}/${id}`, {
       headers: this.getAuthHeaders(),
       body: { userId },

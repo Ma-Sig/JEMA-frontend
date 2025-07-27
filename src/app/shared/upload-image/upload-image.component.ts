@@ -21,7 +21,8 @@ export class UploadImageComponent {
       const reader = new FileReader();
       reader.onload = () => {
         this.imageSrc = reader.result as string;
-        this.imageUploaded.emit(this.imageSrc);
+        const base64String = this.imageSrc.split(',')[1];
+        this.imageUploaded.emit(base64String);
       };
       reader.readAsDataURL(file);
     }
