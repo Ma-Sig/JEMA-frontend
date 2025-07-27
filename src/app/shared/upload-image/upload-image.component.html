@@ -1,45 +1,55 @@
-<div class="upload-container relative">
-  <label class="upload-button block" for="photoUpload" [class.pointer-events-none]="readonly">
-    <div class="upload-circle h-40 w-40 relative overflow-hidden">
-      <img *ngIf="imageSrc" [src]="imageSrc" class="preview-image h-full w-full object-cover rounded-md" />
+<div class="flex flex-col items-center gap-2.5">
+  <div class="relative">
+    <label class="flex flex-col items-center gap-2.5 cursor-pointer" [class.pointer-events-none]="readonly" for="photoUpload">
+      <!-- Círculo de carga / previsualización -->
+      <div
+        class="relative h-40 w-40 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden transition-colors group hover:bg-gray-300"
+      >
+        <!-- Imagen previsualizada -->
+        <img *ngIf="imageSrc" [src]="imageSrc" class="h-full w-full object-cover absolute inset-0" alt="Preview" />
 
+        <!-- Ícono de cámara -->
+        <svg
+          *ngIf="!imageSrc"
+          class="mx-auto text-gray-500 transition-transform group-hover:scale-110"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+          <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+      </div>
+    </label>
+
+    <!-- Botón de eliminar imagen (posicionado en la esquina del círculo) -->
+    <button
+      *ngIf="imageSrc && !readonly"
+      (click)="removeImage($event)"
+      class="absolute -top-2 -right-2 bg-white text-red-600 rounded-full p-1.5 shadow-lg hover:bg-gray-100 z-10 transition-all border-2 border-white"
+      aria-label="Eliminar imagen"
+    >
       <svg
-        *ngIf="!imageSrc"
-        class="camera-icon mx-auto my-auto text-gray-500"
-        width="32"
-        height="32"
+        width="20"
+        height="20"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        stroke-width="2"
+        stroke-width="2.5"
         stroke-linecap="round"
         stroke-linejoin="round"
       >
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-        <circle cx="12" cy="13" r="4"></circle>
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
-    </div>
-  </label>
+    </button>
+  </div>
 
-  <button
-    *ngIf="imageSrc && !readonly"
-    (click)="removeImage($event)"
-    class="absolute top-2 right-2 bg-white text-red-600 rounded-full p-2 shadow-lg hover:bg-gray-100 z-10"
-  >
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <line x1="18" y1="6" x2="6" y2="18"></line>
-      <line x1="6" y1="6" x2="18" y2="18"></line>
-    </svg>
-  </button>
-
-  <input type="file" id="photoUpload" class="upload-input hidden" accept="image/*" (change)="onFileSelected($event)" [disabled]="readonly" />
+  <!-- Input oculto -->
+  <input type="file" id="photoUpload" class="hidden" accept="image/*" (change)="onFileSelected($event)" [disabled]="readonly" />
 </div>

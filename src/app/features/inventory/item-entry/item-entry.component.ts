@@ -2,73 +2,157 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
-import { DropdownComponent } from '../../../shared/dropdown/dropdown.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { InputFieldComponent } from '../../../shared/input-field/input-field.component';
-import { TextareaFieldComponent } from '../../../shared/textarea-field/textarea-field.component';
 import { UploadImageComponent } from '../../../shared/upload-image/upload-image.component';
-import { TypeStateEntryComponent } from '../type-state-entry/type-state-entry.component';
-
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
+import { UserService } from '../../users/user.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser'; // <-- Importa DomSanitizer
 
 @Component({
   selector: 'app-item-entry',
   standalone: true,
-  imports: [
-    DropdownComponent,
-    ButtonComponent,
-    CommonModule,
-    InputFieldComponent,
-    TextareaFieldComponent,
-    UploadImageComponent,
-    TypeStateEntryComponent,
-  ],
+  imports: [ButtonComponent, CommonModule, InputFieldComponent, UploadImageComponent],
   templateUrl: './item-entry.component.html',
   styleUrls: ['./item-entry.component.css'],
 })
 export class ItemEntryComponent implements OnInit {
   mode: 'create' | 'edit' | 'view' = 'view';
-  itemId?: string;
-  selectedState = '';
-  selectedType = '';
-  isModalOpen = false;
-  states: string[] = [];
-  types: string[] = [];
+  userId?: number;
   name: string = '';
-  description: string = '';
-  uploadedImage: string | null = null;
+  surname: string = '';
+  idNumber: string = '';
+  email: string = '';
+  password: string = '';
+  cellphone: string = '';
+  uploadedImageFile: string | null = null; // base64 sin prefijo
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  imagePreviewUrl: SafeUrl | null = null; // <-- Cambiado a SafeUrl
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private userService: UserService,
+    private sanitizer: DomSanitizer // <-- Inyecta DomSanitizer
+  ) {}
 
   async ngOnInit(): Promise<void> {
     const data = await firstValueFrom(this.route.data);
     this.mode = data['mode'] ?? 'view';
 
     const params = await firstValueFrom(this.route.paramMap);
-    this.itemId = params.get('id') ?? undefined;
+    const idParam = params.get('id');
+    this.userId = idParam ? Number(idParam) : undefined;
 
-    this.loadSystemData();
-
-    if (this.mode === 'edit' || this.mode === 'view') {
-      this.loadItemData();
+    if ((this.mode === 'edit' || this.mode === 'view') && this.userId !== undefined) {
+      this.loadItemData(this.userId);
     }
   }
 
-  loadSystemData() {
-    this.states = ['Nuevo', 'Usado', 'Dañado'];
-    this.types = ['Computador', 'Mueble', 'Herramienta'];
+  loadItemData(id: number) {
+    this.userService.getUserById(id).subscribe({
+      next: (user) => {
+        this.name = user.nombres;
+        this.surname = user.apellidos;
+        this.idNumber = user.cedula;
+        this.email = user.email;
+        this.password = '';
+        this.cellphone = user.celular || '';
+
+        if (user.imagen) {
+          this.uploadedImageFile = user.imagen; // base64 sin prefijo
+          // Crea URL segura para imagen
+          this.imagePreviewUrl = this.sanitizer.bypassSecurityTrustUrl(
+            `data:image/jpeg;base64,${user.imagen}`
+          );
+        } else {
+          this.uploadedImageFile = null;
+          this.imagePreviewUrl = null;
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar usuario', err);
+        Swal.fire('Error', 'No se pudo cargar el usuario.', 'error');
+      },
+    });
   }
 
-  loadItemData() {
-    console.log('Cargar datos del item con ID:', this.itemId);
-    this.name = 'Item de ejemplo';
-    this.description = 'Descripción del item de ejemplo';
-    this.selectedState = 'Nuevo';
-    this.selectedType = 'Computador';
-    this.uploadedImage =
-      'https://t3.ftcdn.net/jpg/00/92/53/56/360_F_92535664_IvFsQeHjBzfE6sD4VHdO8u5OHUSc6yHF.jpg';
+  onImageUploaded(base64: string | null): void {
+    this.uploadedImageFile = base64;
+    if (base64) {
+      this.imagePreviewUrl = this.sanitizer.bypassSecurityTrustUrl(
+        `data:image/jpeg;base64,${base64}`
+      );
+    } else {
+      this.imagePreviewUrl = null;
+    }
+  }
+
+  async saveItem() {
+    if (
+      !this.name.trim() ||
+      !this.surname.trim() ||
+      !this.email.trim() ||
+      !this.idNumber.trim() ||
+      (this.isCreate && !this.password.trim())
+    ) {
+      Swal.fire('Error', 'Completa todos los campos.', 'warning');
+      return;
+    }
+
+    const userPayload: any = {
+      nombres: this.name,
+      apellidos: this.surname,
+      cedula: this.idNumber,
+      email: this.email,
+      celular: this.cellphone,
+    };
+
+    // Si la imagen es null, se envía null para borrar
+    if (this.uploadedImageFile) {
+      const blob = this.base64StringToBlob(this.uploadedImageFile);
+      const arrayBuffer = await blob.arrayBuffer();
+      userPayload.imagen = Array.from(new Uint8Array(arrayBuffer));
+    } else {
+      userPayload.imagen = null; // importante para borrar imagen en backend
+    }
+
+    if (this.password.trim()) {
+      userPayload.password = this.password;
+    }
+
+    const storedUserId = Number(localStorage.getItem('userId')) || 13;
+    userPayload.userId = storedUserId;
+
+    const request$ = this.isCreate
+      ? this.userService.createUser(userPayload)
+      : this.userService.updateUser(this.userId!, userPayload);
+
+    request$.subscribe({
+      next: () => {
+        this.showToast();
+        this.router.navigate(['/users']);
+      },
+      error: (err) => {
+        console.error('Error al guardar', err);
+        Swal.fire('Error', 'No se pudo guardar el usuario.', 'error');
+      },
+    });
+  }
+
+  base64StringToBlob(base64: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length)
+      .fill(0)
+      .map((_, i) => byteCharacters.charCodeAt(i));
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: 'image/jpeg' });
+  }
+
+  removeImage(): void {
+    this.uploadedImageFile = null;
+    this.imagePreviewUrl = null;
   }
 
   get isReadOnly(): boolean {
@@ -83,76 +167,23 @@ export class ItemEntryComponent implements OnInit {
     return this.mode === 'create';
   }
 
-  onPriorityChange1(value: string) {
-    this.selectedState = value;
-    console.log('Prioridad seleccionada:', value);
-  }
-
-  onPriorityChange2(value: string) {
-    this.selectedType = value;
-    console.log('Prioridad seleccionada:', value);
-  }
-
-  addItem() {
-    console.log('Item added!');
-  }
-
   onNameChange(value: string): void {
     this.name = value;
   }
-
-  onDescriptionChange(value: string): void {
-    this.description = value;
+  onSurnameChange(value: string): void {
+    this.surname = value;
   }
-
-  openTypeStateModal() {
-    this.isModalOpen = true;
+  onIdNumberChange(value: string): void {
+    this.idNumber = value;
   }
-
-  closeModal() {
-    this.isModalOpen = false;
+  onEmailChange(value: string): void {
+    this.email = value;
   }
-
-  onDataSelected(data: any) {
-    console.log('onDataSelected');
-    console.log('Data selected:', data);
+  onPasswordChange(value: string): void {
+    this.password = value;
   }
-
-  onStateChange(value: string) {
-    console.log('Estado seleccionado:', value);
-    this.selectedState = value;
-  }
-
-  onTypeChange(value: string): void {
-    console.log('Tipo cambiado:', value);
-    this.selectedType = value;
-  }
-
-  saveItem() {
-    if (
-      !this.name.trim() ||
-      !this.description.trim() ||
-      !this.selectedType ||
-      !this.selectedState ||
-      !this.uploadedImage
-    ) {
-      console.warn('Por favor, completa todos los campos antes de guardar.');
-      console.log('this.name', this.name);
-      console.log('this.description', this.description);
-      console.log('this.selectedType', this.selectedType);
-      console.log('this.selectedState', this.selectedState);
-      console.log('this.uploadedImage', this.uploadedImage);
-      return;
-    }
-
-    this.showToast();
-    console.log('Guardar en la base de datos');
-    this.router.navigate(['/inventory/items']);
-  }
-
-  onImageUploaded(imageData: string | null): void {
-    console.log('Imagen subida');
-    this.uploadedImage = imageData;
+  onCellphoneChange(value: string): void {
+    this.cellphone = value;
   }
 
   showToast() {
@@ -164,15 +195,5 @@ export class ItemEntryComponent implements OnInit {
       showConfirmButton: false,
       timer: 1500,
     });
-  }
-
-  modalData(value: any) {
-    console.log('Esto llega desde el modal');
-    console.log('modalData', value);
-    if (value.field === 'Tipo') {
-      this.types.push(value.name);
-    } else if (value.field === 'Estado') {
-      this.states.push(value.name);
-    }
   }
 }

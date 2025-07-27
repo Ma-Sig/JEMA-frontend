@@ -1,81 +1,59 @@
 <div class="container px-4 py-8 mx-auto">
-  <h1 class="section-title" *ngIf="isCreate">Registro de items</h1>
-  <h1 class="section-title" *ngIf="isEdit">Editar ítem</h1>
-  <h1 class="section-title" *ngIf="isReadOnly">Detalle del ítem</h1>
+  <h1 class="section-title" *ngIf="isCreate">Registrar Usuario</h1>
+  <h1 class="section-title" *ngIf="isEdit">Editar Usuario</h1>
+  <h1 class="section-title" *ngIf="isReadOnly">Detalles de Usuario</h1>
 
   <div class="bg-white rounded-2xl p-10">
-    <div class="grid grid-cols-12 gap-4">
-      <div class="space-y-2 col-span-12 md:col-span-6">
-        <label class="field-title">Estado</label>
-        <div class="grid grid-cols-12 gap-2 items-center">
-          <div class="col-span-11">
-            <app-dropdown
-              class="w-full block"
-              [options]="states"
-              [placeholder]="'Estado'"
-              [readonly]="isReadOnly"
-              [selectedLabel]="selectedState"
-              (selectionChange)="onStateChange($event)"
-            ></app-dropdown>
-          </div>
-          <div class="col-span-1 h-full">
-            <app-button class="w-full h-full" [label]="'+'" (clicked)="openTypeStateModal()" [readonly]="isReadOnly"></app-button>
-            <app-type-state-entry [(isOpen)]="isModalOpen" (emitDataSelected)="modalData($event)"></app-type-state-entry>
-          </div>
-        </div>
+    <app-upload-image (imageUploaded)="onImageUploaded($event)" [readonly]="isReadOnly"></app-upload-image>
+
+    <!-- <div class="">
+      <img class="block mx-auto w-40 h-40 rounded-full object-cover" src="" alt="" />
+    </div> -->
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div>
+        <label class="field-title">Nombres</label>
+        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onNameChange($event)" [value]="name"></app-input-field>
       </div>
 
-      <div class="space-y-2 col-span-12 md:col-span-6">
-        <label class="field-title">Tipo</label>
-        <div class="grid grid-cols-12 gap-2 items-center">
-          <div class="col-span-11">
-            <app-dropdown
-              class="w-full block"
-              [options]="types"
-              [placeholder]="'Tipo'"
-              [readonly]="isReadOnly"
-              [selectedLabel]="selectedType"
-              (selectionChange)="onTypeChange($event)"
-            ></app-dropdown>
-          </div>
-          <div class="col-span-1 h-full">
-            <app-button class="w-full h-full" [label]="'+'" (clicked)="openTypeStateModal()" [readonly]="isReadOnly"></app-button>
-            <app-type-state-entry [(isOpen)]="isModalOpen" (emitDataSelected)="modalData($event)"></app-type-state-entry>
-          </div>
-        </div>
+      <div>
+        <label class="field-title">Apellidos</label>
+        <app-input-field
+          [placeholder]="'Nombres'"
+          [readonly]="isReadOnly"
+          (valueChange)="onSurnameChange($event)"
+          [value]="surname"
+        ></app-input-field>
       </div>
 
-      <div class="space-y-2 col-span-12">
-        <label class="field-title">Nombre</label>
-        <div class="grid grid-cols-12 gap-2 items-center">
-          <div class="col-span-12">
-            <app-input-field [placeholder]="'Nombre'" [readonly]="isReadOnly" (valueChange)="onNameChange($event)" [value]="name"></app-input-field>
-          </div>
-        </div>
+      <div>
+        <label class="field-title">C&eacute;dula</label>
+        <app-input-field
+          [placeholder]="'Nombres'"
+          [readonly]="isReadOnly"
+          (valueChange)="onIdNumberChange($event)"
+          [value]="idNumber"
+        ></app-input-field>
       </div>
 
-      <div class="space-y-2 col-span-12 md:col-span-6">
-        <label class="field-title">Descripción</label>
-        <div class="grid grid-cols-12 gap-2 items-center h-40">
-          <div class="col-span-12">
-            <app-textarea-field
-              [placeholder]="'Descripción'"
-              [readonly]="isReadOnly"
-              (valueChange)="onDescriptionChange($event)"
-              [value]="description"
-            >
-            </app-textarea-field>
-          </div>
-        </div>
+      <div>
+        <label class="field-title">Correo electr&oacute;nico</label>
+        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onEmailChange($event)" [value]="email"></app-input-field>
       </div>
 
-      <div class="space-y-2 col-span-12 md:col-span-6">
-        <label class="field-title">Foto</label>
-        <div class="grid grid-cols-12 gap-2 items-center h-40">
-          <div class="col-span-12 h-full">
-            <app-upload-image (imageUploaded)="onImageUploaded($event)" [readonly]="isReadOnly" [imageSrc]="uploadedImage"></app-upload-image>
-          </div>
-        </div>
+      <!-- <div>
+        <label class="field-title">Usuario</label>
+        <app-input-field [placeholder]="'Nombres'" [readonly]="isReadOnly" (valueChange)="onUsernameChange($event)" [value]="name"></app-input-field>
+      </div> -->
+
+      <div>
+        <label class="field-title">Contraseña</label>
+        <app-input-field
+          [placeholder]="'Nombres'"
+          [readonly]="isReadOnly"
+          (valueChange)="onPasswordChange($event)"
+          [value]="password"
+        ></app-input-field>
       </div>
     </div>
 
