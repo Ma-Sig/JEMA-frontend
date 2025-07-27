@@ -6,8 +6,10 @@
       <app-search-bar (search)="onSearch($event)"></app-search-bar>
     </section>
 
-    <section class="flex justify-center items-start md:row-start-2 col-start-1 w-full h-[33vh] md:h-[calc(90%-2rem)]">
-      <app-location-map></app-location-map>
+    <section class="flex justify-center items-stretch md:row-start-2 col-start-1 w-full h-[33vh] md:h-[calc(90%-2rem)]">
+      <div class="w-full h-full">
+        <app-location-map></app-location-map>
+      </div>
     </section>
 
     <section class="col-start-1 md:col-start-2 md:row-span-2 flex justify-center">

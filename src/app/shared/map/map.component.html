@@ -1,0 +1,11 @@
+<div 
+  [id]="mapId" 
+  class="w-full h-full rounded-xl shadow-lg border border-black"
+></div>
+
+<div *ngIf="allowMarker && selectedCoords" class="coords">
+  Coordenadas: Latitud {{ selectedCoords.lat.toFixed(6) }},
+  Longitud {{ selectedCoords.lng.toFixed(6) }}
+</div>
+
+
