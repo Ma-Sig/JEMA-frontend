@@ -56,6 +56,30 @@ export class TableComponent {
     return `Mostrando ${start}-${end} de ${this.filteredData.length} registros`;
   }
 
+  get paginationRange(): number[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const delta = 2;
+
+    const range: number[] = [];
+    const start = Math.max(2, current - delta);
+    const end = Math.min(total - 1, current + delta);
+
+    range.push(1); // Siempre mostrar la primera
+
+    if (start > 2) range.push(-1); // -1 representará '...'
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+
+    if (end < total - 1) range.push(-2); // -2 representará '...'
+
+    if (total > 1) range.push(total); // Siempre mostrar la última si hay más de una página
+
+    return range;
+  }
+
   onView(row: any) {
     console.log('onView emitido con: ', row); // Añadir log para depuración
     this.view.emit(row);

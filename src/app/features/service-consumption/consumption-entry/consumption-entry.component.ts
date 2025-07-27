@@ -112,28 +112,30 @@ export class ConsumptionEntryComponent {
     const params = await firstValueFrom(this.route.paramMap);
     this.itemId = params.get('id') ?? undefined;
 
-    this.loadSystemData();
+    await this.loadSystemData();
 
     if (this.mode === 'edit' || this.mode === 'view') {
       this.loadItemData();
     }
   }
 
-  loadSystemData() {
-    this.serviceConsumptionService.getServices().then((services) => {
-      this.allServices = services;
-    });
-    this.serviceConsumptionService.getLugares().then((lugares) => {
-      this.places = lugares;
-    });
+  private async loadSystemData() {
+    this.allServices = await this.serviceConsumptionService.getServices();
+    this.places = await this.serviceConsumptionService.getLugares();
   }
 
-  loadItemData() {
+  private loadItemData() {
     console.log('Cargar datos del item con ID:', this.itemId);
-    // this.selectedService = 'Agua';
-    // this.selectedLocation = 'Aula 1';
-    this.quantity = '10';
-    this.selectedDate = new Date();
+    this.serviceConsumptionService.getConsumptionById(Number(this.itemId)).then((response) => {
+      this.selectedService =
+        this.allServices.find((service) => service.id_servicio === response.id_servicio) || null;
+      this.selectedPlace =
+        this.places.find((place) => place.id_lugar === response.id_lugar) || null;
+      console.log('Datos del consumo:', response);
+      console.log('places:', this.places);
+      this.quantity = response.cantidad.toString();
+      this.selectedDate = new Date(response.fecha);
+    });
   }
 
   get isReadOnly(): boolean {
@@ -192,7 +194,7 @@ export class ConsumptionEntryComponent {
     this.selectedPlace = value;
   }
 
-  saveConsumption() {
+  public async saveConsumption() {
     if (this.mode == 'create' && this.tableData.length === 0) {
       Swal.fire({
         icon: 'error',
@@ -202,7 +204,23 @@ export class ConsumptionEntryComponent {
       return;
     }
 
-    if (this.mode == 'edit' && !this.validate()) {
+    if (this.mode == 'edit') {
+      if (this.servicesConsumption.length !== 1) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Debe agregar solo un consumo a la tabla.',
+        });
+        return;
+      }
+
+      const response = await this.serviceConsumptionService.updateServiceConsumption(
+        Number(this.itemId),
+        this.servicesConsumption[0]
+      );
+      console.log('Consumo actualizado:', response);
+      Swal.fire('Actualizado!', 'El consumo ha sido actualizado correctamente.', 'success');
+      this.router.navigate(['/service-consumption/list']);
       return;
     }
 

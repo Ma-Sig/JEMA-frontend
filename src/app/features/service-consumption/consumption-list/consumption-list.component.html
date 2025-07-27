@@ -1,7 +1,13 @@
 <div class="container px-4 py-8 mx-auto">
   <div class="flex justify-between items-start">
     <h1 class="section-title">Consumo de servicios</h1>
-    <button [routerLink]="['/service-consumption/new']" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Nuevo</button>
+    <button
+      [routerLink]="['/service-consumption/new']"
+      class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+      [title]="'Nuevo consumo de servicio'"
+    >
+      Nuevo
+    </button>
   </div>
   <app-table
     class="w-full"

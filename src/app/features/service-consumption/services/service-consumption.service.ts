@@ -25,6 +25,28 @@ export class ServiceConsumptionService {
     return firstValueFrom(this.http.get<any[]>(URL, { headers }));
   }
 
+  public getConsumptions(): Promise<any[]> {
+    const URL = `${this.baseUrl}/consumos-servicio`;
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.getToken()}`,
+      'Content-Type': 'application/json',
+    });
+
+    return firstValueFrom(this.http.get<any[]>(URL, { headers }));
+  }
+
+  public getConsumptionById(id: number): Promise<any> {
+    const URL = `${this.baseUrl}/consumos-servicio/${id}`;
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.getToken()}`,
+      'Content-Type': 'application/json',
+    });
+
+    return firstValueFrom(this.http.get<any>(URL, { headers }));
+  }
+
   public getLugares(): Promise<any[]> {
     const URL = `${this.baseUrl}/lugares`;
 
@@ -46,6 +68,21 @@ export class ServiceConsumptionService {
     });
 
     return firstValueFrom(this.http.post<any>(URL, body, { headers }));
+  }
+
+  public updateServiceConsumption(id: number, consumption: any): Promise<any> {
+    const URL = `${this.baseUrl}/consumos-servicio/${id}`;
+    const body = {
+      ...consumption,
+      userId: this.getUserId(),
+    };
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.getToken()}`,
+      'Content-Type': 'application/json',
+    });
+
+    return firstValueFrom(this.http.put<any>(URL, body, { headers }));
   }
 
   // Funciones obligatorias

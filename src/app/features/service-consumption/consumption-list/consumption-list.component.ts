@@ -1,8 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TableComponent } from '../../../shared/table/table.component';
 import { RouterModule, Router } from '@angular/router';
 
 import Swal from 'sweetalert2';
+import { ServiceConsumptionService } from '../services/service-consumption.service';
+
+interface ApiResponse {
+  id_consumo_servicio: number;
+  cantidad: number;
+  fecha: string;
+  lugares: { nombre: string };
+  servicios: { nombre: string };
+}
+
+interface TableRow {
+  id: string;
+  lugar: string;
+  servicio: string;
+  cantidad: string;
+  fecha: string;
+}
 
 @Component({
   selector: 'app-consumption-list',
@@ -11,34 +28,7 @@ import Swal from 'sweetalert2';
   templateUrl: './consumption-list.component.html',
   styleUrl: './consumption-list.component.css',
 })
-export class ConsumptionListComponent {
-  constructor(private router: Router) {}
-  tableData = [
-    {
-      id: '00001',
-      lugar: 'Christine Brooks',
-      servicio: 'Electric',
-      cantidad: '5',
-      fecha: '2024-05-01',
-    },
-    { id: '00002', lugar: 'Rosie Pearson', servicio: 'Book', cantidad: '10', fecha: '2024-05-02' },
-    {
-      id: '00003',
-      lugar: 'Michael Johnson',
-      servicio: 'Water',
-      cantidad: '7',
-      fecha: '2024-05-03',
-    },
-    { id: '00004', lugar: 'Sarah Williams', servicio: 'Gas', cantidad: '3', fecha: '2024-05-04' },
-    {
-      id: '00005',
-      lugar: 'David Brown',
-      servicio: 'Internet',
-      cantidad: '12',
-      fecha: '2024-05-05',
-    },
-  ];
-
+export class ConsumptionListComponent implements OnInit {
   tableColumns = [
     { key: 'id', label: 'ID' },
     { key: 'lugar', label: 'Lugar' },
@@ -46,15 +36,41 @@ export class ConsumptionListComponent {
     { key: 'cantidad', label: 'Cantidad' },
     { key: 'fecha', label: 'Fecha' },
   ];
+  tableData: TableRow[] = [];
+
+  constructor(
+    private router: Router,
+    private serviceConsumptionService: ServiceConsumptionService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadSystemData();
+  }
+
+  private loadSystemData() {
+    this.serviceConsumptionService.getConsumptions().then((response) => {
+      this.tableData = this.mapToTableData(response);
+    });
+  }
+
+  private mapToTableData(response: ApiResponse[]): TableRow[] {
+    return response.map((item) => ({
+      id: item.id_consumo_servicio.toString().padStart(5, '0'),
+      lugar: item.lugares?.nombre || '—',
+      servicio: item.servicios?.nombre || '—',
+      cantidad: item.cantidad.toFixed(2),
+      fecha: item.fecha,
+    }));
+  }
 
   onViewItem(row: any) {
     console.log('onViewItem recibido:', row);
-    this.router.navigate(['/service-consumption/', row.id, 'view']);
+    this.router.navigate(['/service-consumption/', Number(row.id), 'view']);
   }
 
   onEditItem(row: any) {
     console.log('onEditItem recibido:', row);
-    this.router.navigate(['/service-consumption/', row.id, 'edit']);
+    this.router.navigate(['/service-consumption/', Number(row.id), 'edit']);
   }
 
   async onDeleteItem(row: any) {
