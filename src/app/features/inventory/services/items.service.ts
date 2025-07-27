@@ -6,16 +6,20 @@ import { environment } from '../../../../environments/environment';
 export interface CaracteristicasItem {
   id_caracteristicas_item?: number;
   userId: number | null;
+  codigo: string;
   nombre: string;
   marca: string;
+  categoria: string;
   descripcion: string;
   imagen?: number[] | null; // Para envío como array de bytes
 }
 
 export interface CaracteristicasItemResponse {
   id_caracteristicas_item: number;
+  codigo: string;
   nombre: string;
   marca: string;
+  categoria: string;
   descripcion: string;
   imagen: string | null; // Base64 string desde el backend
 }

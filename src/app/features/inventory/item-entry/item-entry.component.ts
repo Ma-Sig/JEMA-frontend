@@ -20,8 +20,10 @@ export class ItemEntryComponent implements OnInit {
   itemId?: number;
 
   // Propiedades del formulario
+  codigo: string = '';
   nombre: string = '';
   marca: string = '';
+  categoria: string = '';
   descripcion: string = '';
   uploadedImageFile: string | null = null; // base64 sin prefijo
   imagePreviewUrl: SafeUrl | null = null;
@@ -59,9 +61,11 @@ export class ItemEntryComponent implements OnInit {
   async loadItemData(id: number): Promise<void> {
     try {
       const item = await firstValueFrom(this.itemService.getItemById(id));
-
+      console.log('codigo', item.codigo);
+      this.codigo = item.codigo;
       this.nombre = item.nombre;
       this.marca = item.marca;
+      this.categoria = item.categoria;
       this.descripcion = item.descripcion;
 
       if (item.imagen) {
@@ -105,8 +109,10 @@ export class ItemEntryComponent implements OnInit {
     try {
       const itemPayload: CaracteristicasItem = {
         userId: this.itemService.getUserId(),
+        codigo: this.codigo.trim(),
         nombre: this.nombre.trim(),
         marca: this.marca.trim(),
+        categoria: this.categoria.trim(),
         descripcion: this.descripcion.trim(),
       };
 
@@ -126,7 +132,7 @@ export class ItemEntryComponent implements OnInit {
       await firstValueFrom(request$);
 
       this.showSuccessToast();
-      this.router.navigate(['/inventory/items']); // Ajusta la ruta según tu aplicación
+      this.router.navigate(['/inventory/items']);
     } catch (error) {
       console.error('Error al guardar item:', error);
       this.errorMessage = 'No se pudo guardar el item. Inténtalo de nuevo.';
@@ -137,20 +143,25 @@ export class ItemEntryComponent implements OnInit {
   }
 
   private validateForm(): boolean {
+    if (!this.codigo.trim()) {
+      this.errorMessage = 'El codigo es obligatorio';
+      return false;
+    }
+
     if (!this.nombre.trim()) {
       this.errorMessage = 'El nombre es obligatorio';
       return false;
     }
 
-    if (!this.marca.trim()) {
-      this.errorMessage = 'La marca es obligatoria';
-      return false;
-    }
+    // if (!this.marca.trim()) {
+    //   this.errorMessage = 'La marca es obligatoria';
+    //   return false;
+    // }
 
-    if (!this.descripcion.trim()) {
-      this.errorMessage = 'La descripción es obligatoria';
-      return false;
-    }
+    // if (!this.descripcion.trim()) {
+    //   this.errorMessage = 'La descripción es obligatoria';
+    //   return false;
+    // }
 
     return true;
   }
@@ -183,12 +194,7 @@ export class ItemEntryComponent implements OnInit {
   }
 
   get canSubmit(): boolean {
-    return (
-      this.nombre.trim() !== '' &&
-      this.marca.trim() !== '' &&
-      this.descripcion.trim() !== '' &&
-      !this.isSubmitting
-    );
+    return this.codigo.trim() !== '' && this.nombre.trim() !== '' && !this.isSubmitting;
   }
 
   get buttonText(): string {
