@@ -1,23 +1,48 @@
 <div class="page-container flex flex-col md:flex-row">
   <div class="content-area flex-1 p-4 sm:p-6">
     <div class="flex flex-col items-center gap-6">
-      <div class="w-full max-w-md px-2 sm:px-0">
+
+      <!-- Autocomplete search -->
+      <div *ngIf="selectedItem === 'Historico de Item'" class="w-full max-w-md px-2 sm:px-0">
         <input
           type="text"
-          placeholder="Buscar..."
+          placeholder="Buscar ítem por código o nombre"
           [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchTermChange($event)"
           class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <ul *ngIf="filteredItems.length > 0" class="border rounded bg-white shadow mt-1">
+          <li *ngFor="let item of filteredItems" class="px-4 py-2 hover:bg-gray-200 cursor-pointer" (click)="onSelectItem(item)">
+            {{ item.codigo }} - {{ item.nombre }}
+          </li>
+        </ul>
       </div>
 
-      <div class="calendar-container flex flex-col md:flex-row gap-6 items-center w-full justify-center">
+      <!-- Fechas solo si es Histórico -->
+      <div *ngIf="selectedItem === 'Historico de Item'" class="calendar-container flex flex-col md:flex-row gap-6 items-center w-full justify-center">
         <div class="flex flex-col items-center">
           <p class="text-gray-600 mb-2">Fecha inicio</p>
-          <app-calendar></app-calendar>
+          <app-calendar [(ngModel)]="fechaInicio"></app-calendar>
         </div>
         <div class="flex flex-col items-center">
           <p class="text-gray-600 mb-2">Fecha fin</p>
-          <app-calendar></app-calendar>
+          <app-calendar [(ngModel)]="fechaFin"></app-calendar>
+        </div>
+      </div>
+
+      <!-- Dropdowns solo para Item por lugar -->
+      <div *ngIf="selectedItem === 'Item por lugar'" class="flex flex-col md:flex-row gap-4 items-center w-full justify-center">
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700">Lugar:</label>
+          <select [(ngModel)]="selectedLugar" (change)="onLugarSeleccionado(selectedLugar)" class="px-4 py-2 border rounded">
+            <option *ngFor="let lugar of lugares" [ngValue]="lugar">{{ lugar.nombre }}</option>
+          </select>
+        </div>
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700">Item:</label>
+          <select [(ngModel)]="selectedItemLugar" class="px-4 py-2 border rounded shadow-sm w-full max-w-xs">
+            <option *ngFor="let item of itemsPorLugar" [value]="item">{{ item }}</option>
+          </select>
         </div>
       </div>
 

@@ -10,10 +10,13 @@ export class ReportService {
 
   constructor(private http: HttpClient) {}
 
-  getHistoricoItem(codigo: string, userId: string) {
+  getHistoricoItem(codigo: string, userId: string, fechaInicio?: Date | null, fechaFin?: Date | null) {
     const token = localStorage.getItem('token');
     const headers = { Authorization: `Bearer ${token}` };
-    const params = new HttpParams().set('userId', userId);
+
+    let params = new HttpParams().set('userId', userId);
+    if (fechaInicio) params = params.set('fechaInicio', fechaInicio.toISOString());
+    if (fechaFin) params = params.set('fechaFin', fechaFin.toISOString());
 
     return this.http.get<any[]>(`${this.baseUrl}/historico/${codigo}`, { headers, params });
   }
@@ -32,5 +35,12 @@ export class ReportService {
     const params = new HttpParams().set('userId', userId);
 
     return this.http.get<any[]>(`${this.baseUrl}/estado-items`, { headers, params });
+  }
+
+  buscarItems(query: string) {
+    const token = localStorage.getItem('token');
+    const headers = { Authorization: `Bearer ${token}` };
+    const params = new HttpParams().set('q', query);
+    return this.http.get<any[]>(`${this.baseUrl}/buscar-items`, { headers, params });
   }
 }
