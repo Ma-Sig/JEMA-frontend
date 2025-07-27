@@ -1,6 +1,6 @@
-<div class="upload-container h-full relative">
-  <label class="upload-button h-full w-full block" for="photoUpload" [class.pointer-events-none]="readonly">
-    <div class="upload-circle h-full w-40 relative overflow-hidden">
+<div class="upload-container relative">
+  <label class="upload-button block" for="photoUpload" [class.pointer-events-none]="readonly">
+    <div class="upload-circle h-40 w-40 relative overflow-hidden">
       <img *ngIf="imageSrc" [src]="imageSrc" class="preview-image h-full w-full object-cover rounded-md" />
 
       <svg
