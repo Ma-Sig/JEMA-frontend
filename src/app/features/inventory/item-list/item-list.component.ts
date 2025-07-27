@@ -44,7 +44,7 @@ export class ItemListComponent implements OnInit {
       this.isLoading = true;
       this.errorMessage = '';
 
-      const items = await firstValueFrom(this.itemService.getAllItems());
+      const items = await firstValueFrom(this.itemService.getAllItems(false));
       this.inventoryData = items;
     } catch (error) {
       console.error('Error al cargar items:', error);

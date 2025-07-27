@@ -60,8 +60,7 @@ export class ItemEntryComponent implements OnInit {
 
   async loadItemData(id: number): Promise<void> {
     try {
-      const item = await firstValueFrom(this.itemService.getItemById(id));
-      console.log('codigo', item.codigo);
+      const item = await firstValueFrom(this.itemService.getItemById(id, true));
       this.codigo = item.codigo;
       this.nombre = item.nombre;
       this.marca = item.marca;

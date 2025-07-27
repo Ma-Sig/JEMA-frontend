@@ -35,8 +35,10 @@ export class ItemService {
   /**
    * Obtiene una característica de item por ID
    */
-  getItemById(id: number): Observable<CaracteristicasItemResponse> {
-    return this.http.get<CaracteristicasItemResponse>(`${this.baseUrl}/caracteristicas-item/${id}`);
+  getItemById(id: number, includeImage: boolean): Observable<CaracteristicasItemResponse> {
+    return this.http.get<CaracteristicasItemResponse>(
+      `${this.baseUrl}/caracteristicas-item/${id}?includeImage=${includeImage}`
+    );
   }
 
   /**
@@ -69,8 +71,10 @@ export class ItemService {
   /**
    * Obtiene todas las características de items
    */
-  getAllItems(): Observable<CaracteristicasItemResponse[]> {
-    return this.http.get<CaracteristicasItemResponse[]>(`${this.baseUrl}/caracteristicas-item`);
+  getAllItems(includeImage: boolean): Observable<CaracteristicasItemResponse[]> {
+    return this.http.get<CaracteristicasItemResponse[]>(
+      `${this.baseUrl}/caracteristicas-item?includeImage=${includeImage}`
+    );
   }
 
   /**
