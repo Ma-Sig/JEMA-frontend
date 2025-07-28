@@ -99,7 +99,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   onMapClick = (e: any) => {
     const coords = e.latlng;
     this.setMarker(coords);
-    this.coordinateSelected.emit(coords);
+    console.log("Coordenadas desde el hijo: ", coords);
+    this.coordinateSelected.emit({ lat: coords.lat, lng: coords.lng });
     this.selectedCoords = coords;
   };
 

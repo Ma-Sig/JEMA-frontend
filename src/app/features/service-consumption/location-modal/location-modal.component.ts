@@ -7,6 +7,7 @@ import { TextareaFieldComponent } from '../../../shared/textarea-field/textarea-
 import Swal from 'sweetalert2';
 import { DropdownComponent } from '../../../shared/dropdown/dropdown.component';
 import { ModalsService } from '../services/modals.service';
+import { CoordsMapComponent } from "./coords-map/coords-map.component";
 
 interface LugarPadre {
   id_lugar: number;
@@ -31,7 +32,8 @@ interface Lugar {
     ButtonComponent,
     TextareaFieldComponent,
     DropdownComponent,
-  ],
+    CoordsMapComponent
+],
   templateUrl: './location-modal.component.html',
   styleUrl: './location-modal.component.css',
 })
@@ -72,7 +74,7 @@ export class LocationModalComponent implements OnInit {
       ...(this.coordinates !== '' && {
         coordenadas: {
           type: 'Point',
-          coordinates: this.coordinates.split(',').map(Number),
+          coordinates: this.coordinates.split(',').reverse().map(Number),
         },
       }),
     };
@@ -147,6 +149,10 @@ export class LocationModalComponent implements OnInit {
 
   public onCoordinatesChange(value: string) {
     this.coordinates = value;
+  }
+
+  public onCoordinateSelected(coord: { lat: number; lng: number }) {
+    this.coordinates = `${coord.lat}, ${coord.lng}`;
   }
 
   public onDescriptionChange(value: string) {
