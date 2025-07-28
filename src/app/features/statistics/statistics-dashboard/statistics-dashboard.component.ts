@@ -122,7 +122,7 @@ export class StatisticsDashboardComponent implements OnInit {
         beginAtZero: true,
         title: {
           display: true,
-          text: 'Consumo (€)',
+          text: 'Consumo (USD)',
         },
       },
       x: {
@@ -223,37 +223,55 @@ export class StatisticsDashboardComponent implements OnInit {
       this.s2FinalMonthSelected.id
     );
     console.log('Consumo de servicios general:', response);
-    this.processChartData(response);
+    // this.processChartData(response);
+
+    const predictionData = await this.statisticsService.getMLPPredictions(response);
+    // this.processChartData(predictionData);
+    this.prepareChart(response, predictionData);
+    console.log('Predicción de consumo para el siguiente mes:', predictionData);
     // this.nextServiceConsumption =
   }
 
-  private processChartData(responseData: any[]) {
+  private prepareChart(realData: any[], predictionData: any[]) {
     const monthNames = this.months.map((m) => m.name);
 
-    // Ordenar los datos por mes numérico
-    const sortedData = [...responseData].sort((a, b) => parseInt(a.mes) - parseInt(b.mes));
+    // Asegurar que las predicciones estén en formato 1-12
+    const allMonths = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
 
-    // Crear etiquetas (nombres de meses)
-    const labels = sortedData.map((item) => {
-      const monthIndex = parseInt(item.mes) - 1;
-      return monthNames[monthIndex] || `Mes ${item.mes}`;
+    const labels = allMonths.map((mes) => {
+      const index = parseInt(mes) - 1;
+      return monthNames[index] || `Mes ${mes}`;
     });
 
-    // Crear dataset
-    const dataset = {
-      data: sortedData.map((item) => item.total_mensual),
-      label: 'Consumo General',
-      fill: true,
+    const getMonthlyValues = (source: any[]) => {
+      const map = new Map(source.map((d) => [d.mes.padStart(2, '0'), d.total_mensual]));
+      return allMonths.map((mes) => map.get(mes) ?? 0);
+    };
+
+    const realDataset = {
+      data: getMonthlyValues(realData),
+      label: 'Consumo Real',
+      fill: false,
       tension: 0.3,
       borderColor: '#4f46e5',
       backgroundColor: 'rgba(79, 70, 229, 0.1)',
       pointBackgroundColor: '#4f46e5',
     };
 
-    // Actualizar los datos del gráfico
+    const predictionDataset = {
+      data: getMonthlyValues(predictionData),
+      label: 'Predicción MLP',
+      fill: false,
+      tension: 0.3,
+      borderColor: '#16a34a',
+      backgroundColor: 'rgba(22, 163, 74, 0.1)',
+      pointBackgroundColor: '#16a34a',
+      borderDash: [5, 5],
+    };
+
     this.lineChartData = {
       labels: labels,
-      datasets: [dataset],
+      datasets: [realDataset, predictionDataset],
     };
   }
 }

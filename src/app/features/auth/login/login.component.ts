@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 
 import { AuthService } from '../services/auth.service';
 import { environment } from '../../../../environments/environment';
+import Swal from 'sweetalert2';
 
 type LoginView = 'login' | 'forgot-password' | 'forgot-password-sent' | 'contact';
 
@@ -42,7 +43,7 @@ export class LoginComponent implements AfterViewInit {
         const user = this.decodeJwt(token);
         console.log('Google info:', user);
         localStorage.setItem('token', 'fake-jwt-token');
-        localStorage.setItem('userId', user.userId);
+        localStorage.setItem('userId', '13');
         this.router.navigate(['/dashboard']);
       };
     }
@@ -82,28 +83,55 @@ export class LoginComponent implements AfterViewInit {
     }
   }
 
-  onLogin(): void {
+  async onLogin(): Promise<void> {
     if (this.loginForm.valid) {
-      // Aquí implementarías la lógica de autenticación
-      console.log('Login attempt:', this.loginForm.value);
-      localStorage.setItem('token', 'fake-jwt-token');
+      const email = this.loginForm.get('username')?.value;
+      const password = this.loginForm.get('password')?.value;
 
-      const username = this.loginForm.get('username')?.value;
-      const fakeToken = this.createFakeJwtToken(username);
+      let result = null;
+      try {
+        result = await this.authService.login(email, password);
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: (error as any).error.error,
+        });
+        return;
+      }
 
-      this.authService.getUserIdByEmail(username).subscribe({
-        next: ({ id_usuario }) => {
-          localStorage.setItem('userId', id_usuario);
-        },
-        error: (error) => {
-          console.error('Error al obtener el user ID:', error);
-        },
-      });
+      if (result.token && result.userId) {
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('userId', result.userId);
+        this.router.navigate(['/dashboard']);
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Credenciales inválidas',
+        });
+      }
 
-      localStorage.setItem('token', fakeToken);
+      // // Aquí implementarías la lógica de autenticación
+      // console.log('Login attempt:', this.loginForm.value);
+      // localStorage.setItem('token', 'fake-jwt-token');
 
-      // Simular login exitoso y redirigir al dashboard
-      this.router.navigate(['/dashboard']);
+      // const username = this.loginForm.get('username')?.value;
+      // const fakeToken = this.createFakeJwtToken(username);
+
+      // this.authService.getUserIdByEmail(username).subscribe({
+      //   next: ({ id_usuario }) => {
+      //     localStorage.setItem('userId', id_usuario);
+      //   },
+      //   error: (error) => {
+      //     console.error('Error al obtener el user ID:', error);
+      //   },
+      // });
+
+      // localStorage.setItem('token', fakeToken);
+
+      // // Simular login exitoso y redirigir al dashboard
+      // this.router.navigate(['/dashboard']);
     } else {
       // Marcar todos los campos como touched para mostrar errores
       this.loginForm.markAllAsTouched();

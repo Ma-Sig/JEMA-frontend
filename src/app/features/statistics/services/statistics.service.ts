@@ -74,6 +74,17 @@ export class StatisticsService {
     return firstValueFrom(this.http.get<any[]>(url, { headers, params }));
   }
 
+  public getMLPPredictions(data: any[]): Promise<any> {
+    const url = `${this.baseUrl}/prediction/mlp`;
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.getToken()}`,
+      'Content-Type': 'application/json',
+    });
+
+    return firstValueFrom(this.http.post<any>(url, data, { headers }));
+  }
+
   public getItemsByLocation(id_lugar: number): Promise<any[]> {
     const URL = `${this.baseUrl}/items/lugar/${id_lugar}`;
 

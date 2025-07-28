@@ -14,15 +14,19 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(username: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/login`, { username, password });
+  login(email: string, password: string): Promise<any> {
+    return this.http.post<any>(`${this.baseUrl}/login`, { email, password }).toPromise();
   }
 
   isLoggedIn(): boolean {
-    if (isPlatformBrowser(this.platformId)) {
-      return !!localStorage.getItem('token');
+    if (localStorage.getItem('token')) {
+      return true;
     }
     return false;
+    // if (isPlatformBrowser(this.platformId)) {
+    //   return !!localStorage.getItem('token');
+    // }
+    // return false;
   }
 
   logout() {
