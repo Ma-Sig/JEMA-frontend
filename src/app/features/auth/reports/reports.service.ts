@@ -15,7 +15,7 @@ export class ReportService {
   }
 
   getLugares() {
-    return this.http.get<{ id_lugar: number; nombre: string }[]>(`${this.baseUrl}/combo-lugares/`);
+    return this.http.get<{ id: number; nombre: string }[]>(`${this.baseUrl}/combo-lugares/`);
   }
 
   getItemsPorLugar(idLugar: number) {
@@ -23,10 +23,10 @@ export class ReportService {
   }
 
   getAuditoriasItem(idItem: number) {
-    return this.http.get<{nombre_tabla: string; accion: string; fecha: Date; usuarios:{nombres: string}}>(`${this.baseUrl}/auditorias-item/${idItem}`);
+    return this.http.get<{nombre_tabla: string; accion: string; fecha: Date; usuarios:{nombres: string}}[]>(`${this.baseUrl}/auditorias-item/${idItem}`);
   }
 
   getEstadoItems() {
-    return this.http.get<{codigo: string; nombre: string; estado: string}>(`${this.baseUrl}/estado-items/`);
+    return this.http.get<{codigo: string; nombre: string; estado: string}[]>(`${this.baseUrl}/estado-items/`);
   }
 }

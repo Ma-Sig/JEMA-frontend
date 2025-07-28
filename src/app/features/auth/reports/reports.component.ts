@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-reports',
   templateUrl: './reports.component.html',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Quita ButtonComponent y TableComponent si no usas
+  imports: [CommonModule, FormsModule],
 })
 export class ReportsComponent implements OnInit {
   items = ['Historico de Item', 'Item por lugar'];
@@ -34,9 +34,9 @@ export class ReportsComponent implements OnInit {
   }
 
   seleccionarItem(item: string | null) {
-  this.selectedItem = item;
-  this.resetReport();
-}
+    this.selectedItem = item;
+    this.resetReport();
+  }
 
   resetReport() {
     this.mensajeInfo = '';
@@ -85,7 +85,7 @@ export class ReportsComponent implements OnInit {
     this.reportService.getAuditoriasItem(itemId).subscribe({
       next: (auditorias) => {
         const auditoriasArray = Array.isArray(auditorias) ? auditorias : [auditorias];
-        if (!auditoriasArray.length) {
+        if (auditoriasArray.length === 0) {
           this.mensajeInfo = 'No hay información del ítem seleccionado.';
           return;
         }
@@ -111,38 +111,59 @@ export class ReportsComponent implements OnInit {
   }
 
   mostrarItemsPorLugar() {
-    if (!this.selectedLugar) {
-      alert('Por favor selecciona un lugar');
-      return;
-    }
-
-    this.reportService.getEstadoItems().subscribe({
-      next: (estadoItems) => {
-        const estadoItemsArray = Array.isArray(estadoItems) ? estadoItems : [estadoItems];
-        const itemsDelLugar = estadoItemsArray.filter((item: any) => item.lugarId === this.selectedLugar.id_lugar);
-
-        if (itemsDelLugar.length === 0) {
-          this.mensajeInfo = 'No hay ítems en el lugar seleccionado.';
-          return;
-        }
-
-        this.tableColumns = [
-          { key: 'codigoNombre', label: 'Código - Nombre Item' },
-          { key: 'lugar', label: 'Lugar' },
-          { key: 'estado', label: 'Estado' },
-        ];
-
-        this.tableData = itemsDelLugar.map((item: any) => ({
-          codigoNombre: `${item.codigo} - ${item.nombre}`,
-          lugar: this.selectedLugar.nombre,
-          estado: item.estado,
-        }));
-
-        this.showTable = true;
-      },
-      error: () => alert('Error al cargar estado de ítems'),
-    });
+  if (!this.selectedLugar) {
+    alert('Por favor selecciona un lugar');
+    return;
   }
+
+  console.log('selectedLugar:', this.selectedLugar);
+
+  if (!this.selectedLugar.id) {
+    alert('El lugar seleccionado no tiene id');
+    return;
+  }
+
+  this.reportService.getItemsPorLugar(this.selectedLugar.id).subscribe({
+    next: (itemsPorLugar) => {
+      this.reportService.getEstadoItems().subscribe({
+        next: (estadoItems) => {
+          const estadoItemsArray = Array.isArray(estadoItems) ? estadoItems : [estadoItems];
+
+          const combinedItems = itemsPorLugar.map((itemLugar: any) => {
+            const estadoItem = estadoItemsArray.find(
+              (estado: any) => estado.codigo === itemLugar.codigo
+            );
+
+            return {
+              codigoNombre: `${itemLugar.codigo} - ${itemLugar.nombre}`,
+              lugar: this.selectedLugar.nombre,
+              estado: estadoItem ? estadoItem.estado : 'Desconocido',
+            };
+          });
+
+          if (combinedItems.length === 0) {
+            this.mensajeInfo = 'No hay ítems en el lugar seleccionado.';
+            this.showTable = false;
+            return;
+          }
+
+          this.tableColumns = [
+            { key: 'codigoNombre', label: 'Código - Nombre Item' },
+            { key: 'lugar', label: 'Lugar' },
+            { key: 'estado', label: 'Estado' },
+          ];
+
+          this.tableData = combinedItems;
+          this.showTable = true;
+        },
+        error: () => alert('Error al cargar estado de ítems'),
+      });
+    },
+    error: () => alert('Error al cargar ítems por lugar'),
+  });
+}
+
+
 
   onGuardarReporte() {
     if (this.tableData.length === 0) {
@@ -150,7 +171,6 @@ export class ReportsComponent implements OnInit {
       return;
     }
 
-    // Usar solo 2 argumentos si exportToExcel espera 2
-    exportToExcel(this.tableData,"archivo");
+    exportToExcel(this.tableData, 'archivo');
   }
 }
