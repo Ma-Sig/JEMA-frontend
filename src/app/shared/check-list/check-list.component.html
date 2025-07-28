@@ -1,10 +1,10 @@
 <div class="selectable-list-container w-full">
   <ul class="selectable-list w-full">
-    <li *ngFor="let item of items" class="list-item" [class.selected]="item.selected" (click)="toggleItem(item)">
+    <li *ngFor="let option of options" class="list-item" [class.selected]="option.selected" (click)="toggleItem(option)">
       <div class="checkbox-container" (click)="$event.stopPropagation()">
-        <input type="checkbox" class="checkbox" [(ngModel)]="item.selected" (click)="$event.stopPropagation()" />
+        <input type="checkbox" class="checkbox" [(ngModel)]="option.selected" (click)="$event.stopPropagation()" />
       </div>
-      <span class="item-text">{{ item.text }}</span>
+      <span class="item-text">{{ propertyName === '' ? option : option[propertyName] }}</span>
     </li>
   </ul>
 

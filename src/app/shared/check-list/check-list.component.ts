@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 interface Item {
@@ -16,41 +16,50 @@ interface Item {
   imports: [FormsModule, CommonModule],
 })
 export class CheckListComponent {
-  items: Item[] = [
-    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
-    { id: '1235', text: '1235 - Pc Imac. Estado: Bueno', selected: true },
-    { id: '1236', text: '1236 - Pc Imac. Estado: Bueno', selected: true },
-    { id: '1237', text: '1237 - Pc Imac. Estado: Bueno', selected: false },
-    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
-    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
-    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
-    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
-    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
-    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
-    { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
-  ];
+  @Input() options: any[] = [];
+  @Input() propertyName: string = '';
+  @Output() selectionChange = new EventEmitter<any>();
+
+  constructor() {
+    if (this.options.length === 0) {
+      this.options = [
+        { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+        { id: '1235', text: '1235 - Pc Imac. Estado: Bueno', selected: true },
+        { id: '1236', text: '1236 - Pc Imac. Estado: Bueno', selected: true },
+        { id: '1237', text: '1237 - Pc Imac. Estado: Bueno', selected: false },
+        { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+        { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+        { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+        { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+        { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+        { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+        { id: '1234', text: '1234 - Pc Imac. Estado: Bueno', selected: true },
+      ];
+    }
+  }
 
   get selectedCount(): number {
-    return this.items.filter(item => item.selected).length;
+    return this.options.filter((item) => item.selected).length;
   }
 
   get allSelected(): boolean {
-    return this.selectedCount === this.items.length;
+    return this.selectedCount === this.options.length;
   }
 
   toggleItem(item: Item): void {
     item.selected = !item.selected;
+    console.log('Elemento seleccionado dentro del check-list:', item);
+    const selectedItems = this.options.filter((i) => i.selected);
+    this.selectionChange.emit(selectedItems);
   }
 
   toggleAll(): void {
     const newState = !this.allSelected;
-    this.items.forEach(item => item.selected = newState);
+    this.options.forEach((item) => (item.selected = newState));
   }
 
   performAction(): void {
-    const selectedIds = this.items
-      .filter(item => item.selected)
-      .map(item => item.id);
+    const selectedIds = this.options.filter((item) => item.selected).map((item) => item.id);
     alert(`Acción realizada con los elementos: ${selectedIds.join(', ')}`);
   }
 }

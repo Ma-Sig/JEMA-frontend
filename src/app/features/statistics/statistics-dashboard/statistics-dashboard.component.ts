@@ -1,91 +1,259 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BarChartComponent } from '../bar-chart/bar-chart.component';
-import { LineChartComponent } from '../line-chart/line-chart.component';
 import { DropdownComponent } from '../../../shared/dropdown/dropdown.component';
-import { CheckListComponent } from '../../../shared/check-list/check-list.component';
-import { CalendarComponent } from '../../../shared/calendar/calendar.component';
+import { StatisticsService } from '../services/statistics.service';
+import { ButtonComponent } from '../../../shared/button/button.component';
 
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartOptions } from 'chart.js';
+import {
+  Chart,
+  BarController,
+  BarElement,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  Title,
+  CategoryScale,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+Chart.register(
+  BarController,
+  BarElement,
+  LineController,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Title,
+  Tooltip,
+  Legend
+);
+
+import * as tf from '@tensorflow/tfjs';
+import Swal from 'sweetalert2';
+
+interface LugarPadre {
+  id_lugar: number;
+  nombre: string;
+}
+
+interface Lugar {
+  id_lugar: number;
+  id_lugar_padre: number;
+  nombre: string;
+  descripcion: string;
+  lugarPadre: LugarPadre;
+}
+
+interface Unit {
+  id_unidad: number;
+  nombre: string;
+}
+interface Service {
+  id_servicio: number;
+  id_unidad: number;
+  nombre: string;
+  precio: number;
+  unidades: Unit;
+}
 @Component({
   selector: 'app-statistics-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    BarChartComponent,
-    LineChartComponent,
-    DropdownComponent,
-    CheckListComponent,
-    CalendarComponent,
-  ],
+  imports: [CommonModule, DropdownComponent, ButtonComponent, BaseChartDirective],
   templateUrl: './statistics-dashboard.component.html',
   styleUrl: './statistics-dashboard.component.css',
 })
 export class StatisticsDashboardComponent implements OnInit {
-  selectedLocation = '';
-  locations: string[] = [];
-  selectedItem = '';
-  items: string[] = [];
-  itemsPerLocationXLabels: string[] = [];
-  itemsPerLocationDatasets: any[] = [];
-  servicesConsumpstionDateStart: Date = new Date();
-  servicesConsumpstionDateEnd: Date = new Date();
+  months: any[] = [];
 
-  servicesConsumptionXLabels: string[] = [];
-  servicesConsumptionDatasets: any[] = [];
+  locations: Lugar[] = [];
+  items: any[] = [];
 
-  ngOnInit(): void {
-    this.loadSystemData();
-    this.itemsPerLocationXLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'];
+  s1SelectedLocation: Lugar | null = null;
+  s1FilteredItems: any = null;
 
-    this.itemsPerLocationDatasets = [
-      {
-        label: 'Computadora',
-        data: [65, 59, 80, 81, 56, 55, 40],
+  s2InitialMonthSelected: any = null;
+  s2FinalMonthSelected: any = null;
+  nextServiceConsumption: number | null = null;
+
+  s3CompesumptionByService: any[] = [];
+
+  // ================ Datos para Bar Chart ================
+  public barChartData: ChartConfiguration<'bar'>['data'] = {
+    labels: [], // categorías
+    datasets: [], // cantidad por categoría
+  };
+
+  public barChartOptions: ChartOptions<'bar'> = {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Cantidad de ítems',
+        },
       },
-      {
-        label: 'Proyector',
-        data: [28, 48, 40, 19, 86, 27, 90],
+      x: {
+        title: {
+          display: true,
+          text: 'Categorías',
+        },
       },
-      {
-        label: 'Silla',
-        data: [10, 20, 30, 40, 50, 60, 70],
+    },
+  };
+
+  public barChartLegend = true;
+  //================================================
+
+  // ========= Consumo de servicios general =========
+  public lineChartData: ChartConfiguration<'line'>['data'] = {
+    labels: [],
+    datasets: [],
+  };
+
+  public lineChartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Consumo (€)',
+        },
       },
+      x: {
+        title: {
+          display: true,
+          text: 'Meses',
+        },
+      },
+    },
+  };
+
+  public lineChartLegend = true;
+
+  // ================================================
+
+  constructor(private statisticsService: StatisticsService) {}
+
+  async ngOnInit(): Promise<void> {
+    this.months = [
+      { id: 1, name: 'Enero' },
+      { id: 2, name: 'Febrero' },
+      { id: 3, name: 'Marzo' },
+      { id: 4, name: 'Abril' },
+      { id: 5, name: 'Mayo' },
+      { id: 6, name: 'Junio' },
+      { id: 7, name: 'Julio' },
+      { id: 8, name: 'Agosto' },
+      { id: 9, name: 'Septiembre' },
+      { id: 10, name: 'Octubre' },
+      { id: 11, name: 'Noviembre' },
+      { id: 12, name: 'Diciembre' },
     ];
 
-    this.servicesConsumptionXLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul'];
-    this.servicesConsumptionDatasets = [
-      {
-        label: 'Agua',
-        data: [65, 59, 80, 81, 56, 55, 40],
-      },
-      {
-        label: 'Luz',
-        data: [28, 48, 40, 19, 86, 27, 90],
-      },
-      {
-        label: 'Gas',
-        data: [10, 20, 30, 40, 50, 60, 70],
-      },
-    ];
+    await this.loadSystemData();
   }
 
-  loadSystemData() {
-    this.locations.push('Aula 1');
-    this.locations.push('Aula 2');
-    this.locations.push('Aula 3');
+  private async loadSystemData() {
+    this.locations = await this.statisticsService.getLugares();
 
-    this.items.push('Computadora');
-    this.items.push('Proyector');
-    this.items.push('Silla');
+    const year = new Date().getFullYear();
+    this.s3CompesumptionByService = await this.statisticsService.getConsumptionByService(year);
+    console.log('Consumo por servicio:', this.s3CompesumptionByService);
   }
 
-  onLocationChange(value: string) {
-    console.log('Estado seleccionado:', value);
-    this.selectedLocation = value;
+  // ============== Seccion de items por lugar =============
+  public async onS1SelectedLocationChange(value: Lugar) {
+    this.s1SelectedLocation = value;
+    this.s1FilteredItems = await this.statisticsService.getItemsByLocation(value.id_lugar);
+    this.processBarChartData(this.s1FilteredItems);
   }
 
-  onItemChange(value: string) {
-    console.log('Tipo seleccionado:', value);
-    this.selectedItem = value;
+  private processBarChartData(items: any[]) {
+    // Contar ítems por categoría
+    const categoryCounts: { [key: string]: number } = {};
+
+    items.forEach((item) => {
+      const categoria = item.caracteristicas?.categoria || 'Sin Categoría';
+      categoryCounts[categoria] = (categoryCounts[categoria] || 0) + 1;
+    });
+
+    // Crear etiquetas y datos para el gráfico
+    const labels = Object.keys(categoryCounts);
+    const data = Object.values(categoryCounts);
+
+    this.barChartData = {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Cantidad de ítems',
+          data: data,
+          backgroundColor: 'rgba(79, 70, 229, 0.7)', // color de las barras
+          borderColor: 'rgba(79, 70, 229, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
+  }
+
+  // ============== Seccion de consumo de servicios =============
+  public onS2InitialMonthSelectedChange(value: any) {
+    this.s2InitialMonthSelected = value;
+  }
+
+  public onS2FinalMonthSelectedChange(value: any) {
+    this.s2FinalMonthSelected = value;
+  }
+
+  public async getGeneralServiceConsumption() {
+    if (!this.s2InitialMonthSelected || !this.s2FinalMonthSelected) {
+      Swal.fire('Error', 'Por favor, selecciona un rango de meses.', 'error');
+      return;
+    }
+
+    const year = new Date().getFullYear();
+    const response = await this.statisticsService.getServicesConsumption(
+      year,
+      this.s2InitialMonthSelected.id,
+      this.s2FinalMonthSelected.id
+    );
+    console.log('Consumo de servicios general:', response);
+    this.processChartData(response);
+    // this.nextServiceConsumption =
+  }
+
+  private processChartData(responseData: any[]) {
+    const monthNames = this.months.map((m) => m.name);
+
+    // Ordenar los datos por mes numérico
+    const sortedData = [...responseData].sort((a, b) => parseInt(a.mes) - parseInt(b.mes));
+
+    // Crear etiquetas (nombres de meses)
+    const labels = sortedData.map((item) => {
+      const monthIndex = parseInt(item.mes) - 1;
+      return monthNames[monthIndex] || `Mes ${item.mes}`;
+    });
+
+    // Crear dataset
+    const dataset = {
+      data: sortedData.map((item) => item.total_mensual),
+      label: 'Consumo General',
+      fill: true,
+      tension: 0.3,
+      borderColor: '#4f46e5',
+      backgroundColor: 'rgba(79, 70, 229, 0.1)',
+      pointBackgroundColor: '#4f46e5',
+    };
+
+    // Actualizar los datos del gráfico
+    this.lineChartData = {
+      labels: labels,
+      datasets: [dataset],
+    };
   }
 }

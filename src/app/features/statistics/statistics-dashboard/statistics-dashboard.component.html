@@ -1,103 +1,76 @@
-<h1 class="section-title ml-8 pt-8">Items por lugar</h1>
+<h1 class="section-title ml-8 pt-8">Estadísticas</h1>
+
+<h2 class="section-title ml-8 pt-8">Cantidad de items por lugar</h2>
 <div class="bg-white rounded-2xl p-4 mx-8">
   <div class="grid grid-cols-12 gap-4">
-    <!-- Columna izquierda: Lugar + Item -->
-    <div class="col-span-12 md:col-span-6 space-y-4">
-      <div class="space-y-2">
-        <label class="field-title">Lugar</label>
-        <app-dropdown
-          class="w-full block"
-          [options]="locations"
-          [placeholder]="'Lugar'"
-          [selectedLabel]="selectedLocation"
-          (selectionChange)="onLocationChange($event)"
-        ></app-dropdown>
-      </div>
-
-      <div class="space-y-2">
-        <label class="field-title">Item</label>
-        <app-dropdown
-          class="w-full block"
-          [options]="items"
-          [placeholder]="'Item'"
-          [selectedLabel]="selectedItem"
-          (selectionChange)="onItemChange($event)"
-        ></app-dropdown>
-      </div>
+    <div class="col-span-12 md:col-span-6 space-y-2">
+      <label class="field-title">Lugar</label>
+      <app-dropdown
+        class="w-full block"
+        [options]="locations"
+        [placeholder]="'Lugar'"
+        [propertyName]="'nombre'"
+        [selectedLabel]="s1SelectedLocation ? s1SelectedLocation.nombre : ''"
+        (selectionChange)="onS1SelectedLocationChange($event)"
+      ></app-dropdown>
     </div>
-
-    <!-- Columna derecha: Dropdown que ocupa dos filas de alto -->
-    <div class="col-span-12 md:col-span-6">
-      <div class="space-y-0">
-        <label class="field-title block">Items</label>
-        <div class="overflow-auto h-40 w-full">
-          <app-check-list></app-check-list>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-span-12 space-y-2 w-full">
-      <app-bar-chart
-        [title]="'Items por lugar'"
-        [xAxisLabel]="'Items'"
-        [yAxisLabel]="'Cantidad'"
-        [xLabels]="itemsPerLocationXLabels"
-        [datasets]="itemsPerLocationDatasets"
-      ></app-bar-chart>
+    <div class="col-span-12 space-y-2 w-full mt-8">
+      <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="'bar'" [legend]="barChartLegend"> </canvas>
     </div>
   </div>
 </div>
 
-<h1 class="section-title ml-8 pt-8">Consumo de servicios</h1>
+<h2 class="section-title ml-8 pt-8">Consumo de servicios general</h2>
 <div class="bg-white rounded-2xl p-4 mx-8">
   <div class="grid grid-cols-12 gap-4">
-    <!-- Columna izquierda -->
-    <div class="col-span-12 md:col-span-6 space-y-4">
-      <!-- Dropdown -->
-      <div class="space-y-2">
-        <label class="field-title">Lugar</label>
-        <app-dropdown
-          class="w-full block"
-          [options]="locations"
-          [placeholder]="'Lugar'"
-          [selectedLabel]="selectedLocation"
-          (selectionChange)="onLocationChange($event)"
-        ></app-dropdown>
-      </div>
-
+    <div class="col-span-12 md:col-span-12 space-y-4">
       <!-- Fecha inicio -->
       <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-12 md:col-span-6 space-y-2">
-          <label class="field-title">Fecha inicio</label>
-          <app-calendar [selectedDate]="servicesConsumpstionDateStart"></app-calendar>
+        <div class="space-y-2 col-span-12 md:col-span-6">
+          <label class="field-title">Mes inicio</label>
+          <app-dropdown
+            class="w-full block"
+            [options]="months"
+            [propertyName]="'name'"
+            [placeholder]="'Mes inicio'"
+            [selectedLabel]="s2InitialMonthSelected ? s2InitialMonthSelected.name : ''"
+            (selectionChange)="onS2InitialMonthSelectedChange($event)"
+          ></app-dropdown>
         </div>
 
         <!-- Fecha fin -->
-        <div class="col-span-12 md:col-span-6 space-y-2">
-          <label class="field-title">Fecha fin</label>
-          <app-calendar [selectedDate]="servicesConsumpstionDateEnd"></app-calendar>
+        <div class="space-y-2 col-span-12 md:col-span-6">
+          <label class="field-title">Mes fin</label>
+          <app-dropdown
+            class="w-full block"
+            [options]="months"
+            [propertyName]="'name'"
+            [placeholder]="'Mes fin'"
+            [selectedLabel]="s2FinalMonthSelected ? s2FinalMonthSelected.name : ''"
+            (selectionChange)="onS2FinalMonthSelectedChange($event)"
+          ></app-dropdown>
         </div>
+
+        <div class="space-y-2 col-span-4"></div>
+        <app-button
+          class="space-y-2 col-span-4 w-full block"
+          [label]="'Consultar consumo'"
+          [title]="'Consultar consumo'"
+          (clicked)="getGeneralServiceConsumption()"
+        ></app-button>
+        <div class="space-y-2 col-span-4"></div>
       </div>
     </div>
-
-    <!-- Columna derecha -->
-    <div class="col-span-12 md:col-span-6">
-      <div class="space-y-0">
-        <label class="field-title block">Servicios</label>
-        <div class="overflow-auto h-40 w-full">
-          <app-check-list></app-check-list>
-        </div>
-      </div>
-    </div>
-
     <div class="col-span-12 space-y-2 w-full">
-      <app-line-chart
-        [title]="'Consumo de servicios'"
-        [xAxisLabel]="'Fecha'"
-        [yAxisLabel]="'Cantidad'"
-        [xLabels]="servicesConsumptionXLabels"
-        [datasets]="servicesConsumptionDatasets"
-      ></app-line-chart>
+      <canvas baseChart [type]="'line'" [data]="lineChartData" [options]="lineChartOptions" [legend]="lineChartLegend"> </canvas>
     </div>
   </div>
+  <!-- <h3 class="section-title ml-8 pt-8"><b>Aproximación del siguiente mes: </b> {{ nextServiceConsumption || 0 }}</h3> -->
 </div>
+
+<!-- <h2 class="section-title ml-8 pt-8">Consumos por servicio</h2>
+<div class="bg-white rounded-2xl p-4 mx-8">
+  <div class="grid grid-cols-12 gap-4">
+    <div class="col-span-12 space-y-2 w-full mt-8"></div>
+  </div>
+</div> -->
