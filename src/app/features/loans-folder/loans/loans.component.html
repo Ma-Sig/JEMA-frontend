@@ -1,46 +1,15 @@
-<!-- <div class="container px-4 py-8 mx-auto">
-  <h1 class="section-title" *ngIf="isCreate">Registro de prestamo</h1>
-  <h1 class="section-title" *ngIf="isEdit">Editar prestamo</h1>
-  <h1 class="section-title" *ngIf="isReadOnly">Detalle del prestamo</h1>
-
-  <article class="bg-white rounded-2xl p-10">
-    <section class="flex flex-col md:flex-row gap-4 justify-center items-center mt-2 md:mt-15">
-      <div class="w-[80vw] md:w-[30vw]">
-        <h3>Lugar de origen</h3>
-
-        <app-dropdown [options]="placesOriginOptions" [readonly]="isReadOnly"></app-dropdown>
-      </div>
-
-      <div class="w-[80vw] md:w-[30vw]">
-        <h3>Item</h3>
-        <app-dropdown [options]="itemOptions" [readonly]="isReadOnly"></app-dropdown>
-      </div>
-    </section>
-
-    <section class="flex justify-center h-[30vh] mt-4">
-      <div class="overflow-auto h-[30vh] w-[80vw] md:w-[37vw]">
-        <app-check-list></app-check-list>
-      </div>
-    </section>
-
-    <section class="flex flex-col gap-4 items-center">
-      <div class="w-[80vw] md:w-[30vw] md:mt-15">
-        <h3>Lugar de destino</h3>
-        <app-dropdown [options]="placesDestinationOptions" [readonly]="isReadOnly"></app-dropdown>
-      </div>
-      <div *ngIf="!isReadOnly">
-        <app-button class="bg-[#4880FF] rounded-sm w-50 h-10 text-[#FFFFFF]" [label]="'Guardar'" (clicked)="showAlert()"></app-button>
-      </div>
-    </section>
-  </article>
-</div> -->
-
 <div class="container px-4 py-8 mx-auto">
-  <h1 class="section-title" *ngIf="isCreate">Registro de Prestamo</h1>
-  <h1 class="section-title" *ngIf="isEdit">Editar Prestamo</h1>
-  <h1 class="section-title" *ngIf="isReadOnly">Detalles del Prestamo</h1>
+  <h1 class="section-title" *ngIf="isCreate">Registro de Préstamo</h1>
+  <h1 class="section-title" *ngIf="isEdit">Editar Préstamo</h1>
+  <h1 class="section-title" *ngIf="isReadOnly">Detalles del Préstamo</h1>
 
-  <article class="bg-white rounded-2xl p-10">
+  <!-- Loading del préstamo -->
+  <div *ngIf="loadingPrestamo" class="text-center py-8">
+    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#4880FF]"></div>
+    <p class="mt-2">Cargando datos del préstamo...</p>
+  </div>
+
+  <article class="bg-white rounded-2xl p-10" *ngIf="!loadingPrestamo">
     <!-- Lugar de origen y destino-->
     <section class="flex flex-col justify-center items-center mt-2 md:gap-10 md:flex-row md:mt-15">
       <div class="w-[80vw] md:w-[60vw]">
@@ -51,7 +20,9 @@
           [(ngModel)]="selectedOriginPlace"
           (ngModelChange)="onOriginPlaceChange($event)"
         >
-          <option [value]="null" disabled selected>{{ loadingPlaces ? 'Cargando lugares...' : 'Selecciona un lugar de origen' }}</option>
+          <option [value]="null" disabled [selected]="!selectedOriginPlace">
+            {{ loadingPlaces ? 'Cargando lugares...' : 'Selecciona un lugar de origen' }}
+          </option>
           <option *ngFor="let option of placesOptions" [value]="option.value">
             {{ option.label }}
           </option>
@@ -66,7 +37,7 @@
           [(ngModel)]="selectedDestinationPlace"
           (ngModelChange)="onDestinationPlaceChange($event)"
         >
-          <option [value]="null" disabled>Selecciona un lugar de destino</option>
+          <option [value]="null" disabled [selected]="!selectedDestinationPlace">Selecciona un lugar de destino</option>
           <option *ngFor="let option of placesOptions" [value]="option.value">
             {{ option.label }}
           </option>
@@ -76,7 +47,9 @@
 
     <!-- Grid de items -->
     <section class="mt-8" *ngIf="selectedOriginPlace">
-      <h3 class="mb-4 text-lg font-medium text-center">Items disponibles</h3>
+      <h3 class="mb-4 text-lg font-medium text-center">
+        {{ isReadOnly ? 'Items del préstamo' : 'Items disponibles' }}
+      </h3>
 
       <div class="flex justify-center">
         <div class="w-[80vw] md:w-[70vw]">
@@ -86,52 +59,96 @@
           </div>
 
           <div *ngIf="!loadingItems && items.length === 0 && selectedOriginPlace" class="text-center py-8">
-            <p class="text-gray-500">No hay items disponibles en este lugar</p>
+            <p class="text-gray-500">
+              {{ isReadOnly ? 'No hay items en este préstamo' : 'No hay items disponibles en este lugar' }}
+            </p>
           </div>
 
-          <div *ngIf="!loadingItems && items.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div *ngIf="!loadingItems && items.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <div
               *ngFor="let item of items"
-              class="border rounded-lg p-4 cursor-pointer transition-all duration-200 hover:shadow-md"
-              [class.border-[#4880FF]]="item.selected"
-              [class.bg-blue-50]="item.selected"
-              [class.border-gray-300]="!item.selected"
-              [class.opacity-50]="item.id_item_estado !== 1"
-              [class.cursor-not-allowed]="item.id_item_estado !== 1 || isReadOnly"
+              class="border rounded-lg p-4 transition-all duration-200 hover:shadow-md relative"
+              [class]="getItemCardClasses(item)"
+              [class.cursor-pointer]="!isReadOnly && canSelectItem(item)"
+              [class.cursor-not-allowed]="!canSelectItem(item) || isReadOnly"
               (click)="toggleItemSelection(item)"
             >
-              <div class="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-                <img *ngIf="item.imagen" [src]="item.imagen" [alt]="item.nombre" class="w-full h-full object-cover rounded-lg" />
-                <div *ngIf="!item.imagen" class="text-gray-400 text-sm">Sin imagen</div>
-              </div>
+              <!-- Borde izquierdo de color -->
+              <div
+                class="absolute left-0 top-0 bottom-0 w-1 rounded-l-lg"
+                [class.bg-green-500]="getEstadoColor(item) === 'green'"
+                [class.bg-yellow-500]="getEstadoColor(item) === 'yellow'"
+                [class.bg-red-500]="getEstadoColor(item) === 'red'"
+                [class.bg-blue-500]="getEstadoColor(item) === 'blue'"
+              ></div>
 
-              <h4 class="font-medium text-sm mb-1 truncate" [title]="item.nombre">{{ item.nombre }}</h4>
-              <p class="text-xs text-gray-500 mb-2">{{ item.codigo }}</p>
+              <!-- Contenido del item -->
+              <div class="ml-2">
+                <!-- Título y código del item -->
+                <h4 class="font-semibold text-sm mb-1 truncate" [title]="item.caracteristicas.nombre">
+                  {{ item.caracteristicas.nombre }}
+                </h4>
 
-              <div class="flex items-center justify-between">
-                <span
-                  class="text-xs px-2 py-1 rounded-full"
-                  [class.bg-green-100]="item.id_item_estado === 1"
-                  [class.text-green-800]="item.id_item_estado === 1"
-                  [class.bg-red-100]="item.id_item_estado !== 1"
-                  [class.text-red-800]="item.id_item_estado !== 1"
-                >
-                  {{ item.id_item_estado === 1 ? 'Disponible' : 'No disponible' }}
-                </span>
+                <!-- Código del item -->
+                <p class="text-xs text-gray-600 mb-1"><span class="font-medium">Item:</span> {{ item.codigo }}</p>
 
-                <div
-                  class="w-5 h-5 rounded-full border-2"
-                  [class.border-[#4880FF]]="item.selected"
-                  [class.bg-[#4880FF]]="item.selected"
-                  [class.border-gray-300]="!item.selected"
-                >
-                  <svg *ngIf="item.selected" class="w-3 h-3 text-white mx-auto mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fill-rule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
-                    ></path>
-                  </svg>
+                <!-- Código de características -->
+                <p class="text-xs text-gray-600 mb-2"><span class="font-medium">Ref:</span> {{ item.caracteristicas.codigo }}</p>
+
+                <!-- Marca y categoría -->
+                <div class="flex flex-wrap gap-2 mb-2">
+                  <span *ngIf="item.caracteristicas.marca" class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded-full">
+                    {{ item.caracteristicas.marca }}
+                  </span>
+                  <span *ngIf="item.caracteristicas.categoria" class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                    {{ item.caracteristicas.categoria }}
+                  </span>
+                </div>
+
+                <!-- Estado y checkbox -->
+                <div class="flex items-center justify-between">
+                  <span
+                    class="text-xs px-2 py-1 rounded-full font-medium"
+                    [class.bg-green-100]="getEstadoColor(item) === 'green'"
+                    [class.text-green-800]="getEstadoColor(item) === 'green'"
+                    [class.bg-yellow-100]="getEstadoColor(item) === 'yellow'"
+                    [class.text-yellow-800]="getEstadoColor(item) === 'yellow'"
+                    [class.bg-red-100]="getEstadoColor(item) === 'red'"
+                    [class.text-red-800]="getEstadoColor(item) === 'red'"
+                    [class.bg-blue-100]="getEstadoColor(item) === 'blue'"
+                    [class.text-blue-800]="getEstadoColor(item) === 'blue'"
+                  >
+                    {{ item.estadoItem.estado }}
+                  </span>
+
+                  <!-- Checkbox de selección -->
+                  <div
+                    *ngIf="!isReadOnly"
+                    class="w-5 h-5 rounded-full border-2"
+                    [class.border-[#4880FF]]="item.selected"
+                    [class.bg-[#4880FF]]="item.selected"
+                    [class.border-gray-300]="!item.selected"
+                    [class.opacity-50]="!canSelectItem(item)"
+                  >
+                    <svg *ngIf="item.selected" class="w-3 h-3 text-white mx-auto mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+
+                  <!-- Indicador de seleccionado (solo para modo vista) -->
+                  <div *ngIf="isReadOnly" class="w-5 h-5 rounded-full bg-[#4880FF] border-2 border-[#4880FF]">
+                    <svg class="w-3 h-3 text-white mx-auto mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
@@ -140,31 +157,48 @@
       </div>
 
       <!-- Contador de items seleccionados -->
-      <div *ngIf="selectedItems.length > 0" class="text-center mt-4">
+      <div *ngIf="selectedItems.length > 0 && !isReadOnly" class="text-center mt-4">
         <p class="text-[#4880FF] font-medium">{{ selectedItems.length }} item(s) seleccionado(s)</p>
+      </div>
+
+      <!-- Información de items en modo vista -->
+      <div *ngIf="isReadOnly && selectedItems.length > 0" class="text-center mt-4">
+        <p class="text-gray-600">Total de items: {{ selectedItems.length }}</p>
       </div>
     </section>
 
-    <!-- Botón -->
+    <!-- Botones de acción -->
     <section class="flex flex-col gap-4 items-center mt-8">
-      <div *ngIf="!isReadOnly" class="mt-4">
+      <!-- Botón principal (crear/actualizar) -->
+      <div *ngIf="!isReadOnly" class="mt-4 flex gap-4">
         <button
           class="bg-[#4880FF] rounded-sm px-8 h-10 text-[#FFFFFF] font-medium hover:bg-blue-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
           [disabled]="!canSubmit || isSubmitting"
           (click)="realizarPrestamo()"
         >
           <span *ngIf="isSubmitting" class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
-          {{ isSubmitting ? 'Procesando...' : 'Realizar Préstamo' }}
+          {{ actionButtonText }}
+        </button>
+
+        <!-- Botón eliminar (solo en modo editar) -->
+        <button
+          *ngIf="isEdit"
+          class="bg-red-500 rounded-sm px-8 h-10 text-white font-medium hover:bg-red-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+          [disabled]="isSubmitting"
+          (click)="eliminarPrestamo()"
+        >
+          <span *ngIf="isSubmitting" class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+          Eliminar Préstamo
         </button>
       </div>
 
       <!-- Mensajes de error -->
-      <div *ngIf="errorMessage" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+      <div *ngIf="errorMessage" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded max-w-md">
         {{ errorMessage }}
       </div>
 
       <!-- Mensaje de éxito -->
-      <div *ngIf="successMessage" class="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+      <div *ngIf="successMessage" class="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded max-w-md">
         {{ successMessage }}
       </div>
     </section>

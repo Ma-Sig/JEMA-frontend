@@ -67,58 +67,35 @@
 
   <!-- Área de mensajes -->
   <div class="flex-1 p-4 space-y-4 overflow-y-auto bg-gray-50" style="height: calc(100% - 140px)">
-    <!-- Mensaje del bot -->
-    <div class="flex items-start space-x-2">
-      <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
-          ></path>
-        </svg>
-      </div>
-      <div class="bg-white p-3 rounded-lg shadow-sm max-w-xs">
-        <p class="text-sm text-gray-800">¡Hola! ¿En qué puedo ayudarte hoy?</p>
-        <span class="text-xs text-gray-500 mt-1 block">10:30 AM</span>
-      </div>
-    </div>
-
-    <!-- Mensaje del usuario -->
-    <div class="flex items-start space-x-2 justify-end">
-      <div class="bg-blue-600 text-white p-3 rounded-lg shadow-sm max-w-xs">
-        <p class="text-sm">Hola, necesito ayuda con mi pedido</p>
-        <span class="text-xs text-blue-100 mt-1 block">10:32 AM</span>
-      </div>
-      <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-        <svg class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-        </svg>
-      </div>
-    </div>
-
-    <!-- Mensaje del bot con opciones -->
-    <div class="flex items-start space-x-2">
-      <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
-          ></path>
-        </svg>
-      </div>
-      <div class="space-y-2">
-        <div class="bg-white p-3 rounded-lg shadow-sm max-w-xs">
-          <p class="text-sm text-gray-800">Claro, puedo ayudarte con tu pedido. ¿Qué necesitas saber?</p>
-          <span class="text-xs text-gray-500 mt-1 block">10:33 AM</span>
+    <div
+      *ngFor="let msg of messages"
+      class="flex"
+      [ngClass]="{
+        'justify-end': msg.type === 'user',
+        'justify-start': msg.type === 'bot'
+      }"
+    >
+      <div *ngIf="msg.type === 'bot'" class="flex items-start space-x-2">
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
+            ></path>
+          </svg>
         </div>
-        <div class="space-y-1">
-          <button class="block w-full text-left p-2 text-sm bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors">
-            Estado del pedido
-          </button>
-          <button class="block w-full text-left p-2 text-sm bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors">
-            Modificar pedido
-          </button>
-          <button class="block w-full text-left p-2 text-sm bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors">
-            Cancelar pedido
-          </button>
+        <div class="bg-white p-3 rounded-lg shadow-sm max-w-xs">
+          <p class="text-sm text-gray-800">{{ msg.text }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="msg.type === 'user'" class="flex items-start space-x-2 justify-end">
+        <div class="bg-blue-600 text-white p-3 rounded-lg shadow-sm max-w-xs">
+          <p class="text-sm">{{ msg.text }}</p>
+        </div>
+        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+          <svg class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+          </svg>
         </div>
       </div>
     </div>

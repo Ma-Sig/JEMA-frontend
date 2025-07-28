@@ -65,7 +65,9 @@ export class ItemService {
    * Elimina una característica de item
    */
   deleteItem(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/caracteristicas-item/${id}`);
+    return this.http.delete<void>(
+      `${this.baseUrl}/caracteristicas-item/${id}?userId=${this.getUserId()}`
+    );
   }
 
   /**
