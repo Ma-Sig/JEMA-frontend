@@ -80,29 +80,47 @@ export class ReportsComponent implements OnInit {
       return;
     }
 
-    const itemId = this.selectedComboItem.id_item;
+    const codigo = this.selectedComboItem.codigo;
 
-    this.reportService.getAuditoriasItem(itemId).subscribe({
+    this.reportService.getAuditoriasItem(codigo).subscribe({
       next: (auditorias) => {
-        const auditoriasArray = Array.isArray(auditorias) ? auditorias : [auditorias];
-        if (auditoriasArray.length === 0) {
+        if (!auditorias.length) {
           this.mensajeInfo = 'No hay información del ítem seleccionado.';
           return;
         }
 
         this.tableColumns = [
+          { key: 'codigo', label: 'Código' },
+          { key: 'accion', label: 'Acción' },
           { key: 'fecha', label: 'Fecha' },
-          { key: 'accion', label: 'Acción realizada' },
-          { key: 'lugar', label: 'Lugar destino' },
-          { key: 'responsable', label: 'Responsable' },
+          { key: 'accionRealizada', label: 'Detalle' },
+          { key: 'lugar', label: 'Lugar' },
+          { key: 'lugarPadre', label: 'Lugar Padre' },
+          { key: 'caracteristicas', label: 'Características' },
+          { key: 'responsable', label: 'Responsable' }
         ];
 
-        this.tableData = auditoriasArray.map((aud: any) => ({
-          fecha: aud.fecha,
-          accion: aud.accion,
-          lugar: aud.nombre_tabla,
-          responsable: aud.usuarios.nombres,
-        }));
+        this.tableData = auditorias.map((aud: any) => {
+          let detalle = aud.accionRealizada;
+
+          if (
+            detalle.toLowerCase().includes('imagen') ||
+            detalle.length > 100
+          ) {
+            detalle = 'Imagen';
+          }
+
+          return {
+            codigo: aud.codigo,
+            accion: aud.accion,
+            fecha: new Date(aud.fecha).toLocaleString(), // formato legible
+            accionRealizada: detalle,
+            lugar: aud.lugar,
+            lugarPadre: aud.lugarPadre,
+            caracteristicas: aud.caracteristicas,
+            responsable: aud.responsable
+          };
+        });
 
         this.showTable = true;
       },
@@ -111,59 +129,33 @@ export class ReportsComponent implements OnInit {
   }
 
   mostrarItemsPorLugar() {
-  if (!this.selectedLugar) {
-    alert('Por favor selecciona un lugar');
-    return;
+    if (!this.selectedLugar) {
+      alert('Por favor selecciona un lugar');
+      return;
+    }
+
+    const idLugar = this.selectedLugar.id;
+
+    this.reportService.getItemsPorLugar(idLugar).subscribe({
+      next: (itemsPorLugar) => {
+        if (!itemsPorLugar.length) {
+          this.mensajeInfo = 'No hay ítems en el lugar seleccionado.';
+          return;
+        }
+
+        this.tableColumns = [
+          { key: 'codigo', label: 'Código' },
+          { key: 'nombre', label: 'Nombre' },
+          { key: 'lugar', label: 'Lugar' },
+          { key: 'estado', label: 'Estado' }
+        ];
+
+        this.tableData = itemsPorLugar;
+        this.showTable = true;
+      },
+      error: () => alert('Error al cargar ítems por lugar'),
+    });
   }
-
-  console.log('selectedLugar:', this.selectedLugar);
-
-  if (!this.selectedLugar.id) {
-    alert('El lugar seleccionado no tiene id');
-    return;
-  }
-
-  this.reportService.getItemsPorLugar(this.selectedLugar.id).subscribe({
-    next: (itemsPorLugar) => {
-      this.reportService.getEstadoItems().subscribe({
-        next: (estadoItems) => {
-          const estadoItemsArray = Array.isArray(estadoItems) ? estadoItems : [estadoItems];
-
-          const combinedItems = itemsPorLugar.map((itemLugar: any) => {
-            const estadoItem = estadoItemsArray.find(
-              (estado: any) => estado.codigo === itemLugar.codigo
-            );
-
-            return {
-              codigoNombre: `${itemLugar.codigo} - ${itemLugar.nombre}`,
-              lugar: this.selectedLugar.nombre,
-              estado: estadoItem ? estadoItem.estado : 'Desconocido',
-            };
-          });
-
-          if (combinedItems.length === 0) {
-            this.mensajeInfo = 'No hay ítems en el lugar seleccionado.';
-            this.showTable = false;
-            return;
-          }
-
-          this.tableColumns = [
-            { key: 'codigoNombre', label: 'Código - Nombre Item' },
-            { key: 'lugar', label: 'Lugar' },
-            { key: 'estado', label: 'Estado' },
-          ];
-
-          this.tableData = combinedItems;
-          this.showTable = true;
-        },
-        error: () => alert('Error al cargar estado de ítems'),
-      });
-    },
-    error: () => alert('Error al cargar ítems por lugar'),
-  });
-}
-
-
 
   onGuardarReporte() {
     if (this.tableData.length === 0) {

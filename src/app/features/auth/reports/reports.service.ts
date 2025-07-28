@@ -22,8 +22,8 @@ export class ReportService {
     return this.http.get<{ codigo: string; nombre: string }[]>(`${this.baseUrl}/items-por-lugar/${idLugar}`);
   }
 
-  getAuditoriasItem(idItem: number) {
-    return this.http.get<{nombre_tabla: string; accion: string; fecha: Date; usuarios:{nombres: string}}[]>(`${this.baseUrl}/auditorias-item/${idItem}`);
+  getAuditoriasItem(codigo: string) {
+    return this.http.get<any[]>(`${this.baseUrl}/historico-item/${codigo}`);
   }
 
   getEstadoItems() {
