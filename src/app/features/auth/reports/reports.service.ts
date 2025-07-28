@@ -1,46 +1,32 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment'; 
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ReportService {
-  private baseUrl = `${environment.apiBaseUrl}/reportes`;
+
+  private baseUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 
-  getHistoricoItem(codigo: string, userId: string, fechaInicio?: Date | null, fechaFin?: Date | null) {
-    const token = localStorage.getItem('token');
-    const headers = { Authorization: `Bearer ${token}` };
-
-    let params = new HttpParams().set('userId', userId);
-    if (fechaInicio) params = params.set('fechaInicio', fechaInicio.toISOString());
-    if (fechaFin) params = params.set('fechaFin', fechaFin.toISOString());
-
-    return this.http.get<any[]>(`${this.baseUrl}/historico/${codigo}`, { headers, params });
+  getComboItems() {
+    return this.http.get<{ codigo: string; nombre: string; id_item: number }[]>(`${this.baseUrl}/combo-items/`);
   }
 
-  getItemsPorLugar(idLugar: number, userId: string) {
-    const token = localStorage.getItem('token');
-    const headers = { Authorization: `Bearer ${token}` };
-    const params = new HttpParams().set('userId', userId);
-
-    return this.http.get<any[]>(`${this.baseUrl}/items-lugar/${idLugar}`, { headers, params });
+  getLugares() {
+    return this.http.get<{ id_lugar: number; nombre: string }[]>(`${this.baseUrl}/combo-lugares/`);
   }
 
-  getEstadoItems(userId: string) {
-    const token = localStorage.getItem('token');
-    const headers = { Authorization: `Bearer ${token}` };
-    const params = new HttpParams().set('userId', userId);
-
-    return this.http.get<any[]>(`${this.baseUrl}/estado-items`, { headers, params });
+  getItemsPorLugar(idLugar: number) {
+    return this.http.get<{ codigo: string; nombre: string }[]>(`${this.baseUrl}/items-por-lugar/${idLugar}`);
   }
 
-  buscarItems(query: string) {
-    const token = localStorage.getItem('token');
-    const headers = { Authorization: `Bearer ${token}` };
-    const params = new HttpParams().set('q', query);
-    return this.http.get<any[]>(`${this.baseUrl}/buscar-items`, { headers, params });
+  getAuditoriasItem(idItem: number) {
+    return this.http.get<{nombre_tabla: string; accion: string; fecha: Date; usuarios:{nombres: string}}>(`${this.baseUrl}/auditorias-item/${idItem}`);
+  }
+
+  getEstadoItems() {
+    return this.http.get<{codigo: string; nombre: string; estado: string}>(`${this.baseUrl}/estado-items/`);
   }
 }

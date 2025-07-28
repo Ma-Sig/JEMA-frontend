@@ -1,147 +1,156 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ReportService } from './reports.service';
-import { AuthService } from '../services/auth.service';
-import { ButtonComponent } from '../../../shared/button/button.component';
-import { TableComponent } from '../../../shared/table/table.component';
-import { CalendarComponent } from '../../../shared/calendar/calendar.component';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { exportToExcel } from '../../../shared/export.uti';
-
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-reports',
-  imports: [ButtonComponent, TableComponent, FormsModule, CommonModule, CalendarComponent],
   templateUrl: './reports.component.html',
-  styleUrl: './reports.component.css',
   standalone: true,
+  imports: [CommonModule, FormsModule], // Quita ButtonComponent y TableComponent si no usas
 })
-export class ReportsComponent {
-  searchTerm = '';
+export class ReportsComponent implements OnInit {
+  items = ['Historico de Item', 'Item por lugar'];
   selectedItem: string | null = null;
+
+  comboItems: any[] = [];
+  selectedComboItem: any = null;
+
+  lugares: any[] = [];
+  selectedLugar: any = null;
+
+  tableData: any[] = [];
+  tableColumns: { key: string; label: string }[] = [];
+
+  mensajeInfo = '';
   showTable = false;
 
-  codigoItem: string = '';
-  idLugar: number = 0;
+  constructor(private reportService: ReportService) {}
 
-  fechaInicio: Date | null = null;
-  fechaFin: Date | null = null;
+  ngOnInit(): void {
+    this.cargarComboItems();
+    this.cargarLugares();
+  }
 
-  items = ['Historico de Item', 'Item por lugar', 'Estado de item'];
+  seleccionarItem(item: string | null) {
+  this.selectedItem = item;
+  this.resetReport();
+}
 
-  tableColumns: { key: string, label: string }[] = [];
-  tableData: any[] = [];
-  filteredItems: any[] = [];
-
-  lugares = [];
-  itemsPorLugar: { label: string; value: any }[] = [];
-  selectedLugar: any = null;
-  selectedItemLugar: any = null;
-
-  constructor(
-    private reportService: ReportService,
-    private authService: AuthService
-  ) {}
-
-  seleccionarItem(item: string) {
-    this.selectedItem = item;
+  resetReport() {
+    this.mensajeInfo = '';
     this.showTable = false;
-
-    this.codigoItem = '';
-    this.idLugar = 0;
-    this.searchTerm = '';
-    this.tableColumns = [];
     this.tableData = [];
-    this.filteredItems = [];
+    this.tableColumns = [];
   }
 
-  onSearchTermChange(term: string) {
-    if (this.selectedItem === 'Historico de Item' && term.length >= 2) {
-      this.reportService.buscarItems(term).subscribe(data => {
-        this.filteredItems = data;
-      });
-    }
-  }
-
-  onSelectItem(item: any) {
-    this.codigoItem = item.codigo;
-    this.searchTerm = item.nombre;
-    this.filteredItems = [];
-  }
-
-  onLugarSeleccionado(lugar: any) {
-    this.idLugar = lugar.id;
-    const userId = this.authService.getUserId();
-    if (!userId) {
-      alert('Usuario no autenticado.');
-      return;
-    }
-    this.reportService.getItemsPorLugar(lugar.id, userId).subscribe(data => {
-      this.itemsPorLugar = data.map(i => ({ label: `${i.codigo} - ${i.nombre}`, value: i.codigo }));
+  cargarComboItems() {
+    this.reportService.getComboItems().subscribe({
+      next: (items) => (this.comboItems = items),
+      error: () => alert('Error al cargar ítems'),
     });
   }
 
-  onMostrarReporte() {
-    const userId = this.authService.getUserId();
-    if (!userId) {
-      alert('Usuario no autenticado.');
-      return;
-    }
+  cargarLugares() {
+    this.reportService.getLugares().subscribe({
+      next: (lugares) => (this.lugares = lugares),
+      error: () => alert('Error al cargar lugares'),
+    });
+  }
 
+  onLugarSeleccionado(): void {
+    this.resetReport();
+  }
+
+  onMostrarReporte() {
+    this.mensajeInfo = '';
     this.showTable = false;
 
-    switch (this.selectedItem) {
-      case 'Historico de Item':
-        if (!this.codigoItem) {
-          alert('Por favor ingresa el código del item');
-          return;
-        }
-        this.reportService.getHistoricoItem(this.codigoItem, userId, this.fechaInicio, this.fechaFin)
-          .subscribe(data => {
-            this.tableColumns = [
-              { key: 'accion', label: 'Acción' },
-              { key: 'fecha', label: 'Fecha' },
-              { key: 'accionRealizada', label: 'Acción Realizada' },
-              { key: 'lugar', label: 'Lugar Destino' },
-              { key: 'responsable', label: 'Responsable' }
-            ];
-            this.tableData = data;
-            this.showTable = true;
-          });
-        break;
-
-      case 'Item por lugar':
-        if (!this.idLugar) {
-          alert('Por favor selecciona un lugar');
-          return;
-        }
-        this.reportService.getItemsPorLugar(this.idLugar, userId).subscribe(data => {
-          this.tableColumns = [
-            { key: 'codigo', label: 'Código Item' },
-            { key: 'nombre', label: 'Item' },
-            { key: 'lugar', label: 'Lugar' }
-          ];
-          this.tableData = data;
-          this.showTable = true;
-        });
-        break;
-
-      case 'Estado de item':
-        this.reportService.getEstadoItems(userId).subscribe(data => {
-          this.tableColumns = [
-            { key: 'codigo', label: 'Código Item' },
-            { key: 'nombre', label: 'Item' },
-            { key: 'estado', label: 'Estado' }
-          ];
-          this.tableData = data;
-          this.showTable = true;
-        });
-        break;
+    if (this.selectedItem === 'Historico de Item') {
+      this.mostrarHistoricoItem();
+    } else if (this.selectedItem === 'Item por lugar') {
+      this.mostrarItemsPorLugar();
     }
   }
 
+  mostrarHistoricoItem() {
+    if (!this.selectedComboItem) {
+      alert('Por favor selecciona un ítem');
+      return;
+    }
+
+    const itemId = this.selectedComboItem.id_item;
+
+    this.reportService.getAuditoriasItem(itemId).subscribe({
+      next: (auditorias) => {
+        const auditoriasArray = Array.isArray(auditorias) ? auditorias : [auditorias];
+        if (!auditoriasArray.length) {
+          this.mensajeInfo = 'No hay información del ítem seleccionado.';
+          return;
+        }
+
+        this.tableColumns = [
+          { key: 'fecha', label: 'Fecha' },
+          { key: 'accion', label: 'Acción realizada' },
+          { key: 'lugar', label: 'Lugar destino' },
+          { key: 'responsable', label: 'Responsable' },
+        ];
+
+        this.tableData = auditoriasArray.map((aud: any) => ({
+          fecha: aud.fecha,
+          accion: aud.accion,
+          lugar: aud.nombre_tabla,
+          responsable: aud.usuarios.nombres,
+        }));
+
+        this.showTable = true;
+      },
+      error: () => alert('Error al cargar histórico del ítem'),
+    });
+  }
+
+  mostrarItemsPorLugar() {
+    if (!this.selectedLugar) {
+      alert('Por favor selecciona un lugar');
+      return;
+    }
+
+    this.reportService.getEstadoItems().subscribe({
+      next: (estadoItems) => {
+        const estadoItemsArray = Array.isArray(estadoItems) ? estadoItems : [estadoItems];
+        const itemsDelLugar = estadoItemsArray.filter((item: any) => item.lugarId === this.selectedLugar.id_lugar);
+
+        if (itemsDelLugar.length === 0) {
+          this.mensajeInfo = 'No hay ítems en el lugar seleccionado.';
+          return;
+        }
+
+        this.tableColumns = [
+          { key: 'codigoNombre', label: 'Código - Nombre Item' },
+          { key: 'lugar', label: 'Lugar' },
+          { key: 'estado', label: 'Estado' },
+        ];
+
+        this.tableData = itemsDelLugar.map((item: any) => ({
+          codigoNombre: `${item.codigo} - ${item.nombre}`,
+          lugar: this.selectedLugar.nombre,
+          estado: item.estado,
+        }));
+
+        this.showTable = true;
+      },
+      error: () => alert('Error al cargar estado de ítems'),
+    });
+  }
+
   onGuardarReporte() {
-    const fileName = this.selectedItem?.replace(/\s/g, '_') || 'reporte';
-    exportToExcel(this.tableData, fileName);
+    if (this.tableData.length === 0) {
+      alert('No hay datos para guardar');
+      return;
+    }
+
+    // Usar solo 2 argumentos si exportToExcel espera 2
+    exportToExcel(this.tableData,"archivo");
   }
 }
