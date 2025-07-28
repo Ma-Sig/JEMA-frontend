@@ -1,208 +1,3 @@
-// import { Component, OnInit } from '@angular/core';
-// import { ActivatedRoute } from '@angular/router';
-// import { Router } from '@angular/router';
-// import { CommonModule } from '@angular/common';
-
-// import { DropdownComponent } from '../../../shared/dropdown/dropdown.component';
-// import { CheckListComponent } from '../../../shared/check-list/check-list.component';
-// import { ButtonComponent } from '../../../shared/button/button.component';
-
-// import Swal from 'sweetalert2';
-// import { firstValueFrom } from 'rxjs';
-
-// @Component({
-//   selector: 'app-loans',
-//   imports: [DropdownComponent, CheckListComponent,CommonModule,ButtonComponent],
-//   templateUrl: './loans.component.html',
-//   styleUrl: './loans.component.css',
-// })
-// export class LoansComponent {
-//   mode: 'create' | 'edit' | 'view' = 'view';
-//   itemId?: string;
-//   states: string[] = [];
-//   selectedState = '';
-//   selectedType = '';
-//   types: string[] = [];
-//   name: string = '';
-//   description: string = '';
-//   isModalOpen = false;
-
-//   constructor(private route: ActivatedRoute, private router: Router) {}
-
-//   placesOriginOptions: string[] = [];
-//   itemOptions: string[] = [];
-//   placesDestinationOptions: string[] = [];
-//   selectedPlace: string = "";
-
-//   placesData = [
-//     {
-//       campus: "Balzay",
-//       aula: "Laboratorio HCI"
-//     },
-//     {
-//       campus: "Balzay",
-//       aula: "Laboratorio de Redes"
-//     },
-//     {
-//       campus: "Balzay",
-//       aula: "C105"
-//     },
-//     {
-//       campus: "Balzay",
-//       aula: "C106"
-//     },
-//   ];
-
-//   itemTypesData = ["Pc Imac", "Proyector"]
-
-//   itemsData = {
-//     'Laboratorio HCI': [
-//       {id: 1234, tipo: "PC Imac", estado: "bueno"},
-//       {id: 1235, tipo: "PC Imac", estado: "bueno"},
-//       {id: 1236, tipo: "PC Imac", estado: "bueno"},
-//       {id: 1237, tipo: "PC Imac", estado: "bueno"},
-//       {id: 1238, tipo: "PC Imac", estado: "bueno"}
-//     ]
-//   }
-
-//   async ngOnInit(): Promise<void> {
-//       const data = await firstValueFrom(this.route.data);
-//       this.mode = data['mode'] ?? 'view';
-
-//       const params = await firstValueFrom(this.route.paramMap);
-//       this.itemId = params.get('id') ?? undefined;
-
-//       this.loadSystemData();
-
-//       if (this.mode === 'edit' || this.mode === 'view') {
-//         this.loadItemData();
-//       }
-//     }
-
-//   loadItemData() {
-//     console.log('Cargar datos del item con ID:', this.itemId);
-//     this.placesOriginOptions = this.placesData.map((place) => place.aula);
-//     this.placesDestinationOptions = this.placesData.map((place) => place.aula);
-//     this.itemOptions = this.itemsData['Laboratorio HCI'].map((item) => item.tipo);
-//   }
-//   loadSystemData() {
-//     this.states = ['Nuevo', 'Usado', 'Dañado'];
-//     this.types = ['Computador', 'Mueble', 'Herramienta'];
-//   }
-//   get isReadOnly(): boolean {
-//       return this.mode === 'view';
-//     }
-
-//     get isEdit(): boolean {
-//       return this.mode === 'edit';
-//     }
-
-//     get isCreate(): boolean {
-//       return this.mode === 'create';
-//     }
-
-//     onPriorityChange1(value: string) {
-//       this.selectedState = value;
-//       console.log('Prioridad seleccionada:', value);
-//     }
-
-//     onPriorityChange2(value: string) {
-//       this.selectedType = value;
-//       console.log('Prioridad seleccionada:', value);
-//     }
-
-//     addItem() {
-//       console.log('Item added!');
-//     }
-
-//     onNameChange(value: string): void {
-//       this.name = value;
-//     }
-
-//     onDescriptionChange(value: string): void {
-//       this.description = value;
-//     }
-
-//     openTypeStateModal() {
-//       this.isModalOpen = true;
-//     }
-
-//     closeModal() {
-//       this.isModalOpen = false;
-//     }
-
-//     onDataSelected(data: any) {
-//       console.log('onDataSelected');
-//       console.log('Data selected:', data);
-//     }
-
-//     onStateChange(value: string) {
-//       console.log('Estado seleccionado:', value);
-//       this.selectedState = value;
-//     }
-
-//     onTypeChange(value: string): void {
-//       console.log('Tipo cambiado:', value);
-//       this.selectedType = value;
-//     }
-
-//     saveItem() {
-//       if (
-//         !this.name.trim() ||
-//         !this.description.trim() ||
-//         !this.selectedType ||
-//         !this.selectedState
-//       ) {
-//         console.warn('Por favor, completa todos los campos antes de guardar.');
-//         console.log('this.name', this.name);
-//         console.log('this.description', this.description);
-//         console.log('this.selectedType', this.selectedType);
-//         console.log('this.selectedState', this.selectedState);
-//         return;
-//       }
-
-//       this.showToast();
-//       console.log('Guardar en la base de datos');
-//       this.router.navigate(['/inventory/items']);
-//     }
-
-//     showToast() {
-//       Swal.fire({
-//         toast: true,
-//         position: 'top-end',
-//         icon: 'success',
-//         title: 'Item guardado con éxito',
-//         showConfirmButton: false,
-//         timer: 1500,
-//       });
-//     }
-
-//     modalData(value: any) {
-//       console.log('Esto llega desde el modal');
-//       console.log('modalData', value);
-//       if (value.field === 'Tipo') {
-//         this.types.push(value.name);
-//       } else if (value.field === 'Estado') {
-//         this.states.push(value.name);
-//       }
-//     }
-//     showAlert() {
-//   Swal.fire({
-//     title: '¿Deseas registrar este préstamo?',
-//     icon: 'question',
-//     showCancelButton: true,
-//     confirmButtonText: 'Sí, continuar',
-//     cancelButtonText: 'Cancelar'
-//   }).then((result) => {
-//     if (result.isConfirmed) {
-//       Swal.fire('¡Hecho!', 'El registro se realizó correctamente.', 'success');
-//     } else if (result.dismiss === Swal.DismissReason.cancel) {
-//       Swal.fire('Cancelado', 'No se realizó ninguna acción', 'error');
-//     }
-//   });
-//   }
-// }
-
 // prestamo.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { firstValueFrom, Subject } from 'rxjs';
@@ -210,8 +5,8 @@ import { takeUntil } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule, NgIf } from '@angular/common';
-import { PrestamoService, Lugar, Item, DropdownOption } from '../services/loans.service';
-import { ActivatedRoute } from '@angular/router';
+import { PrestamoService, Lugar, Item, DropdownOption, Prestamo } from '../services/loans.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-loans',
@@ -222,6 +17,7 @@ import { ActivatedRoute } from '@angular/router';
 export class LoansComponent implements OnInit, OnDestroy {
   mode: 'create' | 'edit' | 'view' = 'view';
   idPrestamo: string | undefined = undefined;
+  prestamo: Prestamo | null = null;
 
   // Datos y opciones
   lugares: Lugar[] = [];
@@ -237,6 +33,7 @@ export class LoansComponent implements OnInit, OnDestroy {
   // Estados de carga
   loadingPlaces = false;
   loadingItems = false;
+  loadingPrestamo = false;
   isSubmitting = false;
 
   // Mensajes
@@ -246,7 +43,11 @@ export class LoansComponent implements OnInit, OnDestroy {
   // Subject para manejar unsubscriptions
   private destroy$ = new Subject<void>();
 
-  constructor(private route: ActivatedRoute, private prestamoService: PrestamoService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private prestamoService: PrestamoService
+  ) {}
 
   async ngOnInit() {
     const data = await firstValueFrom(this.route.data);
@@ -257,6 +58,11 @@ export class LoansComponent implements OnInit, OnDestroy {
 
     this.loadPlaces();
     this.subscribeToSelectedItems();
+
+    // Si es modo editar o ver, cargar datos del préstamo
+    if ((this.mode === 'edit' || this.mode === 'view') && this.idPrestamo) {
+      this.loadPrestamoData();
+    }
   }
 
   ngOnDestroy() {
@@ -271,6 +77,64 @@ export class LoansComponent implements OnInit, OnDestroy {
     this.prestamoService.selectedItems$.pipe(takeUntil(this.destroy$)).subscribe((items) => {
       this.selectedItems = items;
     });
+  }
+
+  /**
+   * Cargar datos del préstamo (para editar o ver)
+   */
+  private loadPrestamoData(): void {
+    if (!this.idPrestamo) return;
+
+    this.loadingPrestamo = true;
+    const prestamoId = parseInt(this.idPrestamo, 10);
+
+    this.prestamoService
+      .getPrestamoById(prestamoId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (prestamo) => {
+          this.prestamo = prestamo;
+          this.selectedOriginPlace = prestamo.id_origen;
+          this.selectedDestinationPlace = prestamo.id_destino;
+          this.selectedConfirmedOriginPlace = prestamo.id_origen;
+
+          if (this.mode === 'view') {
+            // En modo vista, cargar solo los items del préstamo
+            this.loadPrestamoItems(prestamoId);
+          } else {
+            // En modo editar, cargar todos los items del lugar origen
+            this.loadItems(prestamo.id_origen);
+          }
+
+          this.loadingPrestamo = false;
+        },
+        error: (error) => {
+          this.errorMessage = this.prestamoService.handleError(error);
+          this.loadingPrestamo = false;
+        },
+      });
+  }
+
+  /**
+   * Cargar items específicos del préstamo (para modo vista)
+   */
+  private loadPrestamoItems(prestamoId: number): void {
+    this.loadingItems = true;
+
+    this.prestamoService
+      .getItemsByPrestamo(prestamoId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (items) => {
+          this.items = items.map((item) => ({ ...item, selected: true }));
+          this.prestamoService.updateSelectedItems(this.items);
+          this.loadingItems = false;
+        },
+        error: (error) => {
+          this.errorMessage = this.prestamoService.handleError(error);
+          this.loadingItems = false;
+        },
+      });
   }
 
   /**
@@ -307,7 +171,7 @@ export class LoansComponent implements OnInit, OnDestroy {
     }
 
     // Si hay items seleccionados y está cambiando el lugar, preguntar confirmación
-    if (this.selectedItems.length > 0) {
+    if (this.selectedItems.length > 0 && this.mode !== 'view') {
       const confirmed = confirm(
         'Cambiar el lugar de origen eliminará la selección actual de items. ¿Deseas continuar?'
       );
@@ -319,8 +183,11 @@ export class LoansComponent implements OnInit, OnDestroy {
 
     this.selectedConfirmedOriginPlace = this.selectedOriginPlace;
     this.clearMessages();
-    this.clearItemSelection();
-    this.loadItems(placeId);
+
+    if (this.mode !== 'view') {
+      this.clearItemSelection();
+      this.loadItems(placeId);
+    }
   }
 
   /**
@@ -333,7 +200,6 @@ export class LoansComponent implements OnInit, OnDestroy {
       }, 0);
 
       this.errorMessage = 'Los lugares de origen y destino no pueden ser los mismos.';
-
       return;
     }
 
@@ -353,6 +219,12 @@ export class LoansComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (items) => {
           this.items = items;
+
+          // Si estamos en modo editar y hay un préstamo cargado, marcar items seleccionados
+          if (this.mode === 'edit' && this.prestamo) {
+            this.loadPrestamoItemsForEdit();
+          }
+
           this.loadingItems = false;
         },
         error: (error) => {
@@ -363,14 +235,75 @@ export class LoansComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Cargar items del préstamo para modo editar
+   */
+  private loadPrestamoItemsForEdit(): void {
+    if (!this.idPrestamo) return;
+
+    const prestamoId = parseInt(this.idPrestamo, 10);
+
+    this.prestamoService
+      .getItemsByPrestamo(prestamoId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (prestamoItems) => {
+          const prestamoItemIds = prestamoItems.map((item) => item.id_item);
+
+          // Marcar como seleccionados los items que están en el préstamo
+          this.items.forEach((item) => {
+            item.selected = prestamoItemIds.includes(item.id_item);
+          });
+
+          this.prestamoService.updateSelectedItems(this.items);
+        },
+        error: (error) => {
+          console.error('Error cargando items del préstamo:', error);
+        },
+      });
+  }
+
+  /**
    * Alternar selección de un item
    */
   toggleItemSelection(item: Item): void {
-    if (this.isReadOnly || item.id_item_estado !== 1) return;
+    if (this.isReadOnly || !this.prestamoService.canSelectItem(item)) return;
 
     item.selected = !item.selected;
     this.prestamoService.updateSelectedItems(this.items);
     this.clearMessages();
+  }
+
+  /**
+   * Obtener el color del estado del item
+   */
+  getEstadoColor(item: Item): string {
+    return this.prestamoService.getEstadoColor(item.estadoItem.estado);
+  }
+
+  /**
+   * Verificar si un item se puede seleccionar
+   */
+  canSelectItem(item: Item): boolean {
+    return this.prestamoService.canSelectItem(item);
+  }
+
+  /**
+   * Obtener las clases CSS para las tarjetas de items
+   */
+  getItemCardClasses(item: Item): string {
+    let classes = '';
+
+    if (item.selected) {
+      classes += 'border-[#4880FF] bg-blue-50 ';
+    } else {
+      classes += 'border-gray-300 ';
+    }
+
+    if (!this.canSelectItem(item) || this.isReadOnly) {
+      classes += 'opacity-50 ';
+    }
+
+    return classes.trim();
   }
 
   /**
@@ -390,12 +323,13 @@ export class LoansComponent implements OnInit, OnDestroy {
       this.selectedDestinationPlace &&
       this.selectedItems.length > 0 &&
       !this.loadingItems &&
-      !this.loadingPlaces
+      !this.loadingPlaces &&
+      !this.loadingPrestamo
     );
   }
 
   /**
-   * Realizar el préstamo
+   * Realizar el préstamo (crear o actualizar)
    */
   realizarPrestamo(): void {
     this.clearMessages();
@@ -424,16 +358,65 @@ export class LoansComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Enviar solicitud
+    console.log(prestamoData);
+
+    // Determinar si crear o actualizar
     this.isSubmitting = true;
+    const operation =
+      this.mode === 'edit' && this.idPrestamo
+        ? this.prestamoService.actualizarPrestamo(parseInt(this.idPrestamo, 10), prestamoData)
+        : this.prestamoService.crearPrestamo(prestamoData);
+
+    operation.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response) => {
+        const mensaje =
+          this.mode === 'edit'
+            ? 'Préstamo actualizado exitosamente'
+            : 'Préstamo registrado exitosamente';
+
+        this.successMessage = mensaje;
+
+        if (this.mode === 'create') {
+          this.resetForm();
+        }
+
+        this.isSubmitting = false;
+
+        // Opcional: redirigir después de un tiempo
+        setTimeout(() => {
+          this.router.navigate(['/loans']);
+        }, 2000);
+      },
+      error: (error) => {
+        this.errorMessage = this.prestamoService.handleError(error);
+        this.isSubmitting = false;
+      },
+    });
+  }
+
+  /**
+   * Eliminar préstamo
+   */
+  eliminarPrestamo(): void {
+    if (!this.idPrestamo) return;
+
+    const confirmed = confirm('¿Estás seguro de que deseas eliminar este préstamo?');
+    if (!confirmed) return;
+
+    this.isSubmitting = true;
+    const prestamoId = parseInt(this.idPrestamo, 10);
+
     this.prestamoService
-      .crearPrestamo(prestamoData)
+      .eliminarPrestamo(prestamoId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response) => {
-          this.successMessage = 'Préstamo registrado exitosamente';
-          this.resetForm();
+        next: () => {
+          this.successMessage = 'Préstamo eliminado exitosamente';
           this.isSubmitting = false;
+
+          setTimeout(() => {
+            this.router.navigate(['/loans']);
+          }, 1500);
         },
         error: (error) => {
           this.errorMessage = this.prestamoService.handleError(error);
@@ -448,6 +431,7 @@ export class LoansComponent implements OnInit, OnDestroy {
   private resetForm(): void {
     this.selectedOriginPlace = null;
     this.selectedDestinationPlace = null;
+    this.selectedConfirmedOriginPlace = null;
     this.clearItemSelection();
     this.items = [];
   }
@@ -475,5 +459,12 @@ export class LoansComponent implements OnInit, OnDestroy {
 
   get isCreate(): boolean {
     return this.mode === 'create';
+  }
+
+  get actionButtonText(): string {
+    if (this.isSubmitting) {
+      return this.mode === 'edit' ? 'Actualizando...' : 'Procesando...';
+    }
+    return this.mode === 'edit' ? 'Actualizar Préstamo' : 'Realizar Préstamo';
   }
 }
