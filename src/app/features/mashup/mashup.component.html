@@ -8,12 +8,12 @@
 
     <section class="flex justify-center items-stretch md:row-start-2 col-start-1 w-full h-[33vh] md:h-[calc(90%-2rem)]">
       <div class="w-full h-full">
-        <app-location-map></app-location-map>
+        <app-location-map [location]="coord"></app-location-map>
       </div>
     </section>
 
     <section class="col-start-1 md:col-start-2 md:row-span-2 flex justify-center">
-      <app-list-view [placeName]="searchedPlace"></app-list-view>
+      <app-list-view [setItems]="items"></app-list-view>
     </section>
   </div>
 </div>

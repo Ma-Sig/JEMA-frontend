@@ -8,10 +8,13 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './search-bar.component.css'
 })
 export class SearchBarComponent {
-  searchTerm = "";
+  searchTerm: string = '';
   @Output() search = new EventEmitter<string>();
 
-  onSearch() {
-    this.search.emit(this.searchTerm.trim().toLowerCase());
+  onSearch(): void {
+    const value = this.searchTerm.trim();
+    if (value) {
+      this.search.emit(value);
+    }
   }
 }

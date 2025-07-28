@@ -8,9 +8,8 @@ import { Component, Input } from '@angular/core';
 })
 export class ItemComponent {
   @Input() nombre: string = "";
-  @Input() lugar: string = "";
+  @Input() marca: string = "";
   @Input() estado: string = "";
-  @Input() item: string = "";
-  @Input() fecha: string = "";
+  @Input() categoria: string = "";
   @Input() img: string = "";
 }

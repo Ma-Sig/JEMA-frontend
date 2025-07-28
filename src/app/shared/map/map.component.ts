@@ -30,7 +30,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     await this.waitForMapContainer();
 
     this.map = L.map(this.mapId, {
-      zoomControl: true,
+      zoomControl: false,
       dragging: true,
       scrollWheelZoom: true,
       doubleClickZoom: true,
@@ -58,6 +58,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['allowMarker'] && this.map) {
       this.updateClickListener();
+    }
+    if (changes['coordinates'] && this.map && this.coordinates) {
+      this.map.setView(this.coordinates, 17);
+      this.setMarker(this.coordinates);
+      console.log('Mapa actualizando coordenadas:', this.coordinates);
     }
   }
 
